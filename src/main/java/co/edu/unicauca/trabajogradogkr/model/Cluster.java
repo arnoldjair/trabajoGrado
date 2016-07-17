@@ -82,6 +82,7 @@ public class Cluster {
         }
 
         centroid.setData(centroidData);
+        centroid.setAttributes(attributes);
     }
 
 }
