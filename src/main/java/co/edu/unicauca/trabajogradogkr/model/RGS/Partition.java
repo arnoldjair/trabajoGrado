@@ -132,7 +132,7 @@ public class Partition {
         rgs[0] = 0;
 
         int max = 0;
-        k = rgs[0];
+        k = 0;
         for (int i = 1; i < rgs.length; i++) {
             if (swap[rgs[i]][1] != -1) {
                 rgs[i] = swap[rgs[i]][1];
