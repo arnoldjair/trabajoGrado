@@ -35,6 +35,12 @@ public class Partition {
     public Partition() {
     }
 
+    public Partition(int[] rgs, int n, int k) {
+        this.rgs = rgs;
+        this.n = n;
+        this.k = k;
+    }
+
     public Partition(int n) {
         rgs = new int[n];
         this.n = n;
@@ -96,16 +102,16 @@ public class Partition {
 
     public synchronized static Partition randPartition(int n, int k, Random random) {
         int[] rgs = new int[n];
-        int max = k + 1;
+        int max = k;
         int ak = 0;
         Partition ret = null;
         while (ak != k) {
-            max = 2;
             for (int i = 0; i < n; i++) {
                 rgs[i] = random.nextInt(max);
             }
             ret = reprocessRGS(rgs);
             ak = ret.getK();
+            System.out.println(ak);
         }
         return ret;
     }
