@@ -43,8 +43,8 @@ public class KMeans {
         double currPercent = 1;
         Cluster[] clusters;
         Agent ret = new Agent();
-        Partition tmpP = new Partition();
-        tmpP.setRgs(agent.getP().getRgs().clone());
+        Partition tmpP = new Partition(agent.getP().getRgs().clone(),
+                agent.getP().getN(), agent.getP().getK());
         ret.setP(tmpP);
         ret.calcClusters(dataset);
 
