@@ -144,7 +144,7 @@ public class Dataset {
 
             read.close();
 
-            return fields > 2 && attribs != 0;
+            return fields >= 2 && attribs != 0;
 
         } catch (Exception e) {
             return false;
@@ -239,8 +239,8 @@ public class Dataset {
                 for (int j = 0; j < cols; j++) {
                     if (attributes[j].getType() == Dataset.DOUBLE) {
                         tmp[j] = Double.parseDouble(data.get(i)[j]);
-                        this.normValues[j][0] = Math.min(this.normValues[j][0], (Double) tmp[i]);
-                        this.normValues[j][1] = Math.max(this.normValues[j][1], (Double) tmp[i]);
+                        this.normValues[j][0] = Math.min(this.normValues[j][0], (Double) tmp[j]);
+                        this.normValues[j][1] = Math.max(this.normValues[j][1], (Double) tmp[j]);
                     } else {
                         tmp[j] = data.get(i)[j];
                         if (hasClass && j == classIndex) {
@@ -271,6 +271,33 @@ public class Dataset {
         } catch (IOException ex) {
             Logger.getLogger(Dataset.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    public synchronized void normalize() {
+        int rows = n;
+        int cols = this.attributes.length;
+        Object tempD[];
+        records = new Record[rows];
+        if (!normalized) {
+            for (int i = 0; i < rows; i++) {
+                tempD = new Object[cols];
+                for (int j = 0; j < cols; j++) {
+                    if (attributes[j].getType() == Dataset.DOUBLE) {
+                        if (this.normValues[j][0] == this.normValues[j][1]) {
+                            tempD[j] = 1.0;
+                        } else {
+                            tempD[j]
+                                    = ((Double) oRecords[i].getData()[j] - this.normValues[j][0])
+                                    / (this.normValues[j][1] - this.normValues[j][0]);
+                        }
+                    } else {
+                        tempD[j] = oRecords[i].getData()[j];
+                    }
+                }
+                this.records[i] = new Record(i, tempD, attributes);
+            }
+        }
+        this.normalized = true;
     }
 
     public synchronized static int getAttrType(String t) {
