@@ -22,7 +22,7 @@ import co.edu.unicauca.trabajogradogkr.distance.Distance;
 import co.edu.unicauca.trabajogradogkr.model.Agent;
 import co.edu.unicauca.trabajogradogkr.model.Cluster;
 import co.edu.unicauca.trabajogradogkr.model.Dataset;
-import co.edu.unicauca.trabajogradogkr.model.RGS.Partition;
+import co.edu.unicauca.trabajogradogkr.model.rgs.Partition;
 import co.edu.unicauca.trabajogradogkr.model.Record;
 
 /**
