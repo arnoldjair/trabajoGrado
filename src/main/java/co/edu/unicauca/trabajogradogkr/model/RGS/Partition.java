@@ -18,7 +18,9 @@
  */
 package co.edu.unicauca.trabajogradogkr.model.RGS;
 
+import java.security.SecureRandom;
 import java.util.Arrays;
+import java.util.Random;
 
 /**
  *
@@ -85,6 +87,73 @@ public class Partition {
                 this.rgs[i] = n;
             }
         }
+    }
+
+    public synchronized static Partition randPartition(int n, int k) {
+        Random random = new SecureRandom();
+        return randPartition(n, k, random);
+    }
+
+    public synchronized static Partition randPartition(int n, int k, Random random) {
+        int[] rgs = new int[n];
+        int max = k + 1;
+        int ak = 0;
+        Partition ret = null;
+        while (ak != k) {
+            max = 2;
+            for (int i = 0; i < n; i++) {
+                rgs[i] = random.nextInt(max);
+            }
+            ret = reprocessRGS(rgs);
+            ak = ret.getK();
+        }
+        return ret;
+    }
+
+    public synchronized static Partition reprocessRGS(int[] rgs) {
+        int k = rgs[0];
+
+        for (int i = 1; i < rgs.length; i++) {
+            if (k < rgs[i]) {
+                k = rgs[i];
+            }
+        }
+        k++;
+
+        int[][] swap = new int[k][2];
+
+        for (int i = 0; i < k; i++) {
+            swap[i][0] = i;
+            swap[i][1] = -1;
+        }
+
+        int tmp = rgs[0];
+        swap[tmp][1] = 0;
+        rgs[0] = 0;
+
+        int max = 0;
+        k = rgs[0];
+        for (int i = 1; i < rgs.length; i++) {
+            if (swap[rgs[i]][1] != -1) {
+                rgs[i] = swap[rgs[i]][1];
+            } else {
+                max++;
+                swap[rgs[i]][1] = max;
+                rgs[i] = max;
+            }
+            if (k < rgs[i]) {
+                k = rgs[i];
+            }
+        }
+
+        k++;
+
+        Partition ret = new Partition();
+        ret.setN(rgs.length);
+        ret.setRgs(rgs);
+        ret.setK(k);
+
+        return ret;
     }
 
     @Override
