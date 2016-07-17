@@ -26,13 +26,15 @@ public class Record {
 
     private int index;
     private Object[] data;
+    private Attribute[] attributes;
 
     public Record() {
     }
 
-    public Record(int index, Object[] data) {
+    public Record(int index, Object[] data, Attribute[] attributes) {
         this.index = index;
         this.data = data;
+        this.attributes = attributes;
     }
 
     public int getIndex() {
@@ -51,4 +53,50 @@ public class Record {
         this.data = data;
     }
 
+    public Attribute[] getAttributes() {
+        return attributes;
+    }
+
+    public void setAttributes(Attribute[] attributes) {
+        this.attributes = attributes;
+    }
+
+    public Record subtract(Record record) {
+        Object[] data1 = data;
+        Object[] data2 = record.getData();
+        Object[] dataRet = new Object[data.length];
+        for (int i = 0; i < attributes.length; i++) {
+            if (attributes[i].getType() == Dataset.DOUBLE) {
+                dataRet[i] = (double) data1[i] - (double) data2[i];
+            } else {
+                dataRet[i] = 0;
+            }
+        }
+
+        return new Record(-1, dataRet, attributes);
+    }
+
+    public Record pow(double val) {
+        Object[] dataRet = new Object[data.length];
+        for (int i = 0; i < attributes.length; i++) {
+            if (attributes[i].getType() == Dataset.DOUBLE) {
+                dataRet[i] = Math.pow((double) data[i], val);
+            } else {
+                dataRet[i] = 0;
+            }
+        }
+
+        return new Record(-1, dataRet, attributes);
+    }
+
+    public double sumValues() {
+        double ret = 0;
+        for (int i = 0; i < attributes.length; i++) {
+            if (attributes[i].getType() == Dataset.DOUBLE) {
+                ret += (double) data[i];
+            }
+        }
+
+        return ret;
+    }
 }
