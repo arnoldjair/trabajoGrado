@@ -24,8 +24,18 @@ package co.edu.unicauca.trabajogradogkr.model;
  */
 public class Cluster {
 
+    private int index;
     private Record centroid;
     private Record[] records;
+    private Attribute[] attributes;
+
+    public int getIndex() {
+        return index;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
+    }
 
     public Record getCentroid() {
         return centroid;
@@ -36,11 +46,42 @@ public class Cluster {
     }
 
     public Record[] getRecords() {
-        return records;
+        return records.clone();
     }
 
     public void setRecords(Record[] records) {
-        this.records = records;
+        this.records = records.clone();
+    }
+
+    public Attribute[] getAttributes() {
+        return attributes;
+    }
+
+    public void setAttributes(Attribute[] attributes) {
+        this.attributes = attributes;
+    }
+
+    public void calcCentroid() {
+        centroid = new Record();
+        Object[] centroidData = new Object[attributes.length];
+
+        for (int i = 0; i < attributes.length; i++) {
+            centroidData[i] = 0.0;
+        }
+
+        for (Record record : records) {
+            Object[] tmp = record.getData();
+            for (int i = 0; i < attributes.length; i++) {
+                if (attributes[i].getType() == Dataset.DOUBLE) {
+                    centroidData[i] = (double) centroidData[i] + (double) tmp[i];
+                }
+            }
+        }
+        for (int i = 0; i < this.attributes.length; i++) {
+            centroidData[i] = (Double) centroidData[i] / records.length;
+        }
+
+        centroid.setData(centroidData);
     }
 
 }
