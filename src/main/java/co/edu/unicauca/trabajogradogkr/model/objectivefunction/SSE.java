@@ -61,4 +61,8 @@ public class SSE implements ObjectiveFunction {
         return new SSE();
     }
 
+    @Override
+    public String toString() {
+        return "SSE";
+    }
 }

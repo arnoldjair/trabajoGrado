@@ -111,7 +111,6 @@ public class Partition {
             }
             ret = reprocessRGS(rgs);
             ak = ret.getK();
-            System.out.println(ak);
         }
         return ret;
     }

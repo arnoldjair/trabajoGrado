@@ -47,4 +47,9 @@ public class AIC implements ObjectiveFunction {
         return new AIC();
     }
 
+    @Override
+    public String toString() {
+        return "AIC";
+    }
+
 }
