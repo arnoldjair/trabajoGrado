@@ -99,6 +99,10 @@ public class Dataset {
         return records;
     }
 
+    public Record getRecord(int index) {
+        return records[index];
+    }
+
     public void setRecords(Record[] records) {
         this.records = records;
     }
@@ -247,8 +251,8 @@ public class Dataset {
                         }
                     }
                 }
-                records[i] = new Record(i, tmp);
-                oRecords[i] = new Record(i, tmp);
+                records[i] = new Record(i, tmp, attributes);
+                oRecords[i] = new Record(i, tmp, attributes);
             }
 
             if (this.hasClass) {
