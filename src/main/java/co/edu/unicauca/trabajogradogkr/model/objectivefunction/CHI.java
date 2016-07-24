@@ -19,52 +19,52 @@
 package co.edu.unicauca.trabajogradogkr.model.objectivefunction;
 
 import co.edu.unicauca.trabajogradogkr.distance.Distance;
-import co.edu.unicauca.trabajogradogkr.distance.ManhattanDistance;
 import co.edu.unicauca.trabajogradogkr.model.Agent;
-import co.edu.unicauca.trabajogradogkr.model.Cluster;
 import co.edu.unicauca.trabajogradogkr.model.Dataset;
-import co.edu.unicauca.trabajogradogkr.model.Record;
-import co.edu.unicauca.trabajogradogkr.model.rgs.Partition;
 
 /**
  *
  * @author Arnold Jair Jimenez Vargas <ajjimenez@unicauca.edu.co>
  */
-public class SSE implements ObjectiveFunction {
+public class CHI implements ObjectiveFunction {
 
     @Override
     public boolean minimizes() {
-        return true;
+        return false;
     }
 
     @Override
     public double calculate(Agent agent, Dataset dataset, Distance distance) {
-        Partition p = agent.getP();
-        double ret = 0;
-        //Por sospecha
-        agent.calcClusters(dataset);
-        Cluster[] clusters = agent.getClusters();
-        double dist;
-        Distance localDistance = new ManhattanDistance();
+        InternalClusteringCriteria i = new InternalClusteringCriteria();
 
-        for (Cluster cluster : clusters) {
-            Record[] records = cluster.getRecords();
-            for (Record record : records) {
-                dist = localDistance.distance(cluster.getCentroid(), record);
-                ret += Math.pow(dist, 2);
+        try {
+            double B = i.bgss(agent, dataset, distance);
+            double K = agent.getP().getK();
+            double W = i.wgss(agent, dataset, distance);
+            double N = dataset.getN();
+
+            if (K == 1) {
+                return 0;
             }
+
+            double ret = (B * (N - K)) / (W * (K - 1));
+
+            return ret;
+
+        } catch (Exception e) {
+            return 0;
         }
 
-        return ret;
     }
 
     @Override
     public ObjectiveFunction newInstance() {
-        return new SSE();
+        return new CHI();
     }
 
     @Override
     public String toString() {
-        return "SSE";
+        return "CHI";
     }
+
 }

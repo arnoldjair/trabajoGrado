@@ -19,7 +19,7 @@
 package co.edu.unicauca.trabajogradogkr.model.objectivefunction;
 
 import co.edu.unicauca.trabajogradogkr.distance.Distance;
-import co.edu.unicauca.trabajogradogkr.distance.ManhattanDistance;
+import co.edu.unicauca.trabajogradogkr.exception.DistanceException;
 import co.edu.unicauca.trabajogradogkr.model.Agent;
 import co.edu.unicauca.trabajogradogkr.model.Cluster;
 import co.edu.unicauca.trabajogradogkr.model.Dataset;
@@ -30,41 +30,36 @@ import co.edu.unicauca.trabajogradogkr.model.rgs.Partition;
  *
  * @author Arnold Jair Jimenez Vargas <ajjimenez@unicauca.edu.co>
  */
-public class SSE implements ObjectiveFunction {
+public class InternalClusteringCriteria {
 
-    @Override
-    public boolean minimizes() {
-        return true;
-    }
+    public double wgss(Agent agent, Dataset dataset, Distance distance) throws DistanceException {
 
-    @Override
-    public double calculate(Agent agent, Dataset dataset, Distance distance) {
-        Partition p = agent.getP();
         double ret = 0;
-        //Por sospecha
-        agent.calcClusters(dataset);
-        Cluster[] clusters = agent.getClusters();
-        double dist;
-        Distance localDistance = new ManhattanDistance();
 
-        for (Cluster cluster : clusters) {
+        agent.calcClusters(dataset);
+
+        for (Cluster cluster : agent.getClusters()) {
             Record[] records = cluster.getRecords();
             for (Record record : records) {
-                dist = localDistance.distance(cluster.getCentroid(), record);
-                ret += Math.pow(dist, 2);
+                ret += distance.distance(record, cluster.getCentroid());
             }
         }
 
         return ret;
     }
 
-    @Override
-    public ObjectiveFunction newInstance() {
-        return new SSE();
-    }
+    public double bgss(Agent agent, Dataset dataset, Distance distance) throws DistanceException {
+        double ret = 0;
 
-    @Override
-    public String toString() {
-        return "SSE";
+        agent.calcClusters(dataset);
+        dataset.getMean();
+        double tmp;
+
+        for (Cluster cluster : agent.getClusters()) {
+            tmp = distance.distance(cluster.getCentroid(), dataset.getMean());
+            ret += cluster.getRecords().length * (tmp * tmp);
+        }
+        
+        return ret;
     }
 }
