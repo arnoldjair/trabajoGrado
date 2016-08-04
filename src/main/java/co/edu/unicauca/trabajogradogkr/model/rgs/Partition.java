@@ -100,9 +100,19 @@ public class Partition {
         return randPartition(n, k, random);
     }
 
+    /**
+     * Partición aleatoria.
+     *
+     * @param n
+     * @param k
+     * @param random
+     * @return
+     */
     public synchronized static Partition randPartition(int n, int k, Random random) {
         int[] rgs = new int[n];
+        k = k == 0 ? 1 : k;
         int max = k;
+
         int ak = 0;
         Partition ret = null;
         while (ak != k) {
@@ -158,6 +168,23 @@ public class Partition {
         ret.setRgs(rgs);
         ret.setK(k);
 
+        return ret;
+    }
+
+    public synchronized Partition mix(Partition p, Random random, int c) {
+        int[] rgs1 = this.rgs.clone();
+        int[] rgs2 = p.getRgs().clone();
+
+        for (int i = 0; i < this.n; i++) {
+            if (rgs1[i] == c) {
+                if (rgs2[i] == -1) {
+                    rgs2[i] = c;
+                } else if (random.nextInt(2) == 0) {
+                    rgs2[i] = c;
+                }
+            }
+        }
+        Partition ret = new Partition(rgs2, n, p.getK());
         return ret;
     }
 

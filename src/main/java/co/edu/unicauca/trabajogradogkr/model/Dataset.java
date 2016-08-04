@@ -29,6 +29,7 @@ public class Dataset {
     private boolean normalized;
     private double[][] normValues;
     private String name;
+    private Record mean;
     private String[] classes;
     private Record[] records;
     private Record[] oRecords;
@@ -39,87 +40,108 @@ public class Dataset {
         normalized = false;
     }
 
-    public int getN() {
+    public synchronized int getN() {
         return n;
     }
 
-    public void setN(int n) {
+    public synchronized void setN(int n) {
         this.n = n;
     }
 
-    public int getClassIndex() {
+    public synchronized int getClassIndex() {
         return classIndex;
     }
 
-    public void setClassIndex(int classIndex) {
+    public synchronized void setClassIndex(int classIndex) {
         this.classIndex = classIndex;
     }
 
-    public boolean isHasClass() {
+    public synchronized boolean isHasClass() {
         return hasClass;
     }
 
-    public void setHasClass(boolean hasClass) {
+    public synchronized void setHasClass(boolean hasClass) {
         this.hasClass = hasClass;
     }
 
-    public boolean isNormalized() {
+    public synchronized boolean isNormalized() {
         return normalized;
     }
 
-    public void setNormalized(boolean normalized) {
+    public synchronized void setNormalized(boolean normalized) {
         this.normalized = normalized;
     }
 
-    public double[][] getNormValues() {
+    public synchronized double[][] getNormValues() {
         return normValues;
     }
 
-    public void setNormValues(double[][] normValues) {
+    public synchronized void setNormValues(double[][] normValues) {
         this.normValues = normValues;
     }
 
-    public String getName() {
+    public synchronized String getName() {
         return name;
     }
 
-    public void setName(String name) {
+    public synchronized void setName(String name) {
         this.name = name;
     }
 
-    public String[] getClasses() {
+    public synchronized String[] getClasses() {
         return classes;
     }
 
-    public void setClasses(String[] classes) {
+    public synchronized void setClasses(String[] classes) {
         this.classes = classes;
     }
 
-    public Record[] getRecords() {
+    public synchronized Record[] getRecords() {
         return records;
     }
 
-    public Record getRecord(int index) {
+    public synchronized Record getRecord(int index) {
         return records[index];
     }
 
-    public void setRecords(Record[] records) {
+    public synchronized void setRecords(Record[] records) {
         this.records = records;
     }
 
-    public Record[] getoRecords() {
+    public synchronized Record[] getoRecords() {
         return oRecords;
     }
 
-    public void setoRecords(Record[] oRecords) {
+    public synchronized void setoRecords(Record[] oRecords) {
         this.oRecords = oRecords;
     }
 
-    public Attribute[] getAttributes() {
+    public Record getMean() {
+        if (mean == null) {
+            calcMean();
+        }
+        return mean;
+    }
+
+    public void setMean(Record mean) {
+        this.mean = mean;
+    }
+
+    private void calcMean() {
+        mean = records[0];
+
+        for (int i = 1; i < records.length; i++) {
+            mean = mean.add(records[i]);
+        }
+
+        mean = mean.divide(n);
+    }
+
+    public synchronized Attribute[] getAttributes() {
         return attributes;
     }
 
-    public void setAttributes(Attribute[] attributes) {
+    public synchronized void setAttributes(Attribute[] attributes) {
         this.attributes = attributes;
     }
 

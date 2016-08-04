@@ -61,6 +61,21 @@ public class Record {
         this.attributes = attributes;
     }
 
+    public Record add(Record record) {
+        Object[] data1 = data;
+        Object[] data2 = record.getData();
+        Object[] dataRet = new Object[data.length];
+        for (int i = 0; i < attributes.length; i++) {
+            if (attributes[i].getType() == Dataset.DOUBLE) {
+                dataRet[i] = (double) data1[i] + (double) data2[i];
+            } else {
+                dataRet[i] = 0;
+            }
+        }
+
+        return new Record(-1, dataRet, attributes);
+    }
+
     public Record subtract(Record record) {
         Object[] data1 = data;
         Object[] data2 = record.getData();
@@ -81,6 +96,19 @@ public class Record {
         for (int i = 0; i < attributes.length; i++) {
             if (attributes[i].getType() == Dataset.DOUBLE) {
                 dataRet[i] = Math.pow((double) data[i], val);
+            } else {
+                dataRet[i] = 0;
+            }
+        }
+
+        return new Record(-1, dataRet, attributes);
+    }
+
+    public Record divide(double val) {
+        Object[] dataRet = new Object[data.length];
+        for (int i = 0; i < attributes.length; i++) {
+            if (attributes[i].getType() == Dataset.DOUBLE) {
+                dataRet[i] = (double) data[i] / val;
             } else {
                 dataRet[i] = 0;
             }

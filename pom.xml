@@ -61,7 +61,7 @@
             <url>http://onejar-maven-plugin.googlecode.com/svn/mavenrepo</url>
         </pluginRepository>
     </pluginRepositories>
-    <name>TrabajoGradoBU</name>
+    <name>TrabajoGradoGKR</name>
     <dependencies>
         <dependency>
             <groupId>junit</groupId>

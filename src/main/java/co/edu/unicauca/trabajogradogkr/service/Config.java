@@ -31,7 +31,7 @@ public class Config {
         private static final Config INSTANCE = new Config();
     }
 
-    public synchronized void initCarpetaResultado() {
+    public synchronized void initResultFolder() {
         if (!init) {
 
             String nCarpetaResultado = "Resultado";

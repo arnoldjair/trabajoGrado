@@ -32,7 +32,14 @@ public class Agent {
     private Partition p;
     private double fitness;
     private Cluster[] clusters;
-    private int minimize;
+    private boolean minimize;
+
+    public Agent() {
+    }
+
+    public Agent(Partition p) {
+        this.p = p;
+    }
 
     public Partition getP() {
         return p;
@@ -58,11 +65,11 @@ public class Agent {
         this.clusters = clusters;
     }
 
-    public int getMinimize() {
+    public boolean isMinimize() {
         return minimize;
     }
 
-    public void setMinimize(int minimize) {
+    public void setMinimize(boolean minimize) {
         this.minimize = minimize;
     }
 
@@ -119,4 +126,13 @@ public class Agent {
         p = Partition.reprocessRGS(rgs);
     }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("\nFitness,").append(this.fitness).append("\n");
+        for (Cluster cluster : clusters) {
+            sb.append(cluster.toString()).append("\n");
+        }
+        return sb.toString();
+    }
 }

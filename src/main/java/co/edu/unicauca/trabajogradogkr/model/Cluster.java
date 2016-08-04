@@ -18,6 +18,8 @@
  */
 package co.edu.unicauca.trabajogradogkr.model;
 
+import java.util.Random;
+
 /**
  *
  * @author Arnold Jair Jimenez Vargas <ajjimenez@unicauca.edu.co>
@@ -83,6 +85,38 @@ public class Cluster {
 
         centroid.setData(centroidData);
         centroid.setAttributes(attributes);
+    }
+
+    public static Cluster randCluster(Dataset dataset, Random random) {
+        Cluster ret = new Cluster();
+        ret.setAttributes(dataset.getAttributes());
+        int m = dataset.getAttributes().length;
+        Object[] tmp = new Object[m];
+
+        for (int i = 0; i < m; i++) {
+            if (dataset.getAttributes()[i].getType() == Dataset.DOUBLE) {
+                tmp[i] = random.nextDouble();
+            } else {
+                tmp[i] = 0;
+            }
+        }
+
+        Record centroid = new Record(-1, tmp, dataset.getAttributes());
+        ret.setCentroid(centroid);
+        return ret;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+
+        for (int i = 0; i < centroid.getData().length; i++) {
+            sb.append(centroid.getData()[i]);
+            if (i != centroid.getData().length - 1) {
+                sb.append(",");
+            }
+        }
+        return sb.toString();
     }
 
 }
