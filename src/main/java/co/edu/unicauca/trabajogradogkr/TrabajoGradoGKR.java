@@ -309,7 +309,7 @@ public class TrabajoGradoGKR {
             Result[] results = new Result[algorithms.length * objectiveFunctions.length];
 
             //Thread
-            int maxT = 3;
+            int maxT = 2;
             ExecutorService pool = Executors.newFixedThreadPool(maxT);
             Future<Result>[][] futureObjs = new Future[algorithms.length][objectiveFunctions.length];
 
@@ -322,7 +322,7 @@ public class TrabajoGradoGKR {
                     String id = a.toString() + "-" + f.toString() + ".csv";
                     Experimenter exp = new Experimenter(hms, maxImprovisations, maxK,
                             maxKMeans, nExp, minPar, maxPar, hmcr, po, dataset, f,
-                            true, seed, a, id, distance.newInstance());
+                            false, seed, a, id, distance.newInstance());
 
                     Future<Result> future = pool.submit(exp);
                     futureObjs[pAlgo][pFunc] = future;
@@ -435,7 +435,7 @@ public class TrabajoGradoGKR {
         }
 
         //Thread
-        int maxT = 4;
+        int maxT = 2;
         ExecutorService pool = Executors.newFixedThreadPool(maxT);
 
         sb.append("Afinar_")
