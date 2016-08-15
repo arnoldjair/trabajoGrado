@@ -1,12 +1,19 @@
 package co.edu.unicauca.trabajogradogkr.model;
 
+import co.edu.unicauca.trabajogradogkr.db.MysqlConnection;
 import co.edu.unicauca.trabajogradogkr.exception.AttributeException;
+import co.edu.unicauca.trabajogradogkr.exception.DBException;
 import co.edu.unicauca.trabajogradogkr.exception.DatasetException;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -293,6 +300,70 @@ public class Dataset {
         } catch (IOException ex) {
             Logger.getLogger(Dataset.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    public synchronized void toDB(String host, String username, String passwd) throws DBException, SQLException {
+        //TODO: Validaciones
+        MysqlConnection mysqlCon = new MysqlConnection();
+        mysqlCon.con(host, "datasets", username, passwd);
+        Connection con = mysqlCon.getCon();
+        PreparedStatement ps;
+        ResultSet rs;
+        String testDatasetExists = "select count(id) from dataset where name = ?";
+        String insertDataset = "insert into dataset(name) values(?)";
+        String insertRecord = "insert into record (ind, datasetId) values(?, ?)";
+        String insertAttrib = "insert into attribute (name, value, recordId) values (?, ?, ?)";
+        int count;
+        int datasetId;
+        int recordId;
+
+        con.setAutoCommit(false);
+
+        ps = con.prepareStatement(testDatasetExists);
+        ps.setString(1, this.name);
+        rs = ps.executeQuery();
+        if (rs.next()) {
+            count = rs.getInt(1);
+            if (count != 0) {
+                throw new DBException("Ya existe un dataset con el mismo nombre en la bd");
+            }
+        }
+
+        ps = con.prepareStatement(insertDataset, Statement.RETURN_GENERATED_KEYS);
+        ps.setString(1, this.name);
+        count = ps.executeUpdate();
+        rs = ps.getGeneratedKeys();
+
+        if (rs.next()) {
+            datasetId = rs.getInt(1);
+            for (Record record : this.records) {
+                ps = con.prepareStatement(insertRecord, Statement.RETURN_GENERATED_KEYS);
+                ps.setInt(1, record.getIndex());
+                ps.setInt(2, datasetId);
+                count = ps.executeUpdate();
+                rs = ps.getGeneratedKeys();
+                if (rs.next()) {
+                    recordId = rs.getInt(1);
+                    Object[] data = record.getData();
+                    for (int i = 0; i < record.getAttributes().length; i++) {
+                        ps = con.prepareStatement(insertAttrib, Statement.RETURN_GENERATED_KEYS);
+                        ps.setString(1, record.getAttributes()[i].getName());
+
+                        if (record.getAttributes()[i].getType() == Dataset.DOUBLE) {
+                            ps.setString(2, Double.toString((Double) data[i]));
+                        } else {
+                            ps.setString(2, (String) data[i]);
+                        }
+
+                        ps.setInt(3, recordId);
+                        count = ps.executeUpdate();
+                    }
+                }
+            }
+        }
+
+        con.setAutoCommit(true);
+
     }
 
     public synchronized void normalize() {

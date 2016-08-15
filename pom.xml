@@ -80,5 +80,10 @@
             <artifactId>java-getopt</artifactId>
             <version>1.0.13</version>
         </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>6.0.3</version>
+        </dependency>
     </dependencies>
 </project>
