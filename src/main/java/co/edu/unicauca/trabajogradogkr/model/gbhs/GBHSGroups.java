@@ -42,10 +42,14 @@ import java.util.logging.Logger;
 public class GBHSGroups implements GBHS {
 
     @Override
-    public Agent process(int hms, int maxImprovisations, int maxK, int maxKMeans, double minPar, double maxPar, double hmcr, double pOptimize, Dataset dataset, ObjectiveFunction f, boolean log, Random random, Distance distance) {
+    public Agent process(int hms, int maxImprovisations, int maxK, int maxKMeans, double pKmeans,
+            double minPar, double maxPar, double hmcr, double pOptimize, Dataset dataset,
+            ObjectiveFunction f, boolean log, Random random, Distance distance) {
 
         try {
-
+            int repeated = 0;
+            int curHms = 0;
+            int bad = 0;
             File resultFolder = Config.getInstance().getResultFolder();
             File resultado = new File(resultFolder, "registros_"
                     + dataset.getName() + "_" + f.toString() + ".txt");
@@ -53,18 +57,20 @@ public class GBHSGroups implements GBHS {
             Report report = new Report(logPath);
             AgentComparator agentComparator = new AgentComparator(f.minimizes());
             List<Agent> harmonyMemory;
-            double par = minPar + (maxPar - minPar) / maxImprovisations;
+            double par;
             GBHSUtils utils = new GBHSUtils();
             KMeans kmeans = new KMeans();
 
             harmonyMemory = utils.generateHarmonyMemory(hms, maxK, dataset, random, f,
                     agentComparator, random, distance);
 
+            curHms = harmonyMemory.size();
+
             if (log) {
                 report.writeHarmonyMemory(harmonyMemory, "Initial Harmony Memory");
             }
 
-            utils.optimizeMemory(100, 0.0, pOptimize, random, dataset, f,
+            utils.optimizeMemory(maxKMeans, pKmeans, pOptimize, random, dataset, f,
                     agentComparator, harmonyMemory, distance);
 
             if (log) {
@@ -72,6 +78,7 @@ public class GBHSGroups implements GBHS {
             }
 
             for (int cIt = 0; cIt < maxImprovisations; cIt++) {
+                par = minPar + ((maxPar - minPar) / maxImprovisations) * cIt;
                 int k = utils.chooseK(maxK, hmcr, par, random, harmonyMemory);
                 Partition p = new Partition(dataset.getN());
                 p.clear();
@@ -80,7 +87,7 @@ public class GBHSGroups implements GBHS {
                 for (int i = 0; i < k; i++) {
                     double num = random.nextDouble();
                     if (num <= hmcr) {
-                        int pos = random.nextInt(hms);
+                        int pos = random.nextInt(curHms);
                         int nc = harmonyMemory.get(pos).getP().getK();
                         nc = random.nextInt(nc);
                         p = harmonyMemory.get(pos).getP().mix(p, random, nc);
@@ -106,15 +113,22 @@ public class GBHSGroups implements GBHS {
                 newSolution.calcClusters(dataset);
 
                 if (random.nextDouble() < pOptimize) {
-                    newSolution = kmeans.process(newSolution, dataset, distance, 0.0, maxKMeans);
+                    newSolution = kmeans.process(newSolution, dataset, distance, pKmeans, maxKMeans);
                 }
 
                 newSolution.setFitness(f.calculate(newSolution, dataset, distance));
 
                 if (utils.repeatedSolution(newSolution, agentComparator, harmonyMemory)) {
+                    repeated++;
                 } else {
 
                     utils.replaceSolution(harmonyMemory, newSolution, agentComparator);
+                    if (curHms < hms) {
+                        harmonyMemory.add(newSolution);
+                        curHms++;
+                    } else if (!utils.replaceSolution(harmonyMemory, newSolution, agentComparator)) {
+                        bad++;
+                    }
 
                     Collections.sort(harmonyMemory, agentComparator);
 
@@ -136,6 +150,8 @@ public class GBHSGroups implements GBHS {
                 }
             }
 
+            System.out.println("Repetidos: " + repeated);
+            System.out.println("malos: " + bad);
             report.close();
             return harmonyMemory.get(0);
         } catch (DistanceException ex) {

@@ -48,7 +48,9 @@ public class GBHSUtils {
             atmp.calcClusters(dataset);
             double fitness = f.calculate(atmp, dataset, distance);
             atmp.setFitness(fitness);
-            harmonyMemory.add(atmp);
+            if (!repeatedSolution(atmp, comparador, harmonyMemory)) {
+                harmonyMemory.add(atmp);
+            }
         }
         Collections.sort(harmonyMemory, comparador);
         return harmonyMemory;
@@ -91,6 +93,14 @@ public class GBHSUtils {
         return ret;
     }
 
+    /**
+     * Verifica si existe una solución igual en la memoria
+     *
+     * @param newSolution
+     * @param comparadorAgents
+     * @param harmonyMemory
+     * @return true si la solución ya está en la memoria.
+     */
     public boolean repeatedSolution(Agent newSolution,
             Comparator comparadorAgents, List<Agent> harmonyMemory) {
 
@@ -105,12 +115,13 @@ public class GBHSUtils {
         return false;
     }
 
-    public void replaceSolution(List<Agent> ma, Agent ns,
-            AgentComparator c) {
+    public boolean replaceSolution(List<Agent> ma, Agent ns, AgentComparator c) {
         int hms = ma.size();
         if (c.compare(ns, ma.get(hms - 1)) == -1) {
             ma.set(hms - 1, ns);
+            return true;
         }
+        return false;
     }
 
     public boolean uniformMemory(List<Agent> harmonyMemory) {

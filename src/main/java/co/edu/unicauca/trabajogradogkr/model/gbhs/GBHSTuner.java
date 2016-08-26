@@ -129,7 +129,7 @@ public class GBHSTuner implements Tuner {
                 int maxK = (int) Math.sqrt(dataset.getN());
                 for (int j = 0; j < 30; j++) {
                     System.out.println("Improvisacion param: " + j);
-                    Agent a = algorithm.process(hms, 100, maxK, 100, params.minPar,
+                    Agent a = algorithm.process(hms, 100, maxK, 100, 0, params.minPar,
                             params.maxPar, params.hmcr, params.po, dataset, objectiveFunction, false, random, distance);
                     ContingencyMatrix m = new ContingencyMatrix(a, dataset);
                     ECVM ecvm = new ECVM(m);
@@ -152,7 +152,7 @@ public class GBHSTuner implements Tuner {
 
         return harmonyMemory.get(0);
     }
-    
+
     private List<Params> generateHarmonyMemory(int hms, GBHS algorithm, Dataset[] datasets, Distance distance, ObjectiveFunction f) {
         System.out.println("Generando memoria armónica.");
 
@@ -176,8 +176,8 @@ public class GBHSTuner implements Tuner {
                 System.out.println("Dataset: " + dataset.getName());
                 int maxK = (int) Math.sqrt(dataset.getN());
                 for (int j = 0; j < 30; j++) {
-                    System.out.println("Improvisación: "+j);
-                    Agent a = algorithm.process(hms, 100, maxK, 100, tmp.minPar, tmp.maxPar, tmp.hmcr, tmp.po, dataset, f, true, random, distance);
+                    System.out.println("Improvisación: " + j);
+                    Agent a = algorithm.process(hms, 100, maxK, 100, 0, tmp.minPar, tmp.maxPar, tmp.hmcr, tmp.po, dataset, f, true, random, distance);
                     ContingencyMatrix m = new ContingencyMatrix(a, dataset);
                     ECVM ecvm = new ECVM(m);
                     int icc = ecvm.getIcc();

@@ -30,8 +30,27 @@ import java.util.Random;
  */
 public interface GBHS {
 
+    /**
+     * Procesa el algoritmo gbhs.
+     *
+     * @param hms
+     * @param maxImprovisations
+     * @param maxK
+     * @param maxKMeans
+     * @param pKmeans
+     * @param minPar
+     * @param maxPar
+     * @param hmcr
+     * @param pOptimize
+     * @param dataset
+     * @param f
+     * @param log
+     * @param random
+     * @param distance
+     * @return
+     */
     public Agent process(int hms, int maxImprovisations, int maxK,
-            int maxKMeans, double minPar, double maxPar, double hmcr, double pOptimize,
+            int maxKMeans, double pKmeans, double minPar, double maxPar, double hmcr, double pOptimize,
             Dataset dataset, ObjectiveFunction f, boolean log, Random random,
             Distance distance);
 
