@@ -67,7 +67,7 @@ public class Record {
         Object[] dataRet = new Object[data.length];
         for (int i = 0; i < attributes.length; i++) {
             if (attributes[i].getType() == Dataset.DOUBLE) {
-                dataRet[i] = (double) data1[i] + (double) data2[i];
+                dataRet[i] = (Double) data1[i] + (Double) data2[i];
             } else {
                 dataRet[i] = 0;
             }
@@ -117,6 +117,19 @@ public class Record {
         return new Record(-1, dataRet, attributes);
     }
 
+    public Record multiply(double val) {
+        Object[] dataRet = new Object[data.length];
+        for (int i = 0; i < attributes.length; i++) {
+            if (attributes[i].getType() == Dataset.DOUBLE) {
+                dataRet[i] = (double) data[i] * val;
+            } else {
+                dataRet[i] = 0;
+            }
+        }
+
+        return new Record(-1, dataRet, attributes);
+    }
+
     public double sumValues() {
         double ret = 0;
         for (int i = 0; i < attributes.length; i++) {
@@ -125,6 +138,60 @@ public class Record {
             }
         }
 
+        return ret;
+    }
+
+    public double multValues() {
+        double ret = 1;
+        for (int i = 0; i < attributes.length; i++) {
+            if (attributes[i].getType() == Dataset.DOUBLE) {
+                ret *= (double) data[i];
+            }
+        }
+
+        return ret;
+    }
+
+    public double euclidianNorm() {
+        double ret = 0;
+        for (int i = 0; i < this.attributes.length; i++) {
+            if (this.attributes[i].getType() == Dataset.DOUBLE) {
+                ret += Math.pow((Double) this.data[i], 2);
+            }
+        }
+        ret = Math.sqrt(ret);
+        return ret;
+    }
+
+    public double normal(Record mean, Record sigma) {
+        double mahalanobis;
+        double productSigma;
+        double ret = 0;
+        Record tmp = this.clone();
+        tmp = tmp.subtract(mean);
+        Object[] tmpData = tmp.getData();
+        productSigma = sigma.multValues();
+
+        for (int i = 0; i < this.attributes.length; i++) {
+            if (this.attributes[i].getType() == Dataset.DOUBLE) {
+                tmpData[i] = (Double) tmpData[i] / (Double) sigma.getData()[i];
+            } else {
+                tmpData[i] = 0;
+            }
+        }
+        mahalanobis = Math.pow(tmp.euclidianNorm(), 2);
+        double num = Math.exp(-0.5 * mahalanobis);
+        double den = (1.0 / (Math.pow((2 * Math.PI), (1.0 * this.attributes.length) / 2.0) * productSigma));
+        ret = num / den;
+        
+        return ret;
+    }
+
+    @Override
+    public Record clone() {
+        Object[] retData = this.data.clone();
+
+        Record ret = new Record(-1, retData, this.attributes.clone());
         return ret;
     }
 }

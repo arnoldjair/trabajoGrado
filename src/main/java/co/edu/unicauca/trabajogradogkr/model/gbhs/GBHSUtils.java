@@ -22,6 +22,7 @@ import co.edu.unicauca.trabajogradogkr.distance.Distance;
 import co.edu.unicauca.trabajogradogkr.exception.DistanceException;
 import co.edu.unicauca.trabajogradogkr.model.Agent;
 import co.edu.unicauca.trabajogradogkr.model.AgentComparator;
+import co.edu.unicauca.trabajogradogkr.model.Cluster;
 import co.edu.unicauca.trabajogradogkr.model.Dataset;
 import co.edu.unicauca.trabajogradogkr.model.kmeans.KMeans;
 import co.edu.unicauca.trabajogradogkr.model.objectivefunction.ObjectiveFunction;
@@ -47,6 +48,9 @@ public class GBHSUtils {
             Agent atmp = new Agent(tmp);
             atmp.calcClusters(dataset);
             double fitness = f.calculate(atmp, dataset, distance);
+            if (fitness == Double.NEGATIVE_INFINITY || fitness == Double.POSITIVE_INFINITY) {
+                continue;
+            }
             atmp.setFitness(fitness);
             if (!repeatedSolution(atmp, comparador, harmonyMemory)) {
                 harmonyMemory.add(atmp);
@@ -158,5 +162,27 @@ public class GBHSUtils {
             agentes.set(i, atmp);
         }
         Collections.sort(agentes, comparator);
+    }
+
+    /**
+     * Verifica si una solución es rentable.
+     *
+     * @param a
+     * @return
+     */
+    public boolean testSolution(Agent agent) {
+
+        if (agent.getFitness() == Double.NEGATIVE_INFINITY || agent.getFitness() == Double.POSITIVE_INFINITY) {
+            return false;
+        }
+
+        Cluster[] clusters = agent.getClusters();
+        for (Cluster cluster : clusters) {
+            if (cluster.getRecords().length == 1) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

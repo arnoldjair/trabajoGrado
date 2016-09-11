@@ -112,6 +112,12 @@ public class GBHSCentroids implements GBHS {
 
                 newSolution.setFitness(f.calculate(newSolution, dataset, distance));
 
+                newSolution.calcClusters(dataset);
+                if (!utils.testSolution(newSolution)) {
+                    cIt--;
+                    continue;
+                }
+                
                 if (utils.repeatedSolution(newSolution, agentComparator, harmonyMemory)) {
                     repeated++;
                 } else {

@@ -20,6 +20,7 @@ import co.edu.unicauca.trabajogradogkr.model.gbhs.GBHSTuner;
 import co.edu.unicauca.trabajogradogkr.model.gbhs.Tuner;
 import co.edu.unicauca.trabajogradogkr.model.kmeans.KMeans;
 import co.edu.unicauca.trabajogradogkr.model.objectivefunction.AIC;
+import co.edu.unicauca.trabajogradogkr.model.objectivefunction.BIC;
 import co.edu.unicauca.trabajogradogkr.model.objectivefunction.CHI;
 import co.edu.unicauca.trabajogradogkr.model.objectivefunction.ObjectiveFunction;
 import co.edu.unicauca.trabajogradogkr.model.rgs.Partition;
@@ -248,7 +249,7 @@ public class TrabajoGradoGKR {
         }
 
         for (ObjectiveFunction function : functions) {
-            Agent a = algorithm.process(hms, 1000, maxK, 100, minPar, maxPar, hmcr,
+            Agent a = algorithm.process(hms, 1000, maxK, 100, 0.0, minPar, maxPar, hmcr,
                     0.7, dataset, function, true, random, distance);
             ContingencyMatrix m = new ContingencyMatrix(a, dataset);
 
@@ -268,7 +269,8 @@ public class TrabajoGradoGKR {
 
     public static ObjectiveFunction[] getObjectiveFunctions() {
         return new ObjectiveFunction[]{
-            new AIC(), new CHI(), //new SI()
+            //new AIC(), new CHI(), //new SI(),
+            new BIC()
         };
     }
 

@@ -17,3 +17,9 @@ hs_err_pid*
 /Datasets/
 /Prueba*/
 /Res/
+/Resultado
+glass_*
+iris_*
+wdbc_*
+wine_*
+

@@ -28,8 +28,10 @@ public class Cluster {
 
     private int index;
     private Record centroid;
+    private Record standarDeviation;
     private Record[] records;
     private Attribute[] attributes;
+    private double prior;
 
     public int getIndex() {
         return index;
@@ -63,6 +65,22 @@ public class Cluster {
         this.attributes = attributes;
     }
 
+    public Record getStandarDeviation() {
+        return standarDeviation;
+    }
+
+    public void setStandarDeviation(Record standarDeviation) {
+        this.standarDeviation = standarDeviation;
+    }
+
+    public double getPrior() {
+        return prior;
+    }
+
+    public void setPrior(double prior) {
+        this.prior = prior;
+    }
+
     public void calcCentroid() {
         centroid = new Record();
         Object[] centroidData = new Object[attributes.length];
@@ -85,6 +103,29 @@ public class Cluster {
 
         centroid.setData(centroidData);
         centroid.setAttributes(attributes);
+    }
+
+    public void calcDeviation() {
+
+        Object[] tmp = new Object[this.attributes.length];
+        this.standarDeviation = new Record(-1, tmp, this.attributes);
+
+        for (int i = 0; i < this.attributes.length; i++) {
+            tmp[i] = 0.0;
+        }
+
+        for (int i = 0; i < this.records.length; i++) {
+            Record curr = this.records[i].clone();
+            curr = curr.subtract(this.centroid);
+            curr = curr.pow(2);
+            curr = curr.multiply(1.0 / this.records.length);
+            standarDeviation = standarDeviation.add(curr);
+        }
+        standarDeviation.pow(0.5);
+    }
+
+    public void calcPrior(int n) {
+        prior = (this.records.length * 1.0) / n;
     }
 
     public static Cluster randCluster(Dataset dataset, Random random) {
