@@ -43,15 +43,27 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+
+/**
+ * Spring
+ */
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  *
  * @author equipo
  */
+@RestController
+@EnableAutoConfiguration
 public class TrabajoGradoGKR {
 
     public static void main(String[] args) throws DistanceException, Exception {
 
+        SpringApplication.run(TrabajoGradoGKR.class, args);
+
+        /*
         Locale.setDefault(new Locale("es", "CO"));
 
         if (args.length == 0) {
@@ -189,6 +201,7 @@ public class TrabajoGradoGKR {
                 testGBHS(dataset, gbhs, minPar, maxPar, hmcr, hms, po, distance);
             }
         }
+         */
     }
 
     public static void testKMeans(int it, int k, Dataset dataset, Distance distance) {
