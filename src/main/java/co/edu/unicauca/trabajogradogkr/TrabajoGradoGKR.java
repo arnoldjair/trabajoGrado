@@ -23,6 +23,7 @@ import co.edu.unicauca.trabajogradogkr.model.objectivefunction.AIC;
 import co.edu.unicauca.trabajogradogkr.model.objectivefunction.BIC;
 import co.edu.unicauca.trabajogradogkr.model.objectivefunction.CHI;
 import co.edu.unicauca.trabajogradogkr.model.objectivefunction.ObjectiveFunction;
+import co.edu.unicauca.trabajogradogkr.model.objectivefunction.SI;
 import co.edu.unicauca.trabajogradogkr.model.rgs.Partition;
 import co.edu.unicauca.trabajogradogkr.service.Config;
 import co.edu.unicauca.trabajogradogkr.utils.Report;
@@ -270,7 +271,8 @@ public class TrabajoGradoGKR {
     public static ObjectiveFunction[] getObjectiveFunctions() {
         return new ObjectiveFunction[]{
             //new AIC(), new CHI(), //new SI(),
-            new BIC()
+            //new BIC(),
+            new SI()
         };
     }
 
