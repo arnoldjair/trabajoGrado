@@ -276,9 +276,9 @@ public class TrabajoGradoGKR {
 
     public static ObjectiveFunction[] getObjectiveFunctions() {
         return new ObjectiveFunction[]{
-            //new AIC(), new CHI(), //new SI(),
+            new AIC()//, new CHI(), //new SI(),
             //new BIC(),
-            new SI()
+            //new SI()
         };
     }
 
@@ -319,7 +319,7 @@ public class TrabajoGradoGKR {
             Result[] results = new Result[algorithms.length * objectiveFunctions.length];
 
             //Thread
-            int maxT = 2;
+            int maxT = 5;
             ExecutorService pool = Executors.newFixedThreadPool(maxT);
             Future<Result>[][] futureObjs = new Future[algorithms.length][objectiveFunctions.length];
 
