@@ -19,15 +19,11 @@ import co.edu.unicauca.trabajogradogkr.model.gbhs.GBHSRecords;
 import co.edu.unicauca.trabajogradogkr.model.gbhs.GBHSTuner;
 import co.edu.unicauca.trabajogradogkr.model.gbhs.Tuner;
 import co.edu.unicauca.trabajogradogkr.model.kmeans.KMeans;
-import co.edu.unicauca.trabajogradogkr.model.objectivefunction.AIC;
 import co.edu.unicauca.trabajogradogkr.model.objectivefunction.BIC;
-import co.edu.unicauca.trabajogradogkr.model.objectivefunction.CHI;
 import co.edu.unicauca.trabajogradogkr.model.objectivefunction.ObjectiveFunction;
 import co.edu.unicauca.trabajogradogkr.model.objectivefunction.SI;
 import co.edu.unicauca.trabajogradogkr.model.rgs.Partition;
-import co.edu.unicauca.trabajogradogkr.service.Config;
 import co.edu.unicauca.trabajogradogkr.utils.Report;
-import gnu.getopt.Getopt;
 import java.io.File;
 import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
@@ -35,7 +31,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -44,19 +39,17 @@ import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
  * Spring
  */
-import org.springframework.web.bind.annotation.RestController;
 
 /**
  *
  * @author equipo
  */
-@RestController
-@EnableAutoConfiguration
+@SpringBootApplication
 public class TrabajoGradoGKR {
 
     public static void main(String[] args) throws DistanceException, Exception {

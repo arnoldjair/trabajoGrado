@@ -18,10 +18,17 @@
  */
 package co.edu.unicauca.trabajogradogkr.web.api;
 
-import co.edu.unicauca.trabajogradogkr.model.Dataset;
+import co.edu.unicauca.trabajogradogkr.web.model.Params;
+import co.edu.unicauca.trabajogradogkr.web.model.GBHSTask;
+import co.edu.unicauca.trabajogradogkr.web.service.GBHSService;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -29,14 +36,52 @@ import org.springframework.web.bind.annotation.RestController;
  * @author Arnold Jair Jimenez Vargas <ajjimenez@unicauca.edu.co>
  */
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/gbhs")
 public class GBHSApi {
 
-    @RequestMapping(value = "getDataset", method = RequestMethod.GET)
-    public ResponseEntity<Dataset> getDataset(String nombre) {
+    @Autowired
+    GBHSService gbhsService;
 
-        Dataset dataset = new Dataset();
-        
-        return null;
+    @RequestMapping(value = "gbhsList")
+    public ResponseEntity<Map<String, Object>> getDatasets() {
+        List<String> algorithms = gbhsService.getAlgorithmsNames();
+        Map<String, Object> retorno = new HashMap<>();
+        retorno.put("algorithms", algorithms);
+        return new ResponseEntity<>(retorno, HttpStatus.OK);
     }
+
+    @RequestMapping(value = "functionList")
+    public ResponseEntity<Map<String, Object>> getObjectiveFunctions() {
+        List<String> objectiveFunctions = gbhsService.getObjectiveFunctionNames();
+        Map<String, Object> retorno = new HashMap<>();
+        retorno.put("objectiveFunctions", objectiveFunctions);
+        retorno.put("message", "Listo");
+        return new ResponseEntity<>(retorno, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "run")
+    public ResponseEntity<Map<String, Object>> run(@RequestBody(required = true) Params params) {
+        Map<String, Object> retorno = new HashMap<>();
+
+        //TODO; Verificar que los campos de params sean correctos.
+        params = gbhsService.addParams(params);
+        if (params == null) {
+            retorno.put("message", "Error almacenando los parámetros");
+            return new ResponseEntity<>(retorno, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        GBHSTask task = new GBHSTask();
+        task.setDone(false);
+        task.setParams(params);
+        task = gbhsService.addTask(task);
+        if (task == null) {
+            retorno.put("message", "Error creando la tarea");
+            return new ResponseEntity<>(retorno, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        retorno.put("message", "Tarea guardada");
+        retorno.put("taskId", task.getId());
+        return new ResponseEntity<>(retorno, HttpStatus.OK);
+    }
+
 }
