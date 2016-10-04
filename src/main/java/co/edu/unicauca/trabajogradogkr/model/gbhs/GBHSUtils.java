@@ -48,13 +48,22 @@ public class GBHSUtils {
             Agent atmp = new Agent(tmp);
             atmp.calcClusters(dataset);
             double fitness = f.calculate(atmp, dataset, distance);
-            if (fitness == Double.NEGATIVE_INFINITY || fitness == Double.POSITIVE_INFINITY) {
+            System.out.println(fitness);
+            if (Double.isNaN(fitness)) {
+                i--;
+                continue;
+            }
+            if (Double.isInfinite(fitness)) {
+                i--;
                 continue;
             }
             atmp.setFitness(fitness);
             if (!repeatedSolution(atmp, comparador, harmonyMemory)) {
                 harmonyMemory.add(atmp);
             }
+        }
+        if (harmonyMemory.isEmpty()) {
+            System.out.println("Aqui");
         }
         Collections.sort(harmonyMemory, comparador);
         return harmonyMemory;

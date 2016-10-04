@@ -2,6 +2,7 @@ package co.edu.unicauca.trabajogradogkr;
 
 import co.edu.unicauca.trabajogradogkr.distance.Distance;
 import co.edu.unicauca.trabajogradogkr.distance.EuclideanDistance;
+import co.edu.unicauca.trabajogradogkr.distance.ManhattanDistance;
 import co.edu.unicauca.trabajogradogkr.exception.AttributeException;
 import co.edu.unicauca.trabajogradogkr.exception.DatasetException;
 import co.edu.unicauca.trabajogradogkr.exception.DistanceException;
@@ -19,11 +20,13 @@ import co.edu.unicauca.trabajogradogkr.model.gbhs.GBHSRecords;
 import co.edu.unicauca.trabajogradogkr.model.gbhs.GBHSTuner;
 import co.edu.unicauca.trabajogradogkr.model.gbhs.Tuner;
 import co.edu.unicauca.trabajogradogkr.model.kmeans.KMeans;
-import co.edu.unicauca.trabajogradogkr.model.objectivefunction.BIC;
+import co.edu.unicauca.trabajogradogkr.model.objectivefunction.AIC;
+import co.edu.unicauca.trabajogradogkr.model.objectivefunction.CHI;
 import co.edu.unicauca.trabajogradogkr.model.objectivefunction.ObjectiveFunction;
-import co.edu.unicauca.trabajogradogkr.model.objectivefunction.SI;
 import co.edu.unicauca.trabajogradogkr.model.rgs.Partition;
+import co.edu.unicauca.trabajogradogkr.service.Config;
 import co.edu.unicauca.trabajogradogkr.utils.Report;
+import gnu.getopt.Getopt;
 import java.io.File;
 import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
@@ -31,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -44,7 +48,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 /**
  * Spring
  */
-
 /**
  *
  * @author equipo
@@ -54,9 +57,6 @@ public class TrabajoGradoGKR {
 
     public static void main(String[] args) throws DistanceException, Exception {
 
-        SpringApplication.run(TrabajoGradoGKR.class, args);
-
-        /*
         Locale.setDefault(new Locale("es", "CO"));
 
         if (args.length == 0) {
@@ -66,7 +66,7 @@ public class TrabajoGradoGKR {
 
         String rDataset = null;
         String rDatasets = null;
-        Getopt go = new Getopt("Trabajo Grado", args, "c:d:D:e:g:i:k:m:M:o:s:S:t:");
+        Getopt go = new Getopt("Trabajo Grado", args, "c:d:D:e:g:i:k:m:M:o:s:S:t:W");
         int c;
         int K = 3;
         int it = 1;
@@ -76,6 +76,7 @@ public class TrabajoGradoGKR {
         boolean p = false;
         boolean g = false;
         boolean tuneUp = false;
+        boolean web = false;
         String distanceName = "euclidiana";
 
         //Parámetros algo
@@ -132,69 +133,76 @@ public class TrabajoGradoGKR {
                     tuneUp = true;
                     rDatasets = go.getOptarg();
                     break;
+                case 'W': //Web
+                    web = true;
+                    break;
                 case '?': //En caso de error
                     System.out.println("Opción inválida");
                     return;
             }
         }
 
-        Distance distance = getDistance(distanceName);
-        if (distance == null) {
-            System.out.println("Distance incorrecta");
-            return;
-        }
+        if (web) {
+            SpringApplication.run(TrabajoGradoGKR.class, args);
+        } else {
 
-        Config.getInstance().initResultFolder();
-
-        if (tuneUp) {
-            tuneUp(distance, rDatasets, it);
-        }
-
-        if (rDataset == null) {
-            System.out.println("Indicar dataset");
-            return;
-        }
-
-        File file = new File(rDataset);
-        Dataset dataset = new Dataset();
-        dataset.fromFile(file);
-        String datasetName = dataset.getName();
-
-        if (datasetName == null || datasetName.isEmpty()) {
-            throw new Exception("Falta el nombre del dataset");
-        }
-
-        dataset.normalize();
-
-        if (p) {
-            testKMeans(it, K, dataset, distance);
-        }
-
-        if (e) {
-            experiment(dataset, nExp, minPar, maxPar, hmcr, hms, po, seed, distance);
-        }
-
-        if (g) {
-            GBHS gbhs = null;
-            switch (algo) {
-                case 1: //Registros
-                    gbhs = new GBHSRecords();
-                    break;
-                case 2: //Centroides
-                    gbhs = new GBHSCentroids();
-                    break;
-                case 3: //Grupos
-                    gbhs = new GBHSGroups();
-                    break;
+            Distance distance = getDistance(distanceName);
+            if (distance == null) {
+                System.out.println("Distancia incorrecta");
+                return;
             }
 
-            if (gbhs == null) {
-                System.out.println("Algoritmos disponibles\n1: registros\n2: centroides\n3: grupos");
-            } else {
-                testGBHS(dataset, gbhs, minPar, maxPar, hmcr, hms, po, distance);
+            Config.getInstance().initResultFolder();
+
+            if (tuneUp) {
+                tuneUp(distance, rDatasets, it);
+            }
+
+            if (rDataset == null) {
+                System.out.println("Indicar dataset");
+                return;
+            }
+
+            File file = new File(rDataset);
+            Dataset dataset = new Dataset();
+            dataset.fromFile(file);
+            String datasetName = dataset.getName();
+
+            if (datasetName == null || datasetName.isEmpty()) {
+                throw new Exception("Falta el nombre del dataset");
+            }
+
+            dataset.normalize();
+
+            if (p) {
+                testKMeans(it, K, dataset, distance);
+            }
+
+            if (e) {
+                experiment(dataset, nExp, minPar, maxPar, hmcr, hms, po, seed, distance);
+            }
+
+            if (g) {
+                GBHS gbhs = null;
+                switch (algo) {
+                    case 1: //Registros
+                        gbhs = new GBHSRecords();
+                        break;
+                    case 2: //Centroides
+                        gbhs = new GBHSCentroids();
+                        break;
+                    case 3: //Grupos
+                        gbhs = new GBHSGroups();
+                        break;
+                }
+
+                if (gbhs == null) {
+                    System.out.println("Algoritmos disponibles\n1: registros\n2: centroides\n3: grupos");
+                } else {
+                    testGBHS(dataset, gbhs, minPar, maxPar, hmcr, hms, po, distance);
+                }
             }
         }
-         */
     }
 
     public static void testKMeans(int it, int k, Dataset dataset, Distance distance) {
@@ -237,8 +245,8 @@ public class TrabajoGradoGKR {
         switch (distancia) {
             case "euclidiana":
                 return new EuclideanDistance();
-            /*case "manhattan":
-                return new DistanceManhattan();*/
+            case "manhattan":
+                return new ManhattanDistance();
         }
 
         return null;
@@ -275,10 +283,10 @@ public class TrabajoGradoGKR {
     }
 
     public static ObjectiveFunction[] getObjectiveFunctions() {
+
         return new ObjectiveFunction[]{
-            new AIC()//, new CHI(), //new SI(),
-            //new BIC(),
-            //new SI()
+            new AIC(), new CHI(), //new SI(),
+        //new BIC(), //new SI()
         };
     }
 
@@ -329,7 +337,7 @@ public class TrabajoGradoGKR {
             for (GBHS a : algorithms) {
                 pFunc = 0;
                 for (ObjectiveFunction f : objectiveFunctions) {
-                    String id = a.toString() + "-" + f.toString() + ".csv";
+                    String id = a.toString() + "-" + f.toString();
                     Experimenter exp = new Experimenter(hms, maxImprovisations, maxK,
                             maxKMeans, nExp, minPar, maxPar, hmcr, po, dataset, f,
                             false, seed, a, id, distance.newInstance());
@@ -362,6 +370,7 @@ public class TrabajoGradoGKR {
             params.writeLine("\npo\t" + po);
             params.writeLine("\nnexp\t" + nExp);
             params.writeLine("\nseed\t" + seed);
+            params.writeLine("\nDistance\t" + distance.toString());
             params.close();
 
             StringBuilder sb = new StringBuilder();

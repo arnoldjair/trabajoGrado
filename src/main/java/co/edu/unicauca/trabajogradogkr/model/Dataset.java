@@ -176,8 +176,9 @@ public class Dataset {
                     break;
                 }
             }
-
-            stream.reset();
+            if (stream.markSupported()) {
+                stream.reset();
+            }
             return fields >= 2 && attribs != 0;
 
         } catch (Exception e) {
@@ -226,10 +227,6 @@ public class Dataset {
         Map<String, String> attrMap = new LinkedHashMap<>();
         Map<String, Integer> classMap = new LinkedHashMap<>();
         ArrayList<String[]> data = new ArrayList<>();
-
-        if (!checkFormat(in)) {
-            throw new DatasetException("Dataset mal formado");
-        }
 
         BufferedReader read = new BufferedReader(new InputStreamReader(in));
 

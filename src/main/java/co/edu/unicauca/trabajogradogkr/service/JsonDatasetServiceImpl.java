@@ -16,23 +16,39 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
-package co.edu.unicauca.trabajogradogkr.web.service;
+package co.edu.unicauca.trabajogradogkr.service;
 
-import co.edu.unicauca.trabajogradogkr.web.model.GBHSTask;
-import co.edu.unicauca.trabajogradogkr.web.model.Params;
+import co.edu.unicauca.trabajogradogkr.model.Dataset;
+import co.edu.unicauca.trabajogradogkr.repository.JsonDatasetRepository;
 import java.util.List;
+import javax.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  *
  * @author Arnold Jair Jimenez Vargas <ajjimenez@unicauca.edu.co>
  */
-public interface GBHSService {
+@Service("jsonDatasetService")
+@Transactional
+public class JsonDatasetServiceImpl implements JsonDatasetService {
 
-    List<String> getAlgorithmsNames();
+    @Autowired
+    JsonDatasetRepository jsonDatasetRepository;
 
-    List<String> getObjectiveFunctionNames();
+    @Override
+    public List<String> getDatasetsNames() {
+        return jsonDatasetRepository.getDatasetList();
+    }
 
-    GBHSTask addTask(GBHSTask task);
+    @Override
+    public Dataset.JSonDataset saveDataset(Dataset.JSonDataset dataset) {
+        return jsonDatasetRepository.save(dataset);
+    }
 
-    Params addParams(Params params);
+    @Override
+    public Dataset.JSonDataset findByName(String name) {
+        return jsonDatasetRepository.findByName(name);
+    }
+
 }

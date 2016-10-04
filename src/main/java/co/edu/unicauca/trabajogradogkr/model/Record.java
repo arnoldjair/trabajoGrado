@@ -91,6 +91,17 @@ public class Record {
         return new Record(-1, dataRet, attributes);
     }
 
+    public Record abs() {
+        Object[] dataRet = new Object[data.length];
+        for (int i = 0; i < attributes.length; i++) {
+            if (attributes[i].getType() == Dataset.DOUBLE) {
+                dataRet[i] = Math.abs((double) data[i]);
+            }
+        }
+
+        return new Record(-1, dataRet, attributes);
+    }
+
     public Record pow(double val) {
         Object[] dataRet = new Object[data.length];
         for (int i = 0; i < attributes.length; i++) {
@@ -183,7 +194,7 @@ public class Record {
         double num = Math.exp(-0.5 * mahalanobis);
         double den = (1.0 / (Math.pow((2 * Math.PI), (1.0 * this.attributes.length) / 2.0) * productSigma));
         ret = num / den;
-        
+
         return ret;
     }
 

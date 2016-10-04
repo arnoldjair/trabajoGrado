@@ -16,20 +16,20 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
-package co.edu.unicauca.trabajogradogkr.web.repository;
+package co.edu.unicauca.trabajogradogkr.service;
 
-import co.edu.unicauca.trabajogradogkr.web.model.GBHSTask;
+import co.edu.unicauca.trabajogradogkr.model.Dataset;
 import java.util.List;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 
 /**
  *
  * @author Arnold Jair Jimenez Vargas <ajjimenez@unicauca.edu.co>
  */
-public interface GBHSTaskRepository extends JpaRepository<GBHSTask, Long> {
+public interface JsonDatasetService {
 
-    @Query(value = "select gbhsTask from GBHSTask gbhsTask where gbhsTask.done = false")
-    public List<GBHSTask> getPendingTask();
+    public List<String> getDatasetsNames();
 
+    public Dataset.JSonDataset saveDataset(Dataset.JSonDataset dataset);
+
+    public Dataset.JSonDataset findByName(String name);
 }

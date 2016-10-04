@@ -50,7 +50,8 @@ public class SSE implements ObjectiveFunction {
         for (Cluster cluster : clusters) {
             Record[] records = cluster.getRecords();
             for (Record record : records) {
-                dist = localDistance.distance(cluster.getCentroid(), record);
+                //dist = localDistance.distance(cluster.getCentroid(), record);
+                dist = distance.distance(cluster.getCentroid(), record);
                 ret += Math.pow(dist, 2);
             }
         }

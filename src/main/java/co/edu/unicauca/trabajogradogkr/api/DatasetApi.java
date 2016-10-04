@@ -16,7 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
-package co.edu.unicauca.trabajogradogkr.web.api;
+package co.edu.unicauca.trabajogradogkr.api;
 
 import co.edu.unicauca.trabajogradogkr.model.Dataset;
 import java.util.HashMap;
@@ -31,7 +31,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import co.edu.unicauca.trabajogradogkr.web.service.JsonDatasetService;
+import co.edu.unicauca.trabajogradogkr.service.JsonDatasetService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -92,6 +92,15 @@ public class DatasetApi {
         List<String> datasets = jsonDatasetService.getDatasetsNames();
         Map<String, Object> retorno = new HashMap<>();
         retorno.put("datasets", datasets);
+        return new ResponseEntity<>(retorno, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "loadDataset")
+    public ResponseEntity<Map<String, Object>> loadDataset(
+            @RequestParam(value = "name", required = true) String name) {
+        Dataset.JSonDataset dataset = jsonDatasetService.findByName(name);
+        Map<String, Object> retorno = new HashMap<>();
+        retorno.put("dataset", dataset.getData());
         return new ResponseEntity<>(retorno, HttpStatus.OK);
     }
 }

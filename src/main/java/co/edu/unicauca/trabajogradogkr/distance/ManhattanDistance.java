@@ -30,6 +30,7 @@ public class ManhattanDistance implements Distance {
     public double distance(Record r1, Record r2) {
         double ret = 0;
         Record tmp = r1.subtract(r2);
+        tmp = tmp.abs();
         ret = tmp.sumValues();
         return ret;
     }
@@ -37,6 +38,11 @@ public class ManhattanDistance implements Distance {
     @Override
     public Distance newInstance() {
         return new ManhattanDistance();
+    }
+
+    @Override
+    public String toString() {
+        return "Manhattan";
     }
 
 }

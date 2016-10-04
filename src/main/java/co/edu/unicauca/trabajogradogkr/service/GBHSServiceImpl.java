@@ -16,39 +16,48 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
-package co.edu.unicauca.trabajogradogkr.web.service;
+package co.edu.unicauca.trabajogradogkr.service;
 
-import co.edu.unicauca.trabajogradogkr.model.Dataset;
-import co.edu.unicauca.trabajogradogkr.web.repository.JsonDatasetRepository;
+import co.edu.unicauca.trabajogradogkr.web.model.Params;
+import co.edu.unicauca.trabajogradogkr.repository.ParamsRepository;
+import java.util.ArrayList;
 import java.util.List;
 import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 /**
  *
  * @author Arnold Jair Jimenez Vargas <ajjimenez@unicauca.edu.co>
  */
-@Service("jsonDatasetService")
+@Component("gbhsService")
 @Transactional
-public class JsonDatasetServiceImpl implements JsonDatasetService {
+public class GBHSServiceImpl implements GBHSService {
 
     @Autowired
-    JsonDatasetRepository jsonDatasetRepository;
+    ParamsRepository paramsRepository;
 
     @Override
-    public List<String> getDatasetsNames() {
-        return jsonDatasetRepository.getDatasetList();
+    public List<String> getAlgorithmsNames() {
+        List<String> retorno = new ArrayList<>();
+        retorno.add("Records");
+        retorno.add("Centroids");
+        retorno.add("Groups");
+        return retorno;
     }
 
     @Override
-    public Dataset.JSonDataset saveDataset(Dataset.JSonDataset dataset) {
-        return jsonDatasetRepository.save(dataset);
+    public List<String> getObjectiveFunctionNames() {
+        List<String> retorno = new ArrayList<>();
+        retorno.add("AIC");
+        retorno.add("BIC");
+        retorno.add("CHI");
+        return retorno;
     }
 
     @Override
-    public Dataset.JSonDataset findByName(String name) {
-        return jsonDatasetRepository.findByName(name);
+    public co.edu.unicauca.trabajogradogkr.web.model.Params addParams(Params params) {
+        return paramsRepository.save(params);
     }
 
 }

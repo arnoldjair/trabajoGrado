@@ -1,6 +1,6 @@
 #!/bin/sh
 
-TARGET=target/TrabajoGradoGKR-1.0.one-jar.jar
+TARGET=target/TrabajoGradoGKR-1.0.jar
 NEXP=30
 MINPAR=0.1074830736
 MAXPAR=0.9114391249
@@ -12,7 +12,7 @@ SEED=10
 
 
 
-DATASET=Datasets/iris.data
-echo "iris"
+DATASET=Datasets/wdbc.data
+echo "wdbc"
 java -jar $CTARGET$TARGET -d $DATASET -e $NEXP -m $MINPAR -M $MAXPAR -c $HMCR -s $HMS -o $PO -D $DIST -S $SEED 
 sleep 5

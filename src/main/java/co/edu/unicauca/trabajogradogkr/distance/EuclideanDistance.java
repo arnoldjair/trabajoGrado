@@ -41,4 +41,8 @@ public class EuclideanDistance implements Distance {
         return new EuclideanDistance();
     }
 
+    @Override
+    public String toString() {
+        return "Euclidean";
+    }
 }

@@ -16,20 +16,20 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
-package co.edu.unicauca.trabajogradogkr.web.service;
+package co.edu.unicauca.trabajogradogkr.service;
 
-import co.edu.unicauca.trabajogradogkr.model.Dataset;
+import co.edu.unicauca.trabajogradogkr.web.model.Params;
 import java.util.List;
 
 /**
  *
  * @author Arnold Jair Jimenez Vargas <ajjimenez@unicauca.edu.co>
  */
-public interface JsonDatasetService {
+public interface GBHSService {
 
-    public List<String> getDatasetsNames();
+    List<String> getAlgorithmsNames();
 
-    public Dataset.JSonDataset saveDataset(Dataset.JSonDataset dataset);
+    List<String> getObjectiveFunctionNames();
 
-    public Dataset.JSonDataset findByName(String name);
+    Params addParams(Params params);
 }

@@ -19,7 +19,9 @@ hs_err_pid*
 /Res/
 /Resultado
 glass_*
+Glass_*
 iris_*
 wdbc_*
 wine_*
-
+*.json
+sonar_*

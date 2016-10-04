@@ -18,6 +18,9 @@
  */
 package co.edu.unicauca.trabajogradogkr.model;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
 /**
  *
  * @author Arnold Jair Jimenez Vargas <ajjimenez@unicauca.edu.co>
@@ -189,4 +192,11 @@ public class Result implements Comparable<Result> {
         return 1;
     }
 
+    @Entity
+    public static class ResultDTO {
+
+        @Id
+        private int id;
+        
+    }
 }
