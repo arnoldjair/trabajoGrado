@@ -11,6 +11,7 @@ import co.edu.unicauca.trabajogradogkr.model.ContingencyMatrix;
 import co.edu.unicauca.trabajogradogkr.model.Dataset;
 import co.edu.unicauca.trabajogradogkr.model.ECVM;
 import co.edu.unicauca.trabajogradogkr.model.Experimenter;
+import co.edu.unicauca.trabajogradogkr.model.JsonParams;
 import co.edu.unicauca.trabajogradogkr.model.Params;
 import co.edu.unicauca.trabajogradogkr.model.Result;
 import co.edu.unicauca.trabajogradogkr.model.gbhs.GBHS;
@@ -26,8 +27,11 @@ import co.edu.unicauca.trabajogradogkr.model.objectivefunction.ObjectiveFunction
 import co.edu.unicauca.trabajogradogkr.model.rgs.Partition;
 import co.edu.unicauca.trabajogradogkr.service.Config;
 import co.edu.unicauca.trabajogradogkr.utils.Report;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import gnu.getopt.Getopt;
 import java.io.File;
+import java.io.FileReader;
 import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -66,7 +70,7 @@ public class TrabajoGradoGKR {
 
         String rDataset = null;
         String rDatasets = null;
-        Getopt go = new Getopt("Trabajo Grado", args, "c:d:D:e:g:i:k:m:M:o:s:S:t:W");
+        Getopt go = new Getopt("Trabajo Grado", args, "c:d:D:e:g:i:k:m:M:o:p:s:S:t:W");
         int c;
         int K = 3;
         int it = 1;
@@ -78,6 +82,7 @@ public class TrabajoGradoGKR {
         boolean tuneUp = false;
         boolean web = false;
         String distanceName = "euclidiana";
+        JsonParams params = null;
 
         //Parámetros algo
         double minPar = 0.9067848536;
@@ -123,6 +128,12 @@ public class TrabajoGradoGKR {
                 case 'o': //Porcentaje optimizar
                     po = Double.parseDouble(go.getOptarg());
                     break;
+                case 'p':
+                    GsonBuilder builder = new GsonBuilder();
+                    Gson gson = builder.create();
+                    params = gson.fromJson(new FileReader(go.getOptarg()), JsonParams.class);
+                    System.out.println(params.toString());
+                    break;
                 case 's': //HMS
                     hms = Integer.parseInt(go.getOptarg());
                     break;
@@ -146,8 +157,9 @@ public class TrabajoGradoGKR {
             SpringApplication.run(TrabajoGradoGKR.class, args);
         } else {
 
-            Distance distance = getDistance(distanceName);
-            if (distance == null) {
+            List<Distance> distances = getDistances(params);
+            //Distance distance = getDistance(distanceName);
+            if (distances.isEmpty()) {
                 System.out.println("Distancia incorrecta");
                 return;
             }
@@ -155,7 +167,7 @@ public class TrabajoGradoGKR {
             Config.getInstance().initResultFolder();
 
             if (tuneUp) {
-                tuneUp(distance, rDatasets, it);
+                tuneUp(distances.get(0), rDatasets, it);
             }
 
             if (rDataset == null) {
@@ -250,6 +262,14 @@ public class TrabajoGradoGKR {
         }
 
         return null;
+    }
+
+    public static List<Distance> getDistances(JsonParams jsonParams) {
+        List<Distance> ret = new ArrayList<>();
+        for (String distance : jsonParams.getDistances()) {
+            ret.add(getDistance(distance));
+        }
+        return ret;
     }
 
     public static void testGBHS(Dataset dataset, GBHS algorithm, double minPar, double maxPar,
