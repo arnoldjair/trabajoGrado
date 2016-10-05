@@ -243,7 +243,7 @@ public class TrabajoGradoGKR {
         }
 
         switch (distancia) {
-            case "euclidiana":
+            case "euclidean":
                 return new EuclideanDistance();
             case "manhattan":
                 return new ManhattanDistance();
