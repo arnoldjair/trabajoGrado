@@ -16,15 +16,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
-package co.edu.unicauca.trabajogradogkr.model;
-
-import java.util.List;
+package co.edu.unicauca.trabajogradogkr.model.task;
 
 /**
  *
  * @author Arnold Jair Jimenez Vargas <ajjimenez@unicauca.edu.co>
  */
-public class JsonParams {
+public class Task {
 
     private double minPar;
     private double maxPar;
@@ -37,10 +35,30 @@ public class JsonParams {
     private int maxKMeans;
     private int threads;
     private long seed;
-    private List<String> datasets;
-    private List<String> objectiveFunctions;
-    private List<String> distances;
-    private List<String> algorithms;
+    private String dataset;
+    private String objectiveFunction;
+    private String distance;
+    private String algorithm;
+    private boolean done;
+
+    public Task(double minPar, double maxPar, double hmcr, double po, int hms, int nExp, int nIt, int maxK, int maxKMeans, int threads, long seed, String dataset, String objectiveFunction, String distance, String algorithm, boolean done) {
+        this.minPar = minPar;
+        this.maxPar = maxPar;
+        this.hmcr = hmcr;
+        this.po = po;
+        this.hms = hms;
+        this.nExp = nExp;
+        this.nIt = nIt;
+        this.maxK = maxK;
+        this.maxKMeans = maxKMeans;
+        this.threads = threads;
+        this.seed = seed;
+        this.dataset = dataset;
+        this.objectiveFunction = objectiveFunction;
+        this.distance = distance;
+        this.algorithm = algorithm;
+        this.done = done;
+    }
 
     public double getMinPar() {
         return minPar;
@@ -130,56 +148,44 @@ public class JsonParams {
         this.seed = seed;
     }
 
-    public List<String> getDatasets() {
-        return datasets;
+    public String getDataset() {
+        return dataset;
     }
 
-    public void setDatasets(List<String> datasets) {
-        this.datasets = datasets;
+    public void setDataset(String dataset) {
+        this.dataset = dataset;
     }
 
-    public List<String> getObjectiveFunctions() {
-        return objectiveFunctions;
+    public String getObjectiveFunction() {
+        return objectiveFunction;
     }
 
-    public void setObjectiveFunctions(List<String> objectiveFunctions) {
-        this.objectiveFunctions = objectiveFunctions;
+    public void setObjectiveFunction(String objectiveFunction) {
+        this.objectiveFunction = objectiveFunction;
     }
 
-    public List<String> getDistances() {
-        return distances;
+    public String getDistance() {
+        return distance;
     }
 
-    public void setDistances(List<String> distances) {
-        this.distances = distances;
+    public void setDistance(String distance) {
+        this.distance = distance;
     }
 
-    public List<String> getAlgorithms() {
-        return algorithms;
+    public String getAlgorithm() {
+        return algorithm;
     }
 
-    public void setAlgorithms(List<String> algorithms) {
-        this.algorithms = algorithms;
+    public void setAlgorithm(String algorithm) {
+        this.algorithm = algorithm;
     }
 
-    public boolean verify() {
-
-        boolean ret = true;
-
-        ret = ret && minPar > 0;
-        ret = ret && maxPar > 0;
-        ret = ret && hmcr > 0;
-        ret = ret && po > 0;
-        ret = ret && hms > 0;
-        ret = ret && nExp > 0;
-        ret = ret && nIt > 0;
-        ret = ret && maxK > 0;
-        ret = ret && maxKMeans > 0;
-        ret = ret && threads > 0;
-        ret = ret && datasets.size() > 0;
-        ret = ret && objectiveFunctions.size() > 0;
-        ret = ret && distances.size() > 0;
-        ret = ret && algorithms.size() > 0;
-        return ret;
+    public boolean isDone() {
+        return done;
     }
+
+    public void setDone(boolean done) {
+        this.done = done;
+    }
+
 }

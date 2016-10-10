@@ -16,21 +16,33 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
-package co.edu.unicauca.trabajogradogkr.model.objectivefunction;
+package co.edu.unicauca.trabajogradogkr.model.distance;
 
-import co.edu.unicauca.trabajogradogkr.model.distance.Distance;
-import co.edu.unicauca.trabajogradogkr.model.Agent;
-import co.edu.unicauca.trabajogradogkr.model.Dataset;
+import co.edu.unicauca.trabajogradogkr.model.Record;
 
 /**
  *
  * @author Arnold Jair Jimenez Vargas <ajjimenez@unicauca.edu.co>
  */
-public interface ObjectiveFunction {
+public class ManhattanDistance implements Distance {
 
-    public boolean minimizes();
+    @Override
+    public double distance(Record r1, Record r2) {
+        double ret = 0;
+        Record tmp = r1.subtract(r2);
+        tmp = tmp.abs();
+        ret = tmp.sumValues();
+        return ret;
+    }
 
-    public double calculate(Agent agent, Dataset dataset, Distance distance);
+    @Override
+    public Distance newInstance() {
+        return new ManhattanDistance();
+    }
 
-    public ObjectiveFunction newInstance();
+    @Override
+    public String toString() {
+        return "Manhattan";
+    }
+
 }

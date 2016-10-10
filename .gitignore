@@ -22,5 +22,6 @@ Glass_*
 iris_*
 wdbc_*
 wine_*
-*.json
 sonar_*
+/nbproject/
+Resumen*

@@ -66,7 +66,7 @@ public class DatasetApi {
             String json = dataset.toGson();
             Dataset.JSonDataset jsonDataset = new Dataset.JSonDataset();
             jsonDataset.setName(dataset.getName());
-            jsonDataset.setData(json);
+            //jsonDataset.setData(json);
 
             jsonDataset = jsonDatasetService.saveDataset(jsonDataset);
 

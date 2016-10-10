@@ -1,8 +1,8 @@
 package co.edu.unicauca.trabajogradogkr;
 
-import co.edu.unicauca.trabajogradogkr.distance.Distance;
-import co.edu.unicauca.trabajogradogkr.distance.EuclideanDistance;
-import co.edu.unicauca.trabajogradogkr.distance.ManhattanDistance;
+import co.edu.unicauca.trabajogradogkr.model.distance.Distance;
+import co.edu.unicauca.trabajogradogkr.model.distance.EuclideanDistance;
+import co.edu.unicauca.trabajogradogkr.model.distance.ManhattanDistance;
 import co.edu.unicauca.trabajogradogkr.exception.AttributeException;
 import co.edu.unicauca.trabajogradogkr.exception.DatasetException;
 import co.edu.unicauca.trabajogradogkr.exception.DistanceException;
@@ -22,16 +22,24 @@ import co.edu.unicauca.trabajogradogkr.model.gbhs.GBHSTuner;
 import co.edu.unicauca.trabajogradogkr.model.gbhs.Tuner;
 import co.edu.unicauca.trabajogradogkr.model.kmeans.KMeans;
 import co.edu.unicauca.trabajogradogkr.model.objectivefunction.AIC;
+import co.edu.unicauca.trabajogradogkr.model.objectivefunction.BIC;
+import co.edu.unicauca.trabajogradogkr.model.objectivefunction.BICS;
 import co.edu.unicauca.trabajogradogkr.model.objectivefunction.CHI;
 import co.edu.unicauca.trabajogradogkr.model.objectivefunction.ObjectiveFunction;
 import co.edu.unicauca.trabajogradogkr.model.rgs.Partition;
+import co.edu.unicauca.trabajogradogkr.model.task.Task;
+import co.edu.unicauca.trabajogradogkr.model.task.TaskBuilder;
 import co.edu.unicauca.trabajogradogkr.service.Config;
 import co.edu.unicauca.trabajogradogkr.utils.Report;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.stream.JsonWriter;
 import gnu.getopt.Getopt;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
+import java.lang.reflect.Type;
 import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -95,7 +103,7 @@ public class TrabajoGradoGKR {
         while ((c = go.getopt()) != -1) {
             switch (c) {
 
-                case 'c': //HMCR
+                /*case 'c': //HMCR
                     hmcr = Double.parseDouble(go.getOptarg());
                     break;
                 case 'd': //Dataset
@@ -128,12 +136,16 @@ public class TrabajoGradoGKR {
                 case 'o': //Porcentaje optimizar
                     po = Double.parseDouble(go.getOptarg());
                     break;
+                 */
                 case 'p':
                     GsonBuilder builder = new GsonBuilder();
                     Gson gson = builder.create();
                     params = gson.fromJson(new FileReader(go.getOptarg()), JsonParams.class);
-                    System.out.println(params.toString());
+                    if (!params.verify()) {
+                        throw new Exception("Error en los parámetros");
+                    }
                     break;
+                /*
                 case 's': //HMS
                     hms = Integer.parseInt(go.getOptarg());
                     break;
@@ -144,6 +156,7 @@ public class TrabajoGradoGKR {
                     tuneUp = true;
                     rDatasets = go.getOptarg();
                     break;
+                 */
                 case 'W': //Web
                     web = true;
                     break;
@@ -157,63 +170,9 @@ public class TrabajoGradoGKR {
             SpringApplication.run(TrabajoGradoGKR.class, args);
         } else {
 
-            List<Distance> distances = getDistances(params);
-            //Distance distance = getDistance(distanceName);
-            if (distances.isEmpty()) {
-                System.out.println("Distancia incorrecta");
-                return;
-            }
-
             Config.getInstance().initResultFolder();
 
-            if (tuneUp) {
-                tuneUp(distances.get(0), rDatasets, it);
-            }
-
-            if (rDataset == null) {
-                System.out.println("Indicar dataset");
-                return;
-            }
-
-            File file = new File(rDataset);
-            Dataset dataset = new Dataset();
-            dataset.fromFile(file);
-            String datasetName = dataset.getName();
-
-            if (datasetName == null || datasetName.isEmpty()) {
-                throw new Exception("Falta el nombre del dataset");
-            }
-
-            dataset.normalize();
-
-            if (p) {
-                testKMeans(it, K, dataset, distance);
-            }
-
-            if (e) {
-                experiment(dataset, nExp, minPar, maxPar, hmcr, hms, po, seed, distance);
-            }
-
-            if (g) {
-                GBHS gbhs = null;
-                switch (algo) {
-                    case 1: //Registros
-                        gbhs = new GBHSRecords();
-                        break;
-                    case 2: //Centroides
-                        gbhs = new GBHSCentroids();
-                        break;
-                    case 3: //Grupos
-                        gbhs = new GBHSGroups();
-                        break;
-                }
-
-                if (gbhs == null) {
-                    System.out.println("Algoritmos disponibles\n1: registros\n2: centroides\n3: grupos");
-                } else {
-                    testGBHS(dataset, gbhs, minPar, maxPar, hmcr, hms, po, distance);
-                }
-            }
+            experiment(params);
         }
     }
 
@@ -302,6 +261,26 @@ public class TrabajoGradoGKR {
         };
     }
 
+    public static List<GBHS> getAlgorithms(List<String> algorithms) {
+        List<GBHS> ret = new ArrayList<>();
+
+        for (int i = 0; i < algorithms.size(); i++) {
+            switch (algorithms.get(i)) {
+                case "records":
+                    ret.add(new GBHSRecords());
+                    break;
+                case "centroids":
+                    ret.add(new GBHSRecords());
+                    break;
+                case "groups":
+                    ret.add(new GBHSRecords());
+                    break;
+            }
+        }
+
+        return ret;
+    }
+
     public static ObjectiveFunction[] getObjectiveFunctions() {
 
         return new ObjectiveFunction[]{
@@ -310,120 +289,63 @@ public class TrabajoGradoGKR {
         };
     }
 
-    public static void experiment(Dataset dataset, int nExp, double minPar,
-            double maxPar, double hmcr, int hms, double po, long seed,
-            Distance distance) throws Exception {
+    public static List<ObjectiveFunction> getObjectiveFunctions(List<String> objectiveFunctions) {
+        List<ObjectiveFunction> ret = new ArrayList();
+        for (int i = 0; i < objectiveFunctions.size(); i++) {
+            switch (objectiveFunctions.get(i)) {
+                case "AIC":
+                    ret.add(new AIC());
+                    break;
+                case "CHI":
+                    ret.add(new CHI());
+                    break;
+                case "BIC":
+                    ret.add(new BIC());
+                    break;
+                case "BICS":
+                    ret.add(new BICS());
+                    break;
+            }
+            return ret;
+        }
+
+        return ret;
+    }
+
+    public static void experiment(JsonParams params) throws Exception {
         long milis = System.currentTimeMillis();
         try {
-            System.out.println("Experimentar");
-            System.out.println("minPar: " + minPar);
-            System.out.println("maxPar: " + maxPar);
-            System.out.println("hmcr: " + hmcr);
-            System.out.println("hms: " + hms);
-            System.out.println("po: " + po);
-            System.out.println("seed: " + seed);
-
-            String datasetName = dataset.getName();
-            if (datasetName == null || datasetName.isEmpty()) {
-                throw new Exception("Falta el nombre del dataset");
-            }
 
             SimpleDateFormat dFormat = new SimpleDateFormat("dd-MM-yyyy_HH:mm:ss");
-            String tmp = datasetName + "_" + dFormat.format(new Date());
-            File resultFolder = new File(tmp);
-            resultFolder.mkdir();
 
-            //Algoritmos
-            GBHS[] algorithms = getAlgorithms();
-
-            //Indices internos/Funciones objetivo
-            ObjectiveFunction[] objectiveFunctions = getObjectiveFunctions();
-
-            //Parámetros algoritmo
-            int maxK = (int) Math.sqrt(dataset.getN() / 2);
-            int maxImprovisations = 1000;
-            int maxKMeans = 100;
-
-            Result[] results = new Result[algorithms.length * objectiveFunctions.length];
-
-            //Thread
-            int maxT = 5;
+            int maxT = 4;
             ExecutorService pool = Executors.newFixedThreadPool(maxT);
-            Future<Result>[][] futureObjs = new Future[algorithms.length][objectiveFunctions.length];
+            List<Future<Result>> futureObjs = new ArrayList<>();
+            List<Task> tasks = TaskBuilder.buildTasks(params);
+            List<Result> results = new ArrayList();
 
-            int pAlgo = 0;
-            int pFunc = 0;
-            int pos = 0;
-            for (GBHS a : algorithms) {
-                pFunc = 0;
-                for (ObjectiveFunction f : objectiveFunctions) {
-                    String id = a.toString() + "-" + f.toString();
-                    Experimenter exp = new Experimenter(hms, maxImprovisations, maxK,
-                            maxKMeans, nExp, minPar, maxPar, hmcr, po, dataset, f,
-                            false, seed, a, id, distance.newInstance());
-
-                    Future<Result> future = pool.submit(exp);
-                    futureObjs[pAlgo][pFunc] = future;
-                    pFunc++;
-                }
-                pAlgo++;
+            for (Task task : tasks) {
+                Experimenter exp = new Experimenter(task);
+                Future<Result> future = pool.submit(exp);
+                futureObjs.add(future);
             }
 
-            pos = 0;
-            for (int i = 0; i < algorithms.length; i++) {
-                for (int j = 0; j < objectiveFunctions.length; j++) {
-                    results[pos] = futureObjs[i][j].get();
-                    pos++;
-                }
+            for (Future<Result> futureObj : futureObjs) {
+                results.add(futureObj.get());
             }
 
-            Arrays.sort(results);
-            int tResults = pos;
             pool.shutdown();
 
-            Report report = new Report(tmp + "/Resumen.csv");
-            Report params = new Report(tmp + "/params.csv");
-            params.writeLine("minpar\t" + minPar);
-            params.writeLine("\nmaxpar\t" + maxPar);
-            params.writeLine("\nhmcr\t" + hmcr);
-            params.writeLine("\nhms\t" + hms);
-            params.writeLine("\npo\t" + po);
-            params.writeLine("\nnexp\t" + nExp);
-            params.writeLine("\nseed\t" + seed);
-            params.writeLine("\nDistance\t" + distance.toString());
-            params.close();
+            Date date = new Date();
+            Report report = new Report("Resumen" + dFormat.format(date) + ".json");
 
-            StringBuilder sb = new StringBuilder();
-            sb.append("Algoritmo-funcion")
-                    .append("\t\"PromICC\"").append("\t\"PromIIC\"")
-                    .append("\t\"PromER\"")
-                    .append("\t\"SDeviation\"\n");
-            report.writeLine(sb.toString());
+            GsonBuilder gsonBuilder = new GsonBuilder();
+            Gson gson = gsonBuilder.setPrettyPrinting().create();
 
-            sb = new StringBuilder(tmp);
-            sb.append("/Soluciones");
-            String nCarpetaResults = sb.toString();
-            File fCarpetaResults = new File(nCarpetaResults);
-            fCarpetaResults.mkdirs();
+            Type resultType = new TypeToken<List<Result>>() {
+            }.getType();
 
-            for (int i = 0; i < tResults; i++) {
-                Result result = results[i];
-                result.calcAverages();
-                report.writeLine(result.summary());
-                Report individualReport = new Report(tmp + "/" + result.getId());
-                individualReport.writeLine(result.toString());
-                individualReport.close();
-
-                Report agentsReport = new Report(nCarpetaResults + "/" + result.getId());
-
-                for (int j = 0; j < result.getAgents().length; j++) {
-                    agentsReport.writeLine("it," + j + "\n");
-                    agentsReport.writeLine(result.getAgents()[j].toString());
-                }
-
-                agentsReport.close();
-            }
-
+            report.writeLine(gson.toJson(results, resultType));
             report.close();
 
         } catch (AttributeException | DatasetException ex) {

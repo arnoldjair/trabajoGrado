@@ -9,19 +9,16 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Lob;
-import javax.persistence.Table;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -33,6 +30,8 @@ public class Dataset {
     public static final int DOUBLE = 1;
     public static final int STRING = 2;
     public static final int CLASS = 3;
+
+    public static final String datasetsPath = "Datasets";
 
     private int n;
     private int classIndex;
@@ -328,76 +327,88 @@ public class Dataset {
 
     }
 
-    /*public synchronized void toDB(String host, String username, String passwd) throws DBException, SQLException {
-        //TODO: Validaciones
-        MysqlConnection mysqlCon = new MysqlConnection();
-        mysqlCon.con(host, "datasets", username, passwd);
-        Connection con = mysqlCon.getCon();
-        PreparedStatement ps;
-        ResultSet rs;
-        String testDatasetExists = "select count(id) from dataset where name = ?";
-        String insertDataset = "insert into dataset(name) values(?)";
-        String insertRecord = "insert into record (ind, datasetId) values(?, ?)";
-        String insertAttrib = "insert into attribute (name, value, recordId) values (?, ?, ?)";
-        int count;
-        int datasetId;
-        int recordId;
-
-        con.setAutoCommit(false);
-
-        ps = con.prepareStatement(testDatasetExists);
-        ps.setString(1, this.name);
-        rs = ps.executeQuery();
-        if (rs.next()) {
-            count = rs.getInt(1);
-            if (count != 0) {
-                throw new DBException("Ya existe un dataset con el mismo nombre en la bd");
-            }
-        }
-
-        ps = con.prepareStatement(insertDataset, Statement.RETURN_GENERATED_KEYS);
-        ps.setString(1, this.name);
-        count = ps.executeUpdate();
-        rs = ps.getGeneratedKeys();
-
-        if (rs.next()) {
-            datasetId = rs.getInt(1);
-            for (Record record : this.records) {
-                ps = con.prepareStatement(insertRecord, Statement.RETURN_GENERATED_KEYS);
-                ps.setInt(1, record.getIndex());
-                ps.setInt(2, datasetId);
-                count = ps.executeUpdate();
-                rs = ps.getGeneratedKeys();
-                if (rs.next()) {
-                    recordId = rs.getInt(1);
-                    Object[] data = record.getData();
-                    for (int i = 0; i < record.getAttributes().length; i++) {
-                        ps = con.prepareStatement(insertAttrib, Statement.RETURN_GENERATED_KEYS);
-                        ps.setString(1, record.getAttributes()[i].getName());
-
-                        if (record.getAttributes()[i].getType() == Dataset.DOUBLE) {
-                            ps.setString(2, Double.toString((Double) data[i]));
-                        } else {
-                            ps.setString(2, (String) data[i]);
-                        }
-
-                        ps.setInt(3, recordId);
-                        count = ps.executeUpdate();
-                    }
-                }
-            }
-        }
-
-        con.setAutoCommit(true);
-
-    }
-     */
     public synchronized String toGson() {
         String ret = "";
 
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
         ret = gson.toJson(this, Dataset.class);
+
+        return ret;
+    }
+
+    public synchronized static Dataset fromJson(String name) throws FileNotFoundException {
+        String path = "/home/equipo/Documentos/TrabajoGradoRGS/Datasets" + "/json/" + name + ".json";
+        BufferedReader reader = new BufferedReader(new FileReader(path));
+        Gson gson = new Gson();
+        JSonDataset jsonDataset = gson.fromJson(reader, JSonDataset.class);
+
+        Dataset ret = new Dataset();
+        Attribute[] attrs = new Attribute[jsonDataset.getAttributes().size()];
+        int index = 0;
+
+        for (JsonAttribute attribute : jsonDataset.getAttributes()) {
+            Attribute tmp = new Attribute();
+            tmp.setName(attribute.getName());
+            tmp.setType(getAttrType(attribute.getType()));
+            if (tmp.getType() == Dataset.CLASS) {
+                ret.setClassIndex(index);
+                ret.setHasClass(true);
+            }
+            attrs[index] = tmp;
+            index++;
+        }
+        ret.setAttributes(attrs);
+        index = 0;
+        Record[] records = new Record[jsonDataset.getData().size()];
+        for (List<Object> list : jsonDataset.getData()) {
+            Object[] tmpData = new Object[list.size()];
+            tmpData = list.toArray();
+            Record record = new Record(index, tmpData, attrs);
+            records[index] = record;
+            index++;
+        }
+
+        ret.setoRecords(records);
+
+        //Valores normalización
+        double[][] norm = new double[ret.getAttributes().length][2];
+        for (int i = 0; i < ret.getAttributes().length; i++) {
+            if (attrs[i].getType() == Dataset.DOUBLE) {
+                norm[i][0] = norm[i][1] = (double) records[0].getData()[i];
+            }
+        }
+
+        for (int i = 0; i < ret.getAttributes().length; i++) {
+            if (attrs[i].getType() == Dataset.DOUBLE) {
+                for (int j = 0; j < records.length; j++) {
+                    norm[i][0] = Math.min((double) records[j].getData()[i], norm[i][0]);
+                    norm[i][1] = Math.max((double) records[j].getData()[i], norm[i][1]);
+                }
+            }
+        }
+
+        if (ret.hasClass) {
+            Map<String, Integer> classMap = new LinkedHashMap<>();
+            int cont = 0;
+            for (Record record : records) {
+                if (!classMap.containsKey(record.getData()[ret.classIndex])) {
+                    classMap.put((String) record.getData()[ret.classIndex], cont);
+                    cont++;
+                }
+            }
+            ret.classes = new String[classMap.size()];
+            Object[] m = classMap.keySet().toArray();
+            for (int i = 0; i < m.length; i++) {
+                ret.classes[i] = (String) m[i];
+            }
+        }
+
+        ret.setNormValues(norm);
+        ret.setN(records.length);
+        ret.normalize();
+        ret.setAttributes(attrs);
+        ret.setName(name);
 
         return ret;
     }
@@ -453,14 +464,15 @@ public class Dataset {
         return "?";
     }
 
-    @Entity
-    @Table(name = "jsonDataset")
-    public static class JSonDataset {
+    @Override
+    public String toString() {
+        return this.name;
+    }
 
-        @Id
+    public static class JsonAttribute {
+
         private String name;
-        @Lob
-        private String data;
+        private String type;
 
         public String getName() {
             return name;
@@ -470,12 +482,44 @@ public class Dataset {
             this.name = name;
         }
 
-        public String getData() {
+        public String getType() {
+            return type;
+        }
+
+        public void setType(String type) {
+            this.type = type;
+        }
+
+    }
+
+    public static class JSonDataset {
+
+        private List<JsonAttribute> attributes;
+        private List<List<Object>> data;
+        private String name;
+
+        public List<JsonAttribute> getAttributes() {
+            return attributes;
+        }
+
+        public void setAttributes(List<JsonAttribute> attributes) {
+            this.attributes = attributes;
+        }
+
+        public List<List<Object>> getData() {
             return data;
         }
 
-        public void setData(String data) {
+        public void setData(List<List<Object>> data) {
             this.data = data;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
         }
 
     }

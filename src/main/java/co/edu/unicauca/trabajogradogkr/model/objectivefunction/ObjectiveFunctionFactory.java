@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Arnold Jair Jimenez Vargas <ajjimenez@unicauca.edu.co>.
+ * Copyright (C) 2016 Pivotal Software, Inc..
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,33 +16,21 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
-package co.edu.unicauca.trabajogradogkr.distance;
-
-import co.edu.unicauca.trabajogradogkr.model.Record;
+package co.edu.unicauca.trabajogradogkr.model.objectivefunction;
 
 /**
  *
  * @author Arnold Jair Jimenez Vargas <ajjimenez@unicauca.edu.co>
  */
-public class EuclideanDistance implements Distance {
+public class ObjectiveFunctionFactory {
 
-    @Override
-    public double distance(Record r1, Record r2) {
-        double ret = 0;
-        Record tmp = r1.subtract(r2);
-        tmp = tmp.pow(2);
-        ret = tmp.sumValues();
-        ret = Math.sqrt(ret);
-        return ret;
-    }
-
-    @Override
-    public Distance newInstance() {
-        return new EuclideanDistance();
-    }
-
-    @Override
-    public String toString() {
-        return "Euclidean";
+    public static ObjectiveFunction getObjectiveFuncion(String function) {
+        switch (function) {
+            case "aic":
+                return new AIC();
+            case "chi":
+                return new CHI();
+        }
+        return null;
     }
 }

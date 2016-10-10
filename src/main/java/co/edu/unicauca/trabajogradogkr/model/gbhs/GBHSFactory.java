@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Arnold Jair Jimenez Vargas <ajjimenez@unicauca.edu.co>.
+ * Copyright (C) 2016 Pivotal Software, Inc..
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,18 +16,24 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
-package co.edu.unicauca.trabajogradogkr.distance;
-
-import co.edu.unicauca.trabajogradogkr.model.Record;
+package co.edu.unicauca.trabajogradogkr.model.gbhs;
 
 /**
  *
  * @author Arnold Jair Jimenez Vargas <ajjimenez@unicauca.edu.co>
  */
-public interface Distance {
+public class GBHSFactory {
 
-    public double distance(Record r1, Record r2);
-    
-    public Distance newInstance();
+    public static GBHS getGBHS(String algorithm) {
+        switch (algorithm) {
+            case "records":
+                return new GBHSRecords();
+            case "centroids":
+                return new GBHSCentroids();
+            case "groups":
+                return new GBHSGroups();
+        }
+        return null;
+    }
 
 }

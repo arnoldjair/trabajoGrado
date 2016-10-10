@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Arnold Jair Jimenez Vargas <ajjimenez@unicauca.edu.co>.
+ * Copyright (C) 2016 Pivotal Software, Inc..
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,33 +16,21 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
-package co.edu.unicauca.trabajogradogkr.distance;
-
-import co.edu.unicauca.trabajogradogkr.model.Record;
+package co.edu.unicauca.trabajogradogkr.model.distance;
 
 /**
  *
  * @author Arnold Jair Jimenez Vargas <ajjimenez@unicauca.edu.co>
  */
-public class ManhattanDistance implements Distance {
+public class DistanceFactory {
 
-    @Override
-    public double distance(Record r1, Record r2) {
-        double ret = 0;
-        Record tmp = r1.subtract(r2);
-        tmp = tmp.abs();
-        ret = tmp.sumValues();
-        return ret;
+    public static Distance getDistance(String distance) {
+        switch (distance) {
+            case "euclidean":
+                return new EuclideanDistance();
+            case "manhattan":
+                return new ManhattanDistance();
+        }
+        return null;
     }
-
-    @Override
-    public Distance newInstance() {
-        return new ManhattanDistance();
-    }
-
-    @Override
-    public String toString() {
-        return "Manhattan";
-    }
-
 }

@@ -18,7 +18,7 @@
  */
 package co.edu.unicauca.trabajogradogkr.model;
 
-import co.edu.unicauca.trabajogradogkr.distance.Distance;
+import co.edu.unicauca.trabajogradogkr.model.distance.Distance;
 import co.edu.unicauca.trabajogradogkr.model.rgs.Partition;
 import java.util.ArrayList;
 import java.util.List;

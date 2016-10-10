@@ -1,0 +1,17 @@
+{
+  "minPar": 0.3,
+  "maxPar": 0.5,
+  "hmcr": 0.9,
+  "hms": 25,
+  "nExp": 30,
+  "po": 0.7,
+  "seed": 10,
+  "nIt": 1000,
+  "maxK": 10,
+  "maxKMeans": 100,
+  "threads": 5,
+  "datasets": ["iris"],
+  "algorithms": ["records", "centroids", "groups"],
+  "distances": ["euclidean", "manhattan"],
+  "objectiveFunctions": ["aic", "chi"]
+}
