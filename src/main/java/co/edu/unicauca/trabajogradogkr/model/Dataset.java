@@ -364,6 +364,13 @@ public class Dataset {
         for (List<Object> list : jsonDataset.getData()) {
             Object[] tmpData = new Object[list.size()];
             tmpData = list.toArray();
+            if (ret.hasClass) {
+                if (tmpData[ret.classIndex] instanceof Double) {
+                    tmpData[ret.classIndex] = Double.toString((Double) tmpData[ret.classIndex]);
+                } else {
+                    tmpData[ret.classIndex] = (String) tmpData[ret.classIndex];
+                }
+            }
             Record record = new Record(index, tmpData, attrs);
             records[index] = record;
             index++;
@@ -393,7 +400,13 @@ public class Dataset {
             int cont = 0;
             for (Record record : records) {
                 if (!classMap.containsKey(record.getData()[ret.classIndex])) {
-                    classMap.put((String) record.getData()[ret.classIndex], cont);
+                    Object tmpData = record.getData()[ret.classIndex];
+                    if (tmpData instanceof Double) {
+                        classMap.put(Double.toString((Double) record.getData()[ret.classIndex]), cont);
+                    } else {
+                        classMap.put((String) record.getData()[ret.classIndex], cont);
+                    }
+                    //classMap.put((String) record.getData()[ret.classIndex], cont);
                     cont++;
                 }
             }
