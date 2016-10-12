@@ -18,8 +18,8 @@
  */
 package co.edu.unicauca.trabajogradogkr.model.objectivefunction;
 
-import co.edu.unicauca.trabajogradogkr.distance.Distance;
-import co.edu.unicauca.trabajogradogkr.distance.ManhattanDistance;
+import co.edu.unicauca.trabajogradogkr.model.distance.Distance;
+import co.edu.unicauca.trabajogradogkr.model.distance.ManhattanDistance;
 import co.edu.unicauca.trabajogradogkr.model.Agent;
 import co.edu.unicauca.trabajogradogkr.model.Cluster;
 import co.edu.unicauca.trabajogradogkr.model.Dataset;

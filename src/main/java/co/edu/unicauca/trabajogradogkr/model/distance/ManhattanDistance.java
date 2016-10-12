@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Pivotal Software, Inc..
+ * Copyright (C) 2016 Arnold Jair Jimenez Vargas <ajjimenez@unicauca.edu.co>.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,20 +16,33 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
-package co.edu.unicauca.trabajogradogkr.service;
+package co.edu.unicauca.trabajogradogkr.model.distance;
 
-import co.edu.unicauca.trabajogradogkr.web.model.Params;
-import java.util.List;
+import co.edu.unicauca.trabajogradogkr.model.Record;
 
 /**
  *
  * @author Arnold Jair Jimenez Vargas <ajjimenez@unicauca.edu.co>
  */
-public interface GBHSService {
+public class ManhattanDistance implements Distance {
 
-    List<String> getAlgorithmsNames();
+    @Override
+    public double distance(Record r1, Record r2) {
+        double ret = 0;
+        Record tmp = r1.subtract(r2);
+        tmp = tmp.abs();
+        ret = tmp.sumValues();
+        return ret;
+    }
 
-    List<String> getObjectiveFunctionNames();
+    @Override
+    public Distance newInstance() {
+        return new ManhattanDistance();
+    }
 
-    Params addParams(Params params);
+    @Override
+    public String toString() {
+        return "Manhattan";
+    }
+
 }

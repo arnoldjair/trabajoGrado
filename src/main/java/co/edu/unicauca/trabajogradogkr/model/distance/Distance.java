@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Pivotal Software, Inc..
+ * Copyright (C) 2016 Arnold Jair Jimenez Vargas <ajjimenez@unicauca.edu.co>.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,20 +16,18 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
-package co.edu.unicauca.trabajogradogkr.web.service;
+package co.edu.unicauca.trabajogradogkr.model.distance;
 
-import co.edu.unicauca.trabajogradogkr.model.Dataset;
-import java.util.List;
+import co.edu.unicauca.trabajogradogkr.model.Record;
 
 /**
  *
  * @author Arnold Jair Jimenez Vargas <ajjimenez@unicauca.edu.co>
  */
-public interface JsonDatasetService {
+public interface Distance {
 
-    public List<String> getDatasetsNames();
+    public double distance(Record r1, Record r2);
+    
+    public Distance newInstance();
 
-    public Dataset.JSonDataset saveDataset(Dataset.JSonDataset dataset);
-
-    public Dataset.JSonDataset findByName(String name);
 }

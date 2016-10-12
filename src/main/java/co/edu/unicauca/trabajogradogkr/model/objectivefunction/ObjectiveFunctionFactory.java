@@ -16,23 +16,21 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
-package co.edu.unicauca.trabajogradogkr.web.service;
-
-import co.edu.unicauca.trabajogradogkr.web.model.GBHSTask;
-import co.edu.unicauca.trabajogradogkr.web.model.Params;
-import java.util.List;
+package co.edu.unicauca.trabajogradogkr.model.objectivefunction;
 
 /**
  *
  * @author Arnold Jair Jimenez Vargas <ajjimenez@unicauca.edu.co>
  */
-public interface GBHSService {
+public class ObjectiveFunctionFactory {
 
-    List<String> getAlgorithmsNames();
-
-    List<String> getObjectiveFunctionNames();
-
-    GBHSTask addTask(GBHSTask task);
-
-    Params addParams(Params params);
+    public static ObjectiveFunction getObjectiveFuncion(String function) {
+        switch (function) {
+            case "aic":
+                return new AIC();
+            case "chi":
+                return new CHI();
+        }
+        return null;
+    }
 }

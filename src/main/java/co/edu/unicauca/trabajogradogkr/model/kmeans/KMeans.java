@@ -18,7 +18,7 @@
  */
 package co.edu.unicauca.trabajogradogkr.model.kmeans;
 
-import co.edu.unicauca.trabajogradogkr.distance.Distance;
+import co.edu.unicauca.trabajogradogkr.model.distance.Distance;
 import co.edu.unicauca.trabajogradogkr.model.Agent;
 import co.edu.unicauca.trabajogradogkr.model.Cluster;
 import co.edu.unicauca.trabajogradogkr.model.Dataset;
