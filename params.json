@@ -10,7 +10,7 @@
   "maxK": 10,
   "maxKMeans": 100,
   "threads": 5,
-  "datasets": ["iris"],
+  "datasets": ["iris", "glass", "wine", "wdbc", "sonar"],
   "algorithms": ["records", "centroids", "groups"],
   "distances": ["euclidean", "manhattan"],
   "objectiveFunctions": ["aic", "chi"]

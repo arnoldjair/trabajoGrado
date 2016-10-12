@@ -1,5 +1,7 @@
 package co.edu.unicauca.trabajogradogkr;
 
+import co.edu.unicauca.trabajogradogkr.R.RKmeansOutput;
+import co.edu.unicauca.trabajogradogkr.R.RUtils;
 import co.edu.unicauca.trabajogradogkr.model.distance.Distance;
 import co.edu.unicauca.trabajogradogkr.model.distance.EuclideanDistance;
 import co.edu.unicauca.trabajogradogkr.model.distance.ManhattanDistance;
@@ -34,7 +36,6 @@ import co.edu.unicauca.trabajogradogkr.utils.Report;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import com.google.gson.stream.JsonWriter;
 import gnu.getopt.Getopt;
 import java.io.File;
 import java.io.FileReader;
@@ -43,10 +44,11 @@ import java.lang.reflect.Type;
 import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -76,29 +78,11 @@ public class TrabajoGradoGKR {
             return;
         }
 
-        String rDataset = null;
-        String rDatasets = null;
-        Getopt go = new Getopt("Trabajo Grado", args, "c:d:D:e:g:i:k:m:M:o:p:s:S:t:W");
+        Getopt go = new Getopt("Trabajo Grado", args, "p:r:W");
         int c;
-        int K = 3;
-        int it = 1;
-        int nExp = 10;
-        int algo = 0;
-        boolean e = false;
-        boolean p = false;
-        boolean g = false;
-        boolean tuneUp = false;
         boolean web = false;
-        String distanceName = "euclidiana";
         JsonParams params = null;
-
-        //Parámetros algo
-        double minPar = 0.9067848536;
-        double maxPar = 0.9598223071;
-        double hmcr = 0.1157166472;
-        double po = 0.876586636;
-        long seed = 10;
-        int hms = 11;
+        String pathResults = null;
 
         while ((c = go.getopt()) != -1) {
             switch (c) {
@@ -145,6 +129,10 @@ public class TrabajoGradoGKR {
                         throw new Exception("Error en los parámetros");
                     }
                     break;
+                case 'r':
+                    pathResults = go.getOptarg();
+                    System.out.println(pathResults);
+                    break;
                 /*
                 case 's': //HMS
                     hms = Integer.parseInt(go.getOptarg());
@@ -169,6 +157,42 @@ public class TrabajoGradoGKR {
         if (web) {
             SpringApplication.run(TrabajoGradoGKR.class, args);
         } else {
+
+            if (pathResults != null) {
+                double promErr = 0;
+                List<RKmeansOutput> outputs = RUtils.read(pathResults);
+                List<Agent> agents = new ArrayList<>();
+                // TODO: Se asume que el archivo no está vacío.
+                Dataset dataset = Dataset.fromJson(outputs.get(0).getName());
+                for (RKmeansOutput rKmeansOutput : outputs) {
+                    int[] rgs = new int[rKmeansOutput.getCluster().size()];
+
+                    for (int i = 0; i < rgs.length; i++) {
+                        rgs[i] = rKmeansOutput.getCluster().get(i);
+                    }
+
+                    Partition p = Partition.reprocessRGS(rgs);
+                    Agent agent = new Agent(p);
+                    ContingencyMatrix matrix = new ContingencyMatrix(agent, dataset);
+                    ECVM ecvm = new ECVM(matrix);
+                    int icc = ecvm.getIcc();
+                    int iic = dataset.getN() - icc;
+                    double err = ((double) iic / dataset.getN()) * 100;
+                    System.out.println("Error: " + err);
+                    promErr += err;
+                }
+                promErr /= outputs.size();
+                Map<String, Object> map = new HashMap<>();
+                map.put("dataset", dataset.getName());
+                map.put("promError", promErr);
+                map.put("numIt", outputs.size());
+                Gson gson = new GsonBuilder().setPrettyPrinting().create();
+                String resultado = gson.toJson(map, HashMap.class);
+                Report tmpReport = new Report("RKmeans_" + dataset.getName() + ".json");
+                tmpReport.writeLine(resultado);
+                tmpReport.close();
+                return;
+            }
 
             Config.getInstance().initResultFolder();
 
