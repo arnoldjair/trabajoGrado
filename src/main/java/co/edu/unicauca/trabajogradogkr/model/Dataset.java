@@ -2,14 +2,17 @@ package co.edu.unicauca.trabajogradogkr.model;
 
 import co.edu.unicauca.trabajogradogkr.exception.AttributeException;
 import co.edu.unicauca.trabajogradogkr.exception.DatasetException;
+import co.edu.unicauca.trabajogradogkr.utils.Report;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -534,6 +537,17 @@ public class Dataset {
         public void setName(String name) {
             this.name = name;
         }
+
+    }
+
+    public void toFile() {
+        Report report = new Report(this.name + ".norm");
+
+        for (Record record : records) {
+            report.writeLine(record.toString());
+        }
+
+        report.close();
 
     }
 }
