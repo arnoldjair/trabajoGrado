@@ -1,0 +1,8 @@
+{
+  "k": 3,
+  "maxIt": 100,
+  "nExp": 100,
+  "percentageStop": 0.0,
+  "dataset": "iris",
+  "distance": "euclidean"
+}

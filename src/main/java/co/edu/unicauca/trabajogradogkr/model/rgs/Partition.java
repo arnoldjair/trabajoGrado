@@ -110,7 +110,7 @@ public class Partition {
      */
     public synchronized static Partition randPartition(int n, int k, Random random) {
         int[] rgs = new int[n];
-        k = k == 0 ? 1 : k;
+        k = k < 2 ? 2 : k;
         int max = k;
 
         int ak = 0;

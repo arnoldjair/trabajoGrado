@@ -24,7 +24,7 @@ package co.edu.unicauca.trabajogradogkr.model;
  */
 public class Result implements Comparable<Result> {
 
-    private Agent[] agents;
+    //private Agent[] agents;
     private ContingencyMatrix[] contingencyMatrices;
     private int[] icc;
     private int[] iic;
@@ -39,14 +39,13 @@ public class Result implements Comparable<Result> {
     private String distance;
     private String algorithm;
 
-    public Agent[] getAgents() {
+    /*public Agent[] getAgents() {
         return agents;
     }
 
     public void setAgents(Agent[] agents) {
         this.agents = agents;
-    }
-
+     */
     public ContingencyMatrix[] getContingencyMatrices() {
         return contingencyMatrices;
     }
@@ -185,5 +184,20 @@ public class Result implements Comparable<Result> {
         }
 
         return 1;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder ret = new StringBuilder();
+        ret.append(averageIcc).append("\t");
+        ret.append(averageIic).append("\t");
+        ret.append(averageEr).append("\t");
+        ret.append(standardDeviation).append("\t");
+        ret.append(dataset).append("\t");
+        ret.append(objectiveFunction).append("\t");
+        ret.append(distance).append("\t");
+        ret.append(algorithm).append("\n");
+
+        return ret.toString();
     }
 }

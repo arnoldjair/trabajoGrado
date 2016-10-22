@@ -47,8 +47,8 @@ public class KMeans {
                 agent.getP().getN(), agent.getP().getK());
         ret.setP(tmpP);
         ret.calcClusters(dataset);
-
-        while (currPercent > percentageStop && currIt < maxIt) {
+        
+        do {
             reallocated = 0;
             rgs = ret.getP().getRgs().clone();
             clusters = ret.getClusters();
@@ -68,6 +68,11 @@ public class KMeans {
                 if (index != rgs[i]) {
                     reallocated++;
                     rgs[i] = index;
+                    /**
+                     * MacQueen
+                     */
+                    Partition tmp = Partition.reprocessRGS(rgs);
+                    rgs = tmp.getRgs();
                 }
             }
 
@@ -76,7 +81,7 @@ public class KMeans {
             ret.setP(Partition.reprocessRGS(rgs));
             ret.calcClusters(dataset);
             currIt++;
-        }
+        } while (reallocated != 0 && currIt < maxIt);
 
         return ret;
     }

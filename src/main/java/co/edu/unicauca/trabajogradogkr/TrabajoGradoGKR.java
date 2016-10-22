@@ -14,8 +14,10 @@ import co.edu.unicauca.trabajogradogkr.model.Dataset;
 import co.edu.unicauca.trabajogradogkr.model.ECVM;
 import co.edu.unicauca.trabajogradogkr.model.Experimenter;
 import co.edu.unicauca.trabajogradogkr.model.JsonParams;
+import co.edu.unicauca.trabajogradogkr.model.KmeansParams;
 import co.edu.unicauca.trabajogradogkr.model.Params;
 import co.edu.unicauca.trabajogradogkr.model.Result;
+import co.edu.unicauca.trabajogradogkr.model.distance.DistanceFactory;
 import co.edu.unicauca.trabajogradogkr.model.gbhs.GBHS;
 import co.edu.unicauca.trabajogradogkr.model.gbhs.GBHSCentroids;
 import co.edu.unicauca.trabajogradogkr.model.gbhs.GBHSGroups;
@@ -38,6 +40,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import gnu.getopt.Getopt;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.lang.reflect.Type;
@@ -78,11 +81,17 @@ public class TrabajoGradoGKR {
             return;
         }
 
-        Getopt go = new Getopt("Trabajo Grado", args, "p:r:W");
+        Getopt go = new Getopt("Trabajo Grado", args, "jk:p:r:W");
         int c;
+        int k = 0;
         boolean web = false;
         JsonParams params = null;
+        KmeansParams kmeansParams = null;
         String pathResults = null;
+        boolean kmeans = false;
+        boolean fromR = false;
+        GsonBuilder builder = new GsonBuilder();
+        Gson gson = builder.create();
 
         while ((c = go.getopt()) != -1) {
             switch (c) {
@@ -107,10 +116,12 @@ public class TrabajoGradoGKR {
                 case 'i': //Iteraciones
                     it = Integer.parseInt(go.getOptarg());
                     break;
+                 */
                 case 'k': //KMeans
-                    K = Integer.parseInt(go.getOptarg());
-                    p = true;
+                    kmeansParams = gson.fromJson(new FileReader(go.getOptarg()), KmeansParams.class);
+                    kmeans = true;
                     break;
+                /*
                 case 'm': //MinPar
                     minPar = Double.parseDouble(go.getOptarg());
                     break;
@@ -121,9 +132,15 @@ public class TrabajoGradoGKR {
                     po = Double.parseDouble(go.getOptarg());
                     break;
                  */
+                case 'j':
+                    String[] datasets = new String[]{"iris", "glass", "sonar", "wdbc", "wine"};
+                    for (String d : datasets) {
+                        Dataset dataset = Dataset.fromJson(d);
+                        dataset.toFile();
+                    }
+                    break;
                 case 'p':
-                    GsonBuilder builder = new GsonBuilder();
-                    Gson gson = builder.create();
+
                     params = gson.fromJson(new FileReader(go.getOptarg()), JsonParams.class);
                     if (!params.verify()) {
                         throw new Exception("Error en los parámetros");
@@ -131,7 +148,7 @@ public class TrabajoGradoGKR {
                     break;
                 case 'r':
                     pathResults = go.getOptarg();
-                    System.out.println(pathResults);
+                    fromR = true;
                     break;
                 /*
                 case 's': //HMS
@@ -158,7 +175,7 @@ public class TrabajoGradoGKR {
             SpringApplication.run(TrabajoGradoGKR.class, args);
         } else {
 
-            if (pathResults != null) {
+            if (fromR) {
                 double promErr = 0;
                 List<RKmeansOutput> outputs = RUtils.read(pathResults);
                 List<Agent> agents = new ArrayList<>();
@@ -186,7 +203,7 @@ public class TrabajoGradoGKR {
                 map.put("dataset", dataset.getName());
                 map.put("promError", promErr);
                 map.put("numIt", outputs.size());
-                Gson gson = new GsonBuilder().setPrettyPrinting().create();
+                gson = new GsonBuilder().setPrettyPrinting().create();
                 String resultado = gson.toJson(map, HashMap.class);
                 Report tmpReport = new Report("RKmeans_" + dataset.getName() + ".json");
                 tmpReport.writeLine(resultado);
@@ -194,39 +211,39 @@ public class TrabajoGradoGKR {
                 return;
             }
 
+            if (kmeans) {
+                testKMeans(kmeansParams);
+                return;
+            }
+
             Config.getInstance().initResultFolder();
 
             experiment(params);
         }
+
     }
 
-    public static void testKMeans(int it, int k, Dataset dataset, Distance distance) {
+    public static void testKMeans(KmeansParams params) throws FileNotFoundException {
         Random random = new SecureRandom();
         KMeans kmeans = new KMeans();
-        String datasetName = dataset.getName();
+        Dataset dataset = Dataset.fromJson(params.getDataset());
+        Distance distance = DistanceFactory.getDistance(params.getDistance());
         SimpleDateFormat dFormat = new SimpleDateFormat("dd-MM-yyyy_HH:mm:ss");
-        String tmp = "Prueba_" + datasetName + "_" + dFormat.format(new Date());
-        File resultFolder = new File(tmp);
-        resultFolder.mkdir();
 
-        Report report = new Report(tmp + "/Resumen.csv");
+        Report report = new Report("Kmeans_" + params.getDataset() + "_" + dFormat.format(new Date()) + ".json");
 
-        StringBuilder sb = new StringBuilder();
-        sb.append("\"ICC\"").append("\t\"IIC\"")
-                .append("\t\"ER\"\n");
-        report.writeLine(sb.toString());
-
-        for (int i = 0; i < it; i++) {
-            Partition p = Partition.randPartition(dataset.getN(), k, random);
+        for (int i = 0; i < params.getnExp(); i++) {
+            Partition p = Partition.randPartition(dataset.getN(), params.getK(), random);
             Agent a = new Agent();
             a.setP(p);
-            Agent sol = kmeans.process(a, dataset, distance, 0.05, 100);
+            Agent sol = kmeans.process(a, dataset, distance, params.getPercentajeStop(), params.getMaxIt());
             ContingencyMatrix m = new ContingencyMatrix(sol, dataset);
             ECVM ecvm = new ECVM(m);
             int icc = ecvm.getIcc();
             int iic = dataset.getN() - icc;
             double er = ((double) iic / dataset.getN()) * 100;
-            report.writeLine(icc + "\t" + iic + "\t" + er + "\n");
+            report.writeLine(Double.toString(er));
+            report.writeLine("\n");
         }
 
         report.close();
@@ -369,7 +386,25 @@ public class TrabajoGradoGKR {
             Type resultType = new TypeToken<List<Result>>() {
             }.getType();
 
+//            gson.toJson(results, resultType, new FileWriter("Resumen" + dFormat.format(date) + ".json", false));
             report.writeLine(gson.toJson(results, resultType));
+            report.close();
+
+            report = new Report("Resumen" + dFormat.format(date) + ".csv");
+            StringBuilder sb = new StringBuilder();
+            sb.append("averageIcc").append("\t");
+            sb.append("averageIic").append("\t");
+            sb.append("averageEr").append("\t");
+            sb.append("standardDeviation").append("\t");
+            sb.append("dataset").append("\t");
+            sb.append("objectiveFunction").append("\t");
+            sb.append("distance").append("\t");
+            sb.append("algorithm").append("\n");
+            report.writeLine(sb.toString());
+
+            for (Result result : results) {
+                report.writeLine(result.toString());
+            }
             report.close();
 
         } catch (AttributeException | DatasetException ex) {

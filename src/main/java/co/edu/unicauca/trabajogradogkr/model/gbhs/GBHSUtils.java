@@ -40,15 +40,18 @@ import java.util.Random;
 public class GBHSUtils {
 
     public List<Agent> generateHarmonyMemory(int hms, int maxK, Dataset dataset,
-            Random rand, ObjectiveFunction f, Comparator comparador, Random random,
+            ObjectiveFunction f, Comparator comparador, Random random,
             Distance distance) throws DistanceException {
         List<Agent> harmonyMemory = new ArrayList<>();
         for (int i = 0; i < hms; i++) {
             Partition tmp = Partition.randPartition(dataset.getN(), random.nextInt(maxK), random);
+            if (tmp.getK() < 2) {
+                System.out.println("Lala");
+            }
             Agent atmp = new Agent(tmp);
             atmp.calcClusters(dataset);
             double fitness = f.calculate(atmp, dataset, distance);
-            System.out.println(fitness);
+//            System.out.println(fitness);
             if (Double.isNaN(fitness)) {
                 i--;
                 continue;
@@ -149,17 +152,23 @@ public class GBHSUtils {
             deviation += Math.pow(agent.getFitness() - mean, 2);
         }
         deviation /= (hms - 1);
+        deviation = Math.sqrt(deviation);
         return deviation <= 0.05 * mean;
     }
 
-    public void regenerateMemory(List<Agent> agentes, int maxK, int maxIt,
+    public List<Agent> regenerateMemory(List<Agent> agentes, int maxK, int maxIt,
             double po, double pKMeans,
             Dataset dataset, ObjectiveFunction f, AgentComparator comparator,
             Random random, Distance distance) throws DistanceException {
         int hms = agentes.size();
         KMeans kmeans = new KMeans();
 
-        for (int i = 2; i < hms; i++) {
+        List<Agent> ret = generateHarmonyMemory(hms - 2, maxK, dataset, f, comparator, random, distance);
+
+        ret.add(agentes.get(0));
+        ret.add(agentes.get(1));
+
+        /*for (int i = 2; i < hms; i++) {
             Partition tmp = Partition.randPartition(dataset.getN(), random.nextInt(maxK), random);
             Agent atmp = new Agent(tmp);
             if (random.nextDouble() <= po) {
@@ -169,19 +178,25 @@ public class GBHSUtils {
             atmp.setFitness(fitness);
             atmp.calcClusters(dataset);
             agentes.set(i, atmp);
-        }
-        Collections.sort(agentes, comparator);
+        }*/
+        
+        Collections.sort(ret, comparator);
+        return ret;
     }
 
     /**
      * Verifica si una solución es rentable.
      *
-     * @param a
+     * @param agent
      * @return
      */
     public boolean testSolution(Agent agent) {
 
         if (agent.getFitness() == Double.NEGATIVE_INFINITY || agent.getFitness() == Double.POSITIVE_INFINITY) {
+            return false;
+        }
+
+        if (agent.getP().getK() < 2) {
             return false;
         }
 

@@ -61,7 +61,7 @@ public class GBHSCentroids implements GBHS {
             GBHSUtils utils = new GBHSUtils();
             KMeans kmeans = new KMeans();
 
-            harmonyMemory = utils.generateHarmonyMemory(hms, maxK, dataset, random, f,
+            harmonyMemory = utils.generateHarmonyMemory(hms, maxK, dataset, f,
                     agentComparator, random, distance);
 
             curHms = harmonyMemory.size();
@@ -77,6 +77,8 @@ public class GBHSCentroids implements GBHS {
                 report.writeHarmonyMemory(harmonyMemory, "Optimized Harmony Memory");
             }
 
+            int regenerated = 0;
+
             for (int cIt = 0; cIt < maxImprovisations; cIt++) {
                 par = minPar + ((maxPar - minPar) / maxImprovisations) * cIt;
                 int k = utils.chooseK(maxK, hmcr, par, random, harmonyMemory);
@@ -84,23 +86,42 @@ public class GBHSCentroids implements GBHS {
                 newSolution.setClusters(new Cluster[k]);
 
                 for (int j = 0; j < k; j++) {
-                    double num = random.nextDouble();
-                    Cluster c;
-                    if (num <= hmcr) {
-                        int pos = random.nextInt(curHms);
-                        int nc = harmonyMemory.get(pos).getClusters().length;
-                        nc = random.nextInt(nc);
-                        c = harmonyMemory.get(pos).getClusters()[nc];
 
-                        //TODO: Modificación al par
-                        if (random.nextDouble() < par) {
-                            nc = harmonyMemory.get(0).getClusters().length;
+                    int repeats = 0;
+
+                    boolean repeat;
+                    Cluster c;
+
+                    do {
+                        repeat = false;
+                        double num = random.nextDouble();
+
+                        if (num <= hmcr) {
+                            int pos = random.nextInt(curHms);
+
+                            if (random.nextDouble() < par) {
+                                pos = 0;
+                            }
+
+                            int nc = harmonyMemory.get(pos).getClusters().length;
                             nc = random.nextInt(nc);
-                            c = harmonyMemory.get(0).getClusters()[nc];
+                            c = harmonyMemory.get(pos).getClusters()[nc];
+
+                        } else {
+                            c = Cluster.randCluster(dataset, random);
                         }
-                    } else {
-                        c = Cluster.randCluster(dataset, random);
-                    }
+
+                        for (int i = 0; i < j; i++) {
+                            double bcDistance = distance.distance(c.getCentroid(), newSolution.getClusters()[i].getCentroid());
+                            if (bcDistance <= 1e-10) {
+                                repeat = true;
+                                repeats++;
+                                break;
+                            }
+                        }
+
+                    } while (repeat == true && repeats < 25);
+
                     newSolution.getClusters()[j] = c;
                 }
 
@@ -117,7 +138,7 @@ public class GBHSCentroids implements GBHS {
                     cIt--;
                     continue;
                 }
-                
+
                 if (utils.repeatedSolution(newSolution, agentComparator, harmonyMemory)) {
                     repeated++;
                 } else {
@@ -132,15 +153,22 @@ public class GBHSCentroids implements GBHS {
                     Collections.sort(harmonyMemory, agentComparator);
 
                     if (utils.uniformMemory(harmonyMemory)) {
-                        utils.regenerateMemory(harmonyMemory, maxK,
+                        harmonyMemory = utils.regenerateMemory(harmonyMemory, maxK,
                                 maxImprovisations, pOptimize, 0.0, dataset, f,
                                 agentComparator, random, distance);
+                        regenerated++;
+                        curHms = harmonyMemory.size();
                     }
                 }
 
                 if (log) {
                     report.writeHarmonyMemory(harmonyMemory, "Harmony Memory iteration " + cIt);
                 }
+
+                if (regenerated > 10) {
+                    break;
+                }
+
             }
 
             if (log) {

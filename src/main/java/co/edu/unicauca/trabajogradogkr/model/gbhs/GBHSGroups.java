@@ -61,7 +61,7 @@ public class GBHSGroups implements GBHS {
             GBHSUtils utils = new GBHSUtils();
             KMeans kmeans = new KMeans();
 
-            harmonyMemory = utils.generateHarmonyMemory(hms, maxK, dataset, random, f,
+            harmonyMemory = utils.generateHarmonyMemory(hms, maxK, dataset, f,
                     agentComparator, random, distance);
 
             curHms = harmonyMemory.size();
@@ -76,6 +76,8 @@ public class GBHSGroups implements GBHS {
             if (log) {
                 report.writeHarmonyMemory(harmonyMemory, "Optimized Harmony Memory");
             }
+
+            int regenerated = 0;
 
             for (int cIt = 0; cIt < maxImprovisations; cIt++) {
                 par = minPar + ((maxPar - minPar) / maxImprovisations) * cIt;
@@ -117,8 +119,8 @@ public class GBHSGroups implements GBHS {
                 }
 
                 newSolution.setFitness(f.calculate(newSolution, dataset, distance));
-
                 newSolution.calcClusters(dataset);
+
                 if (!utils.testSolution(newSolution)) {
                     cIt--;
                     continue;
@@ -139,14 +141,20 @@ public class GBHSGroups implements GBHS {
                     Collections.sort(harmonyMemory, agentComparator);
 
                     if (utils.uniformMemory(harmonyMemory)) {
-                        utils.regenerateMemory(harmonyMemory, maxK,
+                        harmonyMemory = utils.regenerateMemory(harmonyMemory, maxK,
                                 maxImprovisations, pOptimize, 0.0, dataset, f,
                                 agentComparator, random, distance);
+                        regenerated++;
+                        curHms = harmonyMemory.size();
                     }
                 }
 
                 if (log) {
                     report.writeHarmonyMemory(harmonyMemory, "Harmony Memory iteration " + cIt);
+                }
+
+                if (regenerated > 10) {
+                    break;
                 }
             }
 

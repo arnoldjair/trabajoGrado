@@ -166,7 +166,7 @@ public class JsonParams {
 
         boolean ret = true;
 
-        ret = ret && minPar > 0;
+        ret = ret && minPar >= 0;
         ret = ret && maxPar > 0;
         ret = ret && hmcr > 0;
         ret = ret && po > 0;

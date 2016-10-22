@@ -205,4 +205,19 @@ public class Record {
         Record ret = new Record(-1, retData, this.attributes.clone());
         return ret;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < this.attributes.length; i++) {
+            if (this.attributes[i].getType() != Dataset.CLASS) {
+                String tmp = this.data[i].toString();
+                String replace = tmp.replace('.', ',');
+                sb.append(replace);
+                sb.append(";");
+            }
+        }
+        sb.append("\n");
+        return sb.toString();
+    }
 }
