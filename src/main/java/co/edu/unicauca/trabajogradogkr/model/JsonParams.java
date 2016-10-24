@@ -169,7 +169,7 @@ public class JsonParams {
         ret = ret && minPar >= 0;
         ret = ret && maxPar > 0;
         ret = ret && hmcr > 0;
-        ret = ret && po > 0;
+        ret = ret && po >= 0;
         ret = ret && hms > 0;
         ret = ret && nExp > 0;
         ret = ret && nIt > 0;
