@@ -25,11 +25,13 @@ package co.edu.unicauca.trabajogradogkr.model;
 public class KmeansParams {
 
     private int k;
-    private double percentajeStop;
+    private double percentageStop;
     private int maxIt;
     private int nExp;
     private String dataset;
     private String distance;
+    private String objectiveFunction;
+    private String algorithm;
 
     public int getK() {
         return k;
@@ -39,12 +41,12 @@ public class KmeansParams {
         this.k = k;
     }
 
-    public double getPercentajeStop() {
-        return percentajeStop;
+    public double getPercentageStop() {
+        return percentageStop;
     }
 
-    public void setPercentajeStop(double percentajeStop) {
-        this.percentajeStop = percentajeStop;
+    public void setPercentageStop(double percentageStop) {
+        this.percentageStop = percentageStop;
     }
 
     public int getMaxIt() {
@@ -77,6 +79,35 @@ public class KmeansParams {
 
     public void setDistance(String distance) {
         this.distance = distance;
+    }
+
+    public String getObjectiveFunction() {
+        return objectiveFunction;
+    }
+
+    public void setObjectiveFunction(String objectiveFunction) {
+        this.objectiveFunction = objectiveFunction;
+    }
+
+    public String getAlgorithm() {
+        return algorithm;
+    }
+
+    public void setAlgorithm(String algorithm) {
+        this.algorithm = algorithm;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(dataset).append("\t")
+                .append(distance).append("\t")
+                .append(objectiveFunction).append("\t")
+                .append(algorithm).append("\t")
+                .append(maxIt).append("\t")
+                .append(nExp).append("\t");
+
+        return sb.toString();
     }
 
 }

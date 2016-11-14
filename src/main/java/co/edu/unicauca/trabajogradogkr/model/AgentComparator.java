@@ -30,6 +30,12 @@ public class AgentComparator implements Comparator<Agent> {
         this.minimizes = minimizes;
     }
 
+    /**
+     * Compara dos agentes
+     * @param o1
+     * @param o2
+     * @return 0 si son iguales. -1 si o1 es menor que o2 o lo contrario.
+     */
     @Override
     public int compare(Agent o1, Agent o2) {
         if (o1.getFitness() == o2.getFitness()) {

@@ -27,7 +27,7 @@ import java.util.List;
  *
  * @author Arnold Jair Jimenez Vargas <ajjimenez@unicauca.edu.co>
  */
-public class Agent {
+public class Agent implements Cloneable{
 
     private Partition p;
     private double fitness;
@@ -134,5 +134,20 @@ public class Agent {
             sb.append(cluster.toString()).append("\n");
         }
         return sb.toString();
+    }
+
+    /**
+     *
+     * @return @throws CloneNotSupportedException
+     */
+    @Override
+    public Agent clone() throws CloneNotSupportedException {
+        // ?
+        Agent ret = (Agent) super.clone();
+        Partition tmpP = new Partition(p.getRgs().clone(),
+                p.getN(), p.getK());
+        ret.setP(tmpP);
+        ret.fitness = this.fitness;
+        return ret;
     }
 }

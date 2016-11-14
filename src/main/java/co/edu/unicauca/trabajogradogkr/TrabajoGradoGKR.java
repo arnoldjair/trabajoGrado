@@ -24,12 +24,16 @@ import co.edu.unicauca.trabajogradogkr.model.gbhs.GBHSGroups;
 import co.edu.unicauca.trabajogradogkr.model.gbhs.GBHSRecords;
 import co.edu.unicauca.trabajogradogkr.model.gbhs.GBHSTuner;
 import co.edu.unicauca.trabajogradogkr.model.gbhs.Tuner;
+import co.edu.unicauca.trabajogradogkr.model.kmeans.BasicKMeans;
 import co.edu.unicauca.trabajogradogkr.model.kmeans.BasicKMeansImpl;
+import co.edu.unicauca.trabajogradogkr.model.kmeans.OBKMeans;
+import co.edu.unicauca.trabajogradogkr.model.kmeans.OBKMeansImpl;
 import co.edu.unicauca.trabajogradogkr.model.objectivefunction.AIC;
 import co.edu.unicauca.trabajogradogkr.model.objectivefunction.BIC;
 import co.edu.unicauca.trabajogradogkr.model.objectivefunction.BICS;
 import co.edu.unicauca.trabajogradogkr.model.objectivefunction.CHI;
 import co.edu.unicauca.trabajogradogkr.model.objectivefunction.ObjectiveFunction;
+import co.edu.unicauca.trabajogradogkr.model.objectivefunction.ObjectiveFunctionFactory;
 import co.edu.unicauca.trabajogradogkr.model.rgs.Partition;
 import co.edu.unicauca.trabajogradogkr.model.task.Task;
 import co.edu.unicauca.trabajogradogkr.model.task.TaskBuilder;
@@ -224,28 +228,45 @@ public class TrabajoGradoGKR {
     }
 
     public static void testKMeans(KmeansParams params) throws FileNotFoundException {
+        long milis = System.currentTimeMillis();
         Random random = new SecureRandom();
-        BasicKMeansImpl kmeans = new BasicKMeansImpl();
+        //BasicKMeansImpl kmeans = new BasicKMeansImpl();
         Dataset dataset = Dataset.fromJson(params.getDataset());
         Distance distance = DistanceFactory.getDistance(params.getDistance());
         SimpleDateFormat dFormat = new SimpleDateFormat("dd-MM-yyyy_HH:mm:ss");
+        ObjectiveFunction objectiveFunction = ObjectiveFunctionFactory.getObjectiveFuncion(params.getObjectiveFunction());
 
-        Report report = new Report("Kmeans_" + params.getDataset() + "_" + dFormat.format(new Date()) + ".json");
+        Report report = new Report("Kmeans_" + params.getDataset() + ".csv", true);
+        double tErr = 0;
 
         for (int i = 0; i < params.getnExp(); i++) {
             Partition p = Partition.randPartition(dataset.getN(), params.getK(), random);
             Agent a = new Agent();
             a.setP(p);
-            Agent sol = kmeans.process(a, dataset, distance, params.getPercentajeStop(), params.getMaxIt());
+            Agent sol;
+            if (params.getAlgorithm().compareTo("basic") == 0) {
+                BasicKMeans kmeans = new BasicKMeansImpl();
+                sol = kmeans.process(a, dataset, distance, params.getPercentageStop(), params.getMaxIt());
+            } else {
+                OBKMeans kmeans = new OBKMeansImpl();
+                sol = kmeans.process(a, dataset, distance, params.getPercentageStop(), params.getMaxIt(), objectiveFunction);
+            }
             ContingencyMatrix m = new ContingencyMatrix(sol, dataset);
             ECVM ecvm = new ECVM(m);
             int icc = ecvm.getIcc();
             int iic = dataset.getN() - icc;
             double er = ((double) iic / dataset.getN()) * 100;
-            report.writeLine(Double.toString(er));
-            report.writeLine("\n");
+            //report.writeLine(Double.toString(er));
+            //report.writeLine("\n");
+            tErr += er;
         }
 
+        tErr /= params.getnExp();
+        milis = System.currentTimeMillis() - milis;
+        report.writeLine(params.toString());
+        report.writeLine(tErr+"\t");
+        report.writeLine(Double.toString((double) milis / 1000));
+        report.writeLine("\n");
         report.close();
     }
 
