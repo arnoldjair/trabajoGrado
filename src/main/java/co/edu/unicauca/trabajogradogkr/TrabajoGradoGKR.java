@@ -24,7 +24,7 @@ import co.edu.unicauca.trabajogradogkr.model.gbhs.GBHSGroups;
 import co.edu.unicauca.trabajogradogkr.model.gbhs.GBHSRecords;
 import co.edu.unicauca.trabajogradogkr.model.gbhs.GBHSTuner;
 import co.edu.unicauca.trabajogradogkr.model.gbhs.Tuner;
-import co.edu.unicauca.trabajogradogkr.model.kmeans.KMeans;
+import co.edu.unicauca.trabajogradogkr.model.kmeans.BasicKMeansImpl;
 import co.edu.unicauca.trabajogradogkr.model.objectivefunction.AIC;
 import co.edu.unicauca.trabajogradogkr.model.objectivefunction.BIC;
 import co.edu.unicauca.trabajogradogkr.model.objectivefunction.BICS;
@@ -225,7 +225,7 @@ public class TrabajoGradoGKR {
 
     public static void testKMeans(KmeansParams params) throws FileNotFoundException {
         Random random = new SecureRandom();
-        KMeans kmeans = new KMeans();
+        BasicKMeansImpl kmeans = new BasicKMeansImpl();
         Dataset dataset = Dataset.fromJson(params.getDataset());
         Distance distance = DistanceFactory.getDistance(params.getDistance());
         SimpleDateFormat dFormat = new SimpleDateFormat("dd-MM-yyyy_HH:mm:ss");

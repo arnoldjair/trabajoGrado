@@ -24,7 +24,7 @@ import co.edu.unicauca.trabajogradogkr.model.Agent;
 import co.edu.unicauca.trabajogradogkr.model.AgentComparator;
 import co.edu.unicauca.trabajogradogkr.model.Cluster;
 import co.edu.unicauca.trabajogradogkr.model.Dataset;
-import co.edu.unicauca.trabajogradogkr.model.kmeans.KMeans;
+import co.edu.unicauca.trabajogradogkr.model.kmeans.BasicKMeansImpl;
 import co.edu.unicauca.trabajogradogkr.model.objectivefunction.ObjectiveFunction;
 import co.edu.unicauca.trabajogradogkr.model.rgs.Partition;
 import java.util.ArrayList;
@@ -76,7 +76,7 @@ public class GBHSUtils {
             Random rand, Dataset d, ObjectiveFunction f,
             Comparator comparador, List<Agent> harmonyMemory, Distance distance)
             throws DistanceException {
-        KMeans kmeans = new KMeans();
+        BasicKMeansImpl kmeans = new BasicKMeansImpl();
 
         for (int i = 0; i < harmonyMemory.size(); i++) {
             if (rand.nextDouble() <= p) {
@@ -161,7 +161,7 @@ public class GBHSUtils {
             Dataset dataset, ObjectiveFunction f, AgentComparator comparator,
             Random random, Distance distance) throws DistanceException {
         int hms = agentes.size();
-        KMeans kmeans = new KMeans();
+        BasicKMeansImpl kmeans = new BasicKMeansImpl();
 
         List<Agent> ret = generateHarmonyMemory(hms - 2, maxK, dataset, f, comparator, random, distance);
 

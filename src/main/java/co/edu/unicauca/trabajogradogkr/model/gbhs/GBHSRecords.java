@@ -23,7 +23,7 @@ import co.edu.unicauca.trabajogradogkr.exception.DistanceException;
 import co.edu.unicauca.trabajogradogkr.model.Agent;
 import co.edu.unicauca.trabajogradogkr.model.AgentComparator;
 import co.edu.unicauca.trabajogradogkr.model.Dataset;
-import co.edu.unicauca.trabajogradogkr.model.kmeans.KMeans;
+import co.edu.unicauca.trabajogradogkr.model.kmeans.BasicKMeansImpl;
 import co.edu.unicauca.trabajogradogkr.model.objectivefunction.ObjectiveFunction;
 import co.edu.unicauca.trabajogradogkr.model.rgs.Partition;
 import co.edu.unicauca.trabajogradogkr.service.Config;
@@ -60,7 +60,7 @@ public class GBHSRecords implements GBHS {
             List<Agent> harmonyMemory;
             double par;
             GBHSUtils utils = new GBHSUtils();
-            KMeans kmeans = new KMeans();
+            BasicKMeansImpl kmeans = new BasicKMeansImpl();
 
             harmonyMemory = utils.generateHarmonyMemory(hms, maxK, dataset, f,
                     agentComparator, random, distance);

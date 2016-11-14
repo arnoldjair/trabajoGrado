@@ -29,7 +29,7 @@ import co.edu.unicauca.trabajogradogkr.model.Record;
  *
  * @author Arnold Jair Jimenez Vargas <ajjimenez@unicauca.edu.co>
  */
-public class KMeans {
+public class BasicKMeansImpl implements BasicKMeans{
 
     public Agent process(Agent agent, Dataset dataset, Distance distance,
             double percentageStop, int maxIt) {
