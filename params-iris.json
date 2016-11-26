@@ -10,7 +10,7 @@
   "maxK": 10,
   "maxKMeans": 100,
   "threads": 2,
-  "datasets": ["iris"],
+  "datasets": ["wine"],
   "algorithms": ["records"],
   "distances": ["euclidean"],
   "objectiveFunctions": ["aic"]

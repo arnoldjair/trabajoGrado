@@ -3,6 +3,8 @@
   "maxIt": 100,
   "nExp": 100,
   "percentageStop": 0.0,
-  "dataset": "iris",
-  "distance": "euclidean"
+  "dataset": "wine",
+  "distance": "euclidean",
+  "objectiveFunction": "chi",
+  "algorithm": "objectiveFunction"
 }
