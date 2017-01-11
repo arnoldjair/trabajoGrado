@@ -15,15 +15,12 @@ import co.edu.unicauca.trabajogradogkr.model.ECVM;
 import co.edu.unicauca.trabajogradogkr.model.Experimenter;
 import co.edu.unicauca.trabajogradogkr.model.JsonParams;
 import co.edu.unicauca.trabajogradogkr.model.KmeansParams;
-import co.edu.unicauca.trabajogradogkr.model.Params;
 import co.edu.unicauca.trabajogradogkr.model.Result;
 import co.edu.unicauca.trabajogradogkr.model.distance.DistanceFactory;
 import co.edu.unicauca.trabajogradogkr.model.gbhs.GBHS;
 import co.edu.unicauca.trabajogradogkr.model.gbhs.GBHSCentroids;
 import co.edu.unicauca.trabajogradogkr.model.gbhs.GBHSGroups;
 import co.edu.unicauca.trabajogradogkr.model.gbhs.GBHSRecords;
-import co.edu.unicauca.trabajogradogkr.model.gbhs.GBHSTuner;
-import co.edu.unicauca.trabajogradogkr.model.gbhs.Tuner;
 import co.edu.unicauca.trabajogradogkr.model.kmeans.BasicKMeans;
 import co.edu.unicauca.trabajogradogkr.model.kmeans.BasicKMeansImpl;
 import co.edu.unicauca.trabajogradogkr.model.kmeans.OBKMeans;
@@ -38,15 +35,15 @@ import co.edu.unicauca.trabajogradogkr.model.rgs.Partition;
 import co.edu.unicauca.trabajogradogkr.model.task.Task;
 import co.edu.unicauca.trabajogradogkr.model.task.TaskBuilder;
 import co.edu.unicauca.trabajogradogkr.service.Config;
+import co.edu.unicauca.trabajogradogkr.service.DatasetServiceImpl;
+import co.edu.unicauca.trabajogradogkr.service.interfaces.DatasetService;
 import co.edu.unicauca.trabajogradogkr.utils.Report;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import gnu.getopt.Getopt;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.lang.reflect.Type;
 import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
@@ -81,11 +78,11 @@ public class TrabajoGradoGKR {
         Locale.setDefault(new Locale("es", "CO"));
 
         if (args.length == 0) {
-            System.out.println("Uso: java -jar <Nombre archivo jar> -d <ruta al dataset> etc");
+            System.out.println("Argumentos");
             return;
         }
 
-        Getopt go = new Getopt("Trabajo Grado", args, "jk:p:r:W");
+        Getopt go = new Getopt("Trabajo Grado", args, "jk:p:r:t:W");
         int c;
         int k = 0;
         boolean web = false;
@@ -97,51 +94,23 @@ public class TrabajoGradoGKR {
         GsonBuilder builder = new GsonBuilder();
         Gson gson = builder.create();
 
+        DatasetService datasetService = new DatasetServiceImpl();
+
+        Config.getInstance().setConfig("datasetsPath", "/home/equipo/Documentos/TrabajoGradoRGS/Codigo/TrabajoGradoGKR/Código/Datasets/json");
+
         while ((c = go.getopt()) != -1) {
             switch (c) {
 
-                /*case 'c': //HMCR
-                    hmcr = Double.parseDouble(go.getOptarg());
-                    break;
-                case 'd': //Dataset
-                    rDataset = go.getOptarg();
-                    break;
-                case 'D': //Distance
-                    distanceName = go.getOptarg();
-                    break;
-                case 'e': //Experimentar
-                    e = true;
-                    nExp = Integer.parseInt(go.getOptarg());
-                    break;
-                case 'g': //Experimentar gbhs
-                    g = true;
-                    algo = Integer.parseInt(go.getOptarg());
-                    break;
-                case 'i': //Iteraciones
-                    it = Integer.parseInt(go.getOptarg());
-                    break;
-                 */
                 case 'k': //KMeans
                     kmeansParams = gson.fromJson(new FileReader(go.getOptarg()), KmeansParams.class);
                     kmeans = true;
                     break;
-                /*
-                case 'm': //MinPar
-                    minPar = Double.parseDouble(go.getOptarg());
-                    break;
-                case 'M': //MaxPar
-                    maxPar = Double.parseDouble(go.getOptarg());
-                    break;
-                case 'o': //Porcentaje optimizar
-                    po = Double.parseDouble(go.getOptarg());
-                    break;
-                 */
                 case 'j':
-                    String[] datasets = new String[]{"iris", "glass", "sonar", "wdbc", "wine"};
-                    for (String d : datasets) {
-                        Dataset dataset = Dataset.fromJson(d);
+                    List<Dataset> datasets = datasetService.getDatasets();
+                    for (Dataset dataset : datasets) {
                         dataset.toFile();
                     }
+
                     break;
                 case 'p':
 
@@ -154,18 +123,10 @@ public class TrabajoGradoGKR {
                     pathResults = go.getOptarg();
                     fromR = true;
                     break;
-                /*
-                case 's': //HMS
-                    hms = Integer.parseInt(go.getOptarg());
+                case 't':
+                    //TuneUP
+
                     break;
-                case 'S': //Seed
-                    seed = Long.parseLong(go.getOptarg());
-                    break;
-                case 't': //Afinar
-                    tuneUp = true;
-                    rDatasets = go.getOptarg();
-                    break;
-                 */
                 case 'W': //Web
                     web = true;
                     break;
@@ -179,12 +140,13 @@ public class TrabajoGradoGKR {
             SpringApplication.run(TrabajoGradoGKR.class, args);
         } else {
 
+            // TODO: Toca volver a hacer esto
             if (fromR) {
                 double promErr = 0;
                 List<RKmeansOutput> outputs = RUtils.read(pathResults);
                 List<Agent> agents = new ArrayList<>();
                 // TODO: Se asume que el archivo no está vacío.
-                Dataset dataset = Dataset.fromJson(outputs.get(0).getName());
+                Dataset dataset = datasetService.fromJson(outputs.get(0).getName());
                 for (RKmeansOutput rKmeansOutput : outputs) {
                     int[] rgs = new int[rKmeansOutput.getCluster().size()];
 
@@ -230,8 +192,11 @@ public class TrabajoGradoGKR {
     public static void testKMeans(KmeansParams params) throws FileNotFoundException {
         long milis = System.currentTimeMillis();
         Random random = new SecureRandom();
+        DatasetService datasetService = new DatasetServiceImpl();
         //BasicKMeansImpl kmeans = new BasicKMeansImpl();
-        Dataset dataset = Dataset.fromJson(params.getDataset());
+        List<Dataset> datasets = datasetService.getDatasets();
+        Dataset dataset = datasetService.byName(params.getDataset());
+        //Dataset dataset = Dataset.fromJson(params.getDataset());
         Distance distance = DistanceFactory.getDistance(params.getDistance());
         SimpleDateFormat dFormat = new SimpleDateFormat("dd-MM-yyyy_HH:mm:ss");
         ObjectiveFunction objectiveFunction = ObjectiveFunctionFactory.getObjectiveFuncion(params.getObjectiveFunction());
@@ -264,7 +229,7 @@ public class TrabajoGradoGKR {
         tErr /= params.getnExp();
         milis = System.currentTimeMillis() - milis;
         report.writeLine(params.toString());
-        report.writeLine(tErr+"\t");
+        report.writeLine(tErr + "\t");
         report.writeLine(Double.toString((double) milis / 1000));
         report.writeLine("\n");
         report.close();
@@ -438,6 +403,7 @@ public class TrabajoGradoGKR {
 
     }
 
+    /*
     public static void tuneUp(Distance distance, String pDatasets, int it) throws Exception {
         long milis = System.currentTimeMillis();
         Tuner tuner;
@@ -525,4 +491,5 @@ public class TrabajoGradoGKR {
         System.out.println(milis / 1000 + " Segundos");
     }
 
+     */
 }

@@ -1,38 +1,17 @@
 package co.edu.unicauca.trabajogradogkr.model;
 
-import co.edu.unicauca.trabajogradogkr.exception.AttributeException;
-import co.edu.unicauca.trabajogradogkr.exception.DatasetException;
 import co.edu.unicauca.trabajogradogkr.utils.Report;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.springframework.web.multipart.MultipartFile;
 
 /**
  *
  * @author Arnold Jair Jimenez Vargas ajjimenez@unicauca.edu.co
  */
 public class Dataset {
-
-    public static final int DOUBLE = 1;
-    public static final int STRING = 2;
-    public static final int CLASS = 3;
 
     public static final String datasetsPath = "Datasets";
 
@@ -188,7 +167,7 @@ public class Dataset {
         }
     }
 
-    public synchronized void fromFile(MultipartFile multipartFile) throws IOException, DatasetException, AttributeException {
+    /*public synchronized void fromFile(MultipartFile multipartFile) throws IOException, DatasetException, AttributeException {
 
         BufferedInputStream in = null;
         try {
@@ -205,15 +184,15 @@ public class Dataset {
                 Logger.getLogger(Dataset.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-    }
+    }*/
 
-    public synchronized void fromFile(File file) throws IOException {
+    /*public synchronized void fromFile(File file) throws IOException {
         try {
             fromFile(new FileInputStream(file));
         } catch (FileNotFoundException | DatasetException | AttributeException ex) {
             Logger.getLogger(Dataset.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }
+    }*/
 
     /**
      *
@@ -222,7 +201,7 @@ public class Dataset {
      * @throws co.edu.unicauca.trabajogradogkr.exception.AttributeException
      * @throws java.io.IOException
      */
-    public synchronized void fromFile(InputStream in) throws DatasetException, AttributeException, IOException {
+    /*public synchronized void fromFile(InputStream in) throws DatasetException, AttributeException, IOException {
         //BufferedReader read;
         String line;
         String[] split;
@@ -328,7 +307,7 @@ public class Dataset {
         //Por sospecha
         normalized = false;
 
-    }
+    }*/
 
     public synchronized String toGson() {
         String ret = "";
@@ -340,6 +319,7 @@ public class Dataset {
         return ret;
     }
 
+    /*
     public synchronized static Dataset fromJson(String name) throws FileNotFoundException {
         String path = "/home/equipo/Documentos/TrabajoGradoRGS/Datasets" + "/json/" + name + ".json";
         BufferedReader reader = new BufferedReader(new FileReader(path));
@@ -428,8 +408,8 @@ public class Dataset {
 
         return ret;
     }
-
-    public synchronized void normalize() {
+     */
+ /*public synchronized void normalize() {
         int rows = n;
         int cols = this.attributes.length;
         Object tempD[];
@@ -454,9 +434,8 @@ public class Dataset {
             }
         }
         this.normalized = true;
-    }
-
-    public synchronized static int getAttrType(String t) {
+    }*/
+ /*public synchronized static int getAttrType(String t) {
         switch (t) {
             case "class":
                 return Dataset.CLASS;
@@ -478,8 +457,7 @@ public class Dataset {
                 return "string";
         }
         return "?";
-    }
-
+    }*/
     @Override
     public String toString() {
         return this.name;
@@ -504,38 +482,6 @@ public class Dataset {
 
         public void setType(String type) {
             this.type = type;
-        }
-
-    }
-
-    public static class JSonDataset {
-
-        private List<JsonAttribute> attributes;
-        private List<List<Object>> data;
-        private String name;
-
-        public List<JsonAttribute> getAttributes() {
-            return attributes;
-        }
-
-        public void setAttributes(List<JsonAttribute> attributes) {
-            this.attributes = attributes;
-        }
-
-        public List<List<Object>> getData() {
-            return data;
-        }
-
-        public void setData(List<List<Object>> data) {
-            this.data = data;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
         }
 
     }

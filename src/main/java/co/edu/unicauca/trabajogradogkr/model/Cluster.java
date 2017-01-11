@@ -18,6 +18,7 @@
  */
 package co.edu.unicauca.trabajogradogkr.model;
 
+import co.edu.unicauca.trabajogradogkr.service.interfaces.DatasetService;
 import java.util.Random;
 
 /**
@@ -92,7 +93,7 @@ public class Cluster {
         for (Record record : records) {
             Object[] tmp = record.getData();
             for (int i = 0; i < attributes.length; i++) {
-                if (attributes[i].getType() == Dataset.DOUBLE) {
+                if (attributes[i].getType() == DatasetService.DOUBLE) {
                     centroidData[i] = (double) centroidData[i] + (double) tmp[i];
                 }
             }
@@ -135,7 +136,7 @@ public class Cluster {
         Object[] tmp = new Object[m];
 
         for (int i = 0; i < m; i++) {
-            if (dataset.getAttributes()[i].getType() == Dataset.DOUBLE) {
+            if (dataset.getAttributes()[i].getType() == DatasetService.DOUBLE) {
                 tmp[i] = random.nextDouble();
             } else {
                 tmp[i] = 0;

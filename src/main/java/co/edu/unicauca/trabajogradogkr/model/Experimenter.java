@@ -25,11 +25,11 @@ import co.edu.unicauca.trabajogradogkr.model.gbhs.GBHSFactory;
 import co.edu.unicauca.trabajogradogkr.model.objectivefunction.ObjectiveFunction;
 import co.edu.unicauca.trabajogradogkr.model.objectivefunction.ObjectiveFunctionFactory;
 import co.edu.unicauca.trabajogradogkr.model.task.Task;
+import co.edu.unicauca.trabajogradogkr.service.DatasetServiceImpl;
+import co.edu.unicauca.trabajogradogkr.service.interfaces.DatasetService;
 import java.io.FileNotFoundException;
 import java.util.Random;
 import java.util.concurrent.Callable;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
 
 /**
  *
@@ -56,6 +56,7 @@ public class Experimenter implements Callable<Result> {
     private int[] iic;
     private double[] er;
     private Distance distance;
+    private DatasetService datasetService;
 
     /**
      *
@@ -102,9 +103,11 @@ public class Experimenter implements Callable<Result> {
         this.iic = new int[nExp];
         this.er = new double[nExp];
         this.distance = distance;
+        this.datasetService = new DatasetServiceImpl();
     }
 
     public Experimenter(Task task) throws FileNotFoundException {
+        this.datasetService = new DatasetServiceImpl();
         this.hms = task.getHms();
         this.maxImprovisations = task.getnIt();
         this.maxK = task.getMaxK();
@@ -114,7 +117,7 @@ public class Experimenter implements Callable<Result> {
         this.maxPar = task.getMaxPar();
         this.hmcr = task.getHmcr();
         this.pOptimize = task.getPo();
-        this.dataset = Dataset.fromJson(task.getDataset());
+        this.dataset = this.datasetService.byName(task.getDataset());
         this.f = ObjectiveFunctionFactory.getObjectiveFuncion(task.getObjectiveFunction());
         if (task.getSeed() != 0) {
             this.random = new Random(task.getSeed());

@@ -18,6 +18,8 @@
  */
 package co.edu.unicauca.trabajogradogkr.model;
 
+import co.edu.unicauca.trabajogradogkr.service.interfaces.DatasetService;
+
 /**
  *
  * @author Arnold Jair Jimenez Vargas <ajjimenez@unicauca.edu.co>
@@ -66,7 +68,7 @@ public class Record {
         Object[] data2 = record.getData();
         Object[] dataRet = new Object[data.length];
         for (int i = 0; i < attributes.length; i++) {
-            if (attributes[i].getType() == Dataset.DOUBLE) {
+            if (attributes[i].getType() == DatasetService.DOUBLE) {
                 dataRet[i] = (Double) data1[i] + (Double) data2[i];
             } else {
                 dataRet[i] = 0;
@@ -81,7 +83,7 @@ public class Record {
         Object[] data2 = record.getData();
         Object[] dataRet = new Object[data.length];
         for (int i = 0; i < attributes.length; i++) {
-            if (attributes[i].getType() == Dataset.DOUBLE) {
+            if (attributes[i].getType() == DatasetService.DOUBLE) {
                 dataRet[i] = (double) data1[i] - (double) data2[i];
             } else {
                 dataRet[i] = 0;
@@ -94,7 +96,7 @@ public class Record {
     public Record abs() {
         Object[] dataRet = new Object[data.length];
         for (int i = 0; i < attributes.length; i++) {
-            if (attributes[i].getType() == Dataset.DOUBLE) {
+            if (attributes[i].getType() == DatasetService.DOUBLE) {
                 dataRet[i] = Math.abs((double) data[i]);
             }
         }
@@ -105,7 +107,7 @@ public class Record {
     public Record pow(double val) {
         Object[] dataRet = new Object[data.length];
         for (int i = 0; i < attributes.length; i++) {
-            if (attributes[i].getType() == Dataset.DOUBLE) {
+            if (attributes[i].getType() == DatasetService.DOUBLE) {
                 dataRet[i] = Math.pow((double) data[i], val);
             } else {
                 dataRet[i] = 0;
@@ -118,7 +120,7 @@ public class Record {
     public Record divide(double val) {
         Object[] dataRet = new Object[data.length];
         for (int i = 0; i < attributes.length; i++) {
-            if (attributes[i].getType() == Dataset.DOUBLE) {
+            if (attributes[i].getType() == DatasetService.DOUBLE) {
                 dataRet[i] = (double) data[i] / val;
             } else {
                 dataRet[i] = 0;
@@ -131,7 +133,7 @@ public class Record {
     public Record multiply(double val) {
         Object[] dataRet = new Object[data.length];
         for (int i = 0; i < attributes.length; i++) {
-            if (attributes[i].getType() == Dataset.DOUBLE) {
+            if (attributes[i].getType() == DatasetService.DOUBLE) {
                 dataRet[i] = (double) data[i] * val;
             } else {
                 dataRet[i] = 0;
@@ -144,7 +146,7 @@ public class Record {
     public double sumValues() {
         double ret = 0;
         for (int i = 0; i < attributes.length; i++) {
-            if (attributes[i].getType() == Dataset.DOUBLE) {
+            if (attributes[i].getType() == DatasetService.DOUBLE) {
                 ret += (double) data[i];
             }
         }
@@ -155,7 +157,7 @@ public class Record {
     public double multValues() {
         double ret = 1;
         for (int i = 0; i < attributes.length; i++) {
-            if (attributes[i].getType() == Dataset.DOUBLE) {
+            if (attributes[i].getType() == DatasetService.DOUBLE) {
                 ret *= (double) data[i];
             }
         }
@@ -166,7 +168,7 @@ public class Record {
     public double euclidianNorm() {
         double ret = 0;
         for (int i = 0; i < this.attributes.length; i++) {
-            if (this.attributes[i].getType() == Dataset.DOUBLE) {
+            if (this.attributes[i].getType() == DatasetService.DOUBLE) {
                 ret += Math.pow((Double) this.data[i], 2);
             }
         }
@@ -184,7 +186,7 @@ public class Record {
         productSigma = sigma.multValues();
 
         for (int i = 0; i < this.attributes.length; i++) {
-            if (this.attributes[i].getType() == Dataset.DOUBLE) {
+            if (this.attributes[i].getType() == DatasetService.DOUBLE) {
                 tmpData[i] = (Double) tmpData[i] / (Double) sigma.getData()[i];
             } else {
                 tmpData[i] = 0;
@@ -210,7 +212,7 @@ public class Record {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < this.attributes.length; i++) {
-            if (this.attributes[i].getType() != Dataset.CLASS) {
+            if (this.attributes[i].getType() != DatasetService.CLASS) {
                 String tmp = this.data[i].toString();
                 String replace = tmp.replace('.', ',');
                 sb.append(replace);
