@@ -4,14 +4,15 @@
   "hmcr": 0.95,
   "hms": 25,
   "nExp": 10,
-  "po": 0,
+  "po": 1,
   "seed": 10,
   "nIt": 1000,
   "maxK": 10,
   "maxKMeans": 20,
   "threads": 4,
-  "datasets": ["iris", "glass", "sonar", "wine", "wdbc"],
+  "datasets": ["iris"],
   "algorithms": ["records", "centroids", "groups"],
   "distances": ["euclidean", "manhattan"],
-  "objectiveFunctions": ["aic", "chi"]
+  "objectiveFunctions": ["aic", "chi"],
+  "datasetsPath": "/home/equipo/Documentos/TrabajoGradoRGS/Codigo/TrabajoGradoGKR/Código/Datasets/json"
 }

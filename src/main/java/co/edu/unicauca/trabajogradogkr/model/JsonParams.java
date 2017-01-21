@@ -37,6 +37,7 @@ public class JsonParams {
     private int maxKMeans;
     private int threads;
     private long seed;
+    private String datasetsPath;
     private List<String> datasets;
     private List<String> objectiveFunctions;
     private List<String> distances;
@@ -130,6 +131,14 @@ public class JsonParams {
         this.seed = seed;
     }
 
+    public String getDatasetsPath() {
+        return datasetsPath;
+    }
+
+    public void setDatasetsPath(String datasetsPath) {
+        this.datasetsPath = datasetsPath;
+    }
+
     public List<String> getDatasets() {
         return datasets;
     }
@@ -162,7 +171,7 @@ public class JsonParams {
         this.algorithms = algorithms;
     }
 
-    public boolean verify() {
+    public boolean verify() throws Exception {
 
         boolean ret = true;
 
@@ -180,6 +189,11 @@ public class JsonParams {
         ret = ret && objectiveFunctions.size() > 0;
         ret = ret && distances.size() > 0;
         ret = ret && algorithms.size() > 0;
+
+        if (datasetsPath == null || datasetsPath.isEmpty()) {
+            throw new Exception("Falta la ruta a los datasets");
+        }
+
         return ret;
     }
 }

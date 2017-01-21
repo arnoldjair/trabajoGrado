@@ -96,7 +96,7 @@ public class TrabajoGradoGKR {
 
         DatasetService datasetService = new DatasetServiceImpl();
 
-        Config.getInstance().setConfig("datasetsPath", "/home/equipo/Documentos/TrabajoGradoRGS/Codigo/TrabajoGradoGKR/Código/Datasets/json");
+        //Config.getInstance().setConfig("datasetsPath", "/home/equipo/Documentos/TrabajoGradoRGS/Codigo/TrabajoGradoGKR/Código/Datasets/json");
 
         while ((c = go.getopt()) != -1) {
             switch (c) {
@@ -118,6 +118,7 @@ public class TrabajoGradoGKR {
                     if (!params.verify()) {
                         throw new Exception("Error en los parámetros");
                     }
+                    Config.getInstance().setConfig("datasetsPath", params.getDatasetsPath());
                     break;
                 case 'r':
                     pathResults = go.getOptarg();
