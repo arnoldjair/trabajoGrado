@@ -18,15 +18,21 @@
  */
 package co.edu.unicauca.trabajogradogkr.model.gbhs;
 
-import co.edu.unicauca.trabajogradogkr.model.Params;
+import co.edu.unicauca.trabajogradogkr.model.JsonParams;
+import co.edu.unicauca.trabajogradogkr.model.task.Task;
+import java.util.List;
 import java.util.concurrent.Callable;
 
 /**
  *
  * @author Arnold Jair Jimenez Vargas <ajjimenez@unicauca.edu.co>
  */
-public interface Tuner extends Callable<Params> {
+public interface Tuner extends Callable<JsonParams> {
 
-    public Params tuneUp();
+    public void setTasks(List<Task> tasks);
+
+    public void setParams(JsonParams params);
+
+    public JsonParams tuneUp();
 
 }

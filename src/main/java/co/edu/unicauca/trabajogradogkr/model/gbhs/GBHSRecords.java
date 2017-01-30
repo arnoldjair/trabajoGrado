@@ -95,6 +95,7 @@ public class GBHSRecords implements GBHS {
 
                         if (random.nextDouble() < par) {
                             rgs[i] = harmonyMemory.get(pos).getP().getRgs()[i];
+                            //rgs[i] = harmonyMemory.get(pos).getP().getRgs()[random.nextInt(curHms)];
                         }
                     } else {
                         rgs[i] = random.nextInt(k);

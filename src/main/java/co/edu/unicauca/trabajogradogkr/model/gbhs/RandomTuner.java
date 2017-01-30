@@ -18,9 +18,14 @@
  */
 package co.edu.unicauca.trabajogradogkr.model.gbhs;
 
-import co.edu.unicauca.trabajogradogkr.model.Params;
-import java.util.ArrayList;
+import co.edu.unicauca.trabajogradogkr.model.Experimenter;
+import co.edu.unicauca.trabajogradogkr.model.JsonParams;
+import co.edu.unicauca.trabajogradogkr.model.Result;
+import co.edu.unicauca.trabajogradogkr.model.task.Task;
+import java.io.FileNotFoundException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -28,18 +33,47 @@ import java.util.List;
  */
 public class RandomTuner implements Tuner {
 
+    private List<Task> tasks;
+    private JsonParams jsonParams;
+
     @Override
-    public Params tuneUp() {
-        List<Params> ret = new ArrayList<>();
-        
-        
-        
-        return ret.get(0);
+    public JsonParams tuneUp() {
+
+        if (this.tasks == null) {
+            return null;
+        }
+
+        double err = 0;
+
+        for (Task task : tasks) {
+            try {
+                Experimenter exp = new Experimenter(task);
+                Result result = exp.experiment();
+                result.calcAverages();
+                err += result.getAverageEr();
+            } catch (FileNotFoundException ex) {
+                Logger.getLogger(RandomTuner.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+        err = err / tasks.size();
+        this.jsonParams.setEr(err);
+        return this.jsonParams;
     }
 
     @Override
-    public Params call() throws Exception {
+    public JsonParams call() throws Exception {
         return this.tuneUp();
+    }
+
+    @Override
+    public void setTasks(List<Task> tasks) {
+        this.tasks = tasks;
+    }
+
+    @Override
+    public void setParams(JsonParams params) {
+        this.jsonParams = params;
     }
 
 }

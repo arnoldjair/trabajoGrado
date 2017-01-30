@@ -23,8 +23,10 @@ import co.edu.unicauca.trabajogradogkr.model.Agent;
 import co.edu.unicauca.trabajogradogkr.model.ContingencyMatrix;
 import co.edu.unicauca.trabajogradogkr.model.Dataset;
 import co.edu.unicauca.trabajogradogkr.model.ECVM;
+import co.edu.unicauca.trabajogradogkr.model.JsonParams;
 import co.edu.unicauca.trabajogradogkr.model.Params;
 import co.edu.unicauca.trabajogradogkr.model.objectivefunction.ObjectiveFunction;
+import co.edu.unicauca.trabajogradogkr.model.task.Task;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -52,7 +54,7 @@ public class GBHSTuner implements Tuner {
     }
 
     @Override
-    public Params tuneUp() {
+    public JsonParams tuneUp() {
         System.out.println("Afinando.");
 
         double minPar = 0.3;
@@ -150,7 +152,8 @@ public class GBHSTuner implements Tuner {
             Collections.sort(harmonyMemory);
         }
 
-        return harmonyMemory.get(0);
+        //return harmonyMemory.get(0);
+        return null;
     }
 
     private List<Params> generateHarmonyMemory(int hms, GBHS algorithm, Dataset[] datasets, Distance distance, ObjectiveFunction f) {
@@ -197,8 +200,18 @@ public class GBHSTuner implements Tuner {
     }
 
     @Override
-    public Params call() throws Exception {
+    public JsonParams call() throws Exception {
         return this.tuneUp();
+    }
+
+    @Override
+    public void setTasks(List<Task> tasks) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void setParams(JsonParams params) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
 }

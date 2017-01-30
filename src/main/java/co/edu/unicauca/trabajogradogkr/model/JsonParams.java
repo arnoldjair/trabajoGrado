@@ -30,18 +30,21 @@ public class JsonParams {
     private double maxPar;
     private double hmcr;
     private double po;
+    private double er;
     private int hms;
     private int nExp;
     private int nIt;
     private int maxK;
     private int maxKMeans;
     private int threads;
+    private int tuneUpIt;
     private long seed;
     private String datasetsPath;
     private List<String> datasets;
     private List<String> objectiveFunctions;
     private List<String> distances;
     private List<String> algorithms;
+    private String tuneUp;
 
     public double getMinPar() {
         return minPar;
@@ -73,6 +76,14 @@ public class JsonParams {
 
     public void setPo(double po) {
         this.po = po;
+    }
+
+    public double getEr() {
+        return er;
+    }
+
+    public void setEr(double er) {
+        this.er = er;
     }
 
     public int getHms() {
@@ -121,6 +132,14 @@ public class JsonParams {
 
     public void setThreads(int threads) {
         this.threads = threads;
+    }
+
+    public int getTuneUpIt() {
+        return tuneUpIt;
+    }
+
+    public void setTuneUpIt(int tuneUpIt) {
+        this.tuneUpIt = tuneUpIt;
     }
 
     public long getSeed() {
@@ -196,4 +215,13 @@ public class JsonParams {
 
         return ret;
     }
+
+    public String getTuneUp() {
+        return tuneUp;
+    }
+
+    public void setTuneUp(String tuneUp) {
+        this.tuneUp = tuneUp;
+    }
+
 }

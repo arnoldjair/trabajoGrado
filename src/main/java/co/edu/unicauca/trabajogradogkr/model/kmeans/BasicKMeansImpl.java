@@ -29,7 +29,7 @@ import co.edu.unicauca.trabajogradogkr.model.Record;
  *
  * @author Arnold Jair Jimenez Vargas <ajjimenez@unicauca.edu.co>
  */
-public class BasicKMeansImpl implements BasicKMeans{
+public class BasicKMeansImpl implements BasicKMeans {
 
     public Agent process(Agent agent, Dataset dataset, Distance distance,
             double percentageStop, int maxIt) {
@@ -47,7 +47,7 @@ public class BasicKMeansImpl implements BasicKMeans{
                 agent.getP().getN(), agent.getP().getK());
         ret.setP(tmpP);
         ret.calcClusters(dataset);
-        
+
         do {
             reallocated = 0;
             rgs = ret.getP().getRgs().clone();
@@ -70,9 +70,12 @@ public class BasicKMeansImpl implements BasicKMeans{
                     rgs[i] = index;
                     /**
                      * MacQueen
+                     * Cada vez que se reasigna un punto se calculan los clusters.
                      */
-                    Partition tmp = Partition.reprocessRGS(rgs);
-                    rgs = tmp.getRgs();
+                    ret.setP(Partition.reprocessRGS(rgs));
+                    ret.calcClusters(dataset);
+                    // TODO: ¿Es necesario clonar la rgs?
+                    rgs = ret.getP().getRgs().clone();
                 }
             }
 

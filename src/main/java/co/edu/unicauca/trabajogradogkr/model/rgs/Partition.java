@@ -95,6 +95,12 @@ public class Partition {
         }
     }
 
+    /**
+     * Crea una partición con n elementos y a lo mucho k grupos.
+     * @param n
+     * @param k
+     * @return 
+     */
     public synchronized static Partition randPartition(int n, int k) {
         Random random = new SecureRandom();
         return randPartition(n, k, random);
