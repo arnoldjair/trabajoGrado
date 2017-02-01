@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Pivotal Software, Inc..
+ * Copyright (C) 2017 Pivotal Software, Inc..
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,17 +18,20 @@
  */
 package co.edu.unicauca.trabajogradogkr.model.kmeans;
 
-import co.edu.unicauca.trabajogradogkr.model.Agent;
-import co.edu.unicauca.trabajogradogkr.model.Dataset;
-import co.edu.unicauca.trabajogradogkr.model.distance.Distance;
-
 /**
  *
- * @author Arnold Jair Jimenez Vargas <ajjimenez@unicauca.edu.co>
+ * @author Arnold Jair Jimenez Vargas arnoldjair@hotmail.com
  */
-public interface BasicKMeans {
+public class KMeansFactory {
 
-    public Agent process(Agent agent, Dataset dataset, Distance distance,
-            double percentageStop, int maxIt);
+    public static KMeans getKMeans(String algorithm) {
+        switch (algorithm) {
+            case "basic":
+                return new BasicKMeansImpl();
+            case "objective":
+                return new OBKMeansImpl();
+        }
+        return null;
+    }
 
 }

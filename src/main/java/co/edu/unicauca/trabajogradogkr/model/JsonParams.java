@@ -19,6 +19,7 @@
 package co.edu.unicauca.trabajogradogkr.model;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -26,189 +27,47 @@ import java.util.List;
  */
 public class JsonParams {
 
-    private double minPar;
-    private double maxPar;
-    private double hmcr;
-    private double po;
-    private double er;
-    private int hms;
-    private int nExp;
-    private int nIt;
-    private int maxK;
-    private int maxKMeans;
-    private int threads;
-    private int tuneUpIt;
-    private long seed;
-    private String datasetsPath;
-    private List<String> datasets;
-    private List<String> objectiveFunctions;
-    private List<String> distances;
-    private List<String> algorithms;
-    private String tuneUp;
+    private Map<String, Object> map;
 
-    public double getMinPar() {
-        return minPar;
+    public void setMap(Map map) {
+        this.map = map;
     }
 
-    public void setMinPar(double minPar) {
-        this.minPar = minPar;
+    public Object getParam(String name) {
+        if (this.map.containsKey(name)) {
+            return this.map.get(name);
+        }
+        return null;
     }
 
-    public double getMaxPar() {
-        return maxPar;
+    public void setParam(String name, Object val) {
+        this.map.put(name, val);
     }
 
-    public void setMaxPar(double maxPar) {
-        this.maxPar = maxPar;
-    }
-
-    public double getHmcr() {
-        return hmcr;
-    }
-
-    public void setHmcr(double hmcr) {
-        this.hmcr = hmcr;
-    }
-
-    public double getPo() {
-        return po;
-    }
-
-    public void setPo(double po) {
-        this.po = po;
-    }
-
-    public double getEr() {
-        return er;
-    }
-
-    public void setEr(double er) {
-        this.er = er;
-    }
-
-    public int getHms() {
-        return hms;
-    }
-
-    public void setHms(int hms) {
-        this.hms = hms;
-    }
-
-    public int getnExp() {
-        return nExp;
-    }
-
-    public void setnExp(int nExp) {
-        this.nExp = nExp;
-    }
-
-    public int getnIt() {
-        return nIt;
-    }
-
-    public void setnIt(int nIt) {
-        this.nIt = nIt;
-    }
-
-    public int getMaxK() {
-        return maxK;
-    }
-
-    public void setMaxK(int maxK) {
-        this.maxK = maxK;
-    }
-
-    public int getMaxKMeans() {
-        return maxKMeans;
-    }
-
-    public void setMaxKMeans(int maxKMeans) {
-        this.maxKMeans = maxKMeans;
-    }
-
-    public int getThreads() {
-        return threads;
-    }
-
-    public void setThreads(int threads) {
-        this.threads = threads;
-    }
-
-    public int getTuneUpIt() {
-        return tuneUpIt;
-    }
-
-    public void setTuneUpIt(int tuneUpIt) {
-        this.tuneUpIt = tuneUpIt;
-    }
-
-    public long getSeed() {
-        return seed;
-    }
-
-    public void setSeed(long seed) {
-        this.seed = seed;
-    }
-
-    public String getDatasetsPath() {
-        return datasetsPath;
-    }
-
-    public void setDatasetsPath(String datasetsPath) {
-        this.datasetsPath = datasetsPath;
-    }
-
-    public List<String> getDatasets() {
-        return datasets;
-    }
-
-    public void setDatasets(List<String> datasets) {
-        this.datasets = datasets;
-    }
-
-    public List<String> getObjectiveFunctions() {
-        return objectiveFunctions;
-    }
-
-    public void setObjectiveFunctions(List<String> objectiveFunctions) {
-        this.objectiveFunctions = objectiveFunctions;
-    }
-
-    public List<String> getDistances() {
-        return distances;
-    }
-
-    public void setDistances(List<String> distances) {
-        this.distances = distances;
-    }
-
-    public List<String> getAlgorithms() {
-        return algorithms;
-    }
-
-    public void setAlgorithms(List<String> algorithms) {
-        this.algorithms = algorithms;
-    }
-
-    public boolean verify() throws Exception {
+    public boolean verifyExperiment() throws Exception {
 
         boolean ret = true;
+        String kmAlgo = (String) getParam("kmeansAlgorithm");
+        String initialization = (String) getParam("initialization");
 
-        ret = ret && minPar >= 0;
-        ret = ret && maxPar > 0;
-        ret = ret && hmcr > 0;
-        ret = ret && po >= 0;
-        ret = ret && hms > 0;
-        ret = ret && nExp > 0;
-        ret = ret && nIt > 0;
-        ret = ret && maxK > 0;
-        ret = ret && maxKMeans > 0;
-        ret = ret && threads > 0;
-        ret = ret && datasets.size() > 0;
-        ret = ret && objectiveFunctions.size() > 0;
-        ret = ret && distances.size() > 0;
-        ret = ret && algorithms.size() > 0;
+        ret = ret && (double) getParam("minPar") >= 0;
+        ret = ret && (double) getParam("maxPar") > 0;
+        ret = ret && (double) getParam("hmcr") > 0;
+        ret = ret && (double) getParam("po") >= 0;
+        ret = ret && ((Double) getParam("hms")).intValue() > 0;
+        ret = ret && ((Double) getParam("nExp")).intValue() > 0;
+        ret = ret && ((Double) getParam("nIt")).intValue() > 0;
+        ret = ret && ((Double) getParam("maxK")).intValue() > 0;
+        ret = ret && ((Double) getParam("maxKMeans")).intValue() > 0;
+        ret = ret && ((Double) getParam("threads")).intValue() > 0;
+        ret = ret && ((List<String>) getParam("datasets")).size() > 0;
+        ret = ret && ((List<String>) getParam("objectiveFunctions")).size() > 0;
+        ret = ret && ((List<String>) getParam("distances")).size() > 0;
+        ret = ret && ((List<String>) getParam("algorithms")).size() > 0;
+        ret = ret && kmAlgo != null && !kmAlgo.isEmpty();
+        ret = ret && initialization != null && !initialization.isEmpty();
 
+        String datasetsPath = (String) getParam("datasetsPath");
         if (datasetsPath == null || datasetsPath.isEmpty()) {
             throw new Exception("Falta la ruta a los datasets");
         }
@@ -216,12 +75,60 @@ public class JsonParams {
         return ret;
     }
 
-    public String getTuneUp() {
-        return tuneUp;
+    public boolean verifyKMeans() throws Exception {
+
+        boolean ret = true;
+        // TODO: Si no se encuentra la config, mas vale lanzar una exception.
+        String kmAlgo = (String) getParam("kmeansAlgorithm");
+        String dataset = (String) getParam("dataset");
+        String distance = (String) getParam("distance");
+        String objectiveFunction = (String) getParam("objectiveFunction");
+        String initialization = (String) getParam("initialization");
+        int nExp = ((Double) getParam("nExp")).intValue();
+        int k = ((Double) getParam("k")).intValue();
+        int maxIt = ((Double) getParam("maxIt")).intValue();
+        double po = (double) getParam("po");
+
+        ret = ret && kmAlgo != null && !kmAlgo.isEmpty();
+        ret = ret && dataset != null && !dataset.isEmpty();
+        ret = ret && distance != null && !distance.isEmpty();
+        ret = ret && distance != null && !objectiveFunction.isEmpty();
+        ret = ret && initialization != null && !initialization.isEmpty();
+        ret = ret && nExp >= 0;
+        ret = ret && k >= 0;
+        ret = ret && maxIt >= 0;
+        ret = ret && po >= 0;
+
+        String datasetsPath = (String) getParam("datasetsPath");
+        if (datasetsPath == null || datasetsPath.isEmpty()) {
+            throw new Exception("Falta la ruta a los datasets");
+        }
+
+        return ret;
     }
 
-    public void setTuneUp(String tuneUp) {
-        this.tuneUp = tuneUp;
+    public String getFields() {
+
+        StringBuilder sb = new StringBuilder();
+
+        for (Map.Entry<String, Object> entry : map.entrySet()) {
+            String key = entry.getKey();
+            Object value = entry.getValue();
+            sb.append(key).append("\t");
+        }
+        return sb.toString();
+
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for (Map.Entry<String, Object> entry : map.entrySet()) {
+            String key = entry.getKey();
+            Object value = entry.getValue();
+            sb.append(value).append("\t");
+        }
+        return sb.toString();
     }
 
 }

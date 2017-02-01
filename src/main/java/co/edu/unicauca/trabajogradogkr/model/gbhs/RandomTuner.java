@@ -57,7 +57,7 @@ public class RandomTuner implements Tuner {
         }
 
         err = err / tasks.size();
-        this.jsonParams.setEr(err);
+        this.jsonParams.setParam("Er", err);
         return this.jsonParams;
     }
 

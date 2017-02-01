@@ -24,7 +24,7 @@ import co.edu.unicauca.trabajogradogkr.model.Agent;
 import co.edu.unicauca.trabajogradogkr.model.AgentComparator;
 import co.edu.unicauca.trabajogradogkr.model.Cluster;
 import co.edu.unicauca.trabajogradogkr.model.Dataset;
-import co.edu.unicauca.trabajogradogkr.model.kmeans.BasicKMeansImpl;
+import co.edu.unicauca.trabajogradogkr.model.kmeans.KMeans;
 import co.edu.unicauca.trabajogradogkr.model.objectivefunction.ObjectiveFunction;
 import co.edu.unicauca.trabajogradogkr.service.Config;
 import co.edu.unicauca.trabajogradogkr.utils.Report;
@@ -44,11 +44,12 @@ public class GBHSCentroids implements GBHS {
     @Override
     public Agent process(int hms, int maxImprovisations, int maxK, int maxKMeans, double pKmeans,
             double minPar, double maxPar, double hmcr, double pOptimize,
-            Dataset dataset, ObjectiveFunction f, boolean log, Random random, Distance distance) {
+            Dataset dataset, ObjectiveFunction f, boolean log, Random random,
+            Distance distance, KMeans kmeans, String initialization) {
 
         try {
             int repeated = 0;
-            int curHms = 0;
+            int curHms;
             int bad = 0;
             File resultFolder = Config.getInstance().getResultFolder();
             File resultado = new File(resultFolder, "registros_"
@@ -59,10 +60,9 @@ public class GBHSCentroids implements GBHS {
             List<Agent> harmonyMemory;
             double par;
             GBHSUtils utils = new GBHSUtils();
-            BasicKMeansImpl kmeans = new BasicKMeansImpl();
 
             harmonyMemory = utils.generateHarmonyMemory(hms, maxK, dataset, f,
-                    agentComparator, random, distance);
+                    agentComparator, random, distance, initialization);
 
             curHms = harmonyMemory.size();
 
@@ -71,7 +71,7 @@ public class GBHSCentroids implements GBHS {
             }
 
             utils.optimizeMemory(maxKMeans, pKmeans, pOptimize, random, dataset, f,
-                    agentComparator, harmonyMemory, distance);
+                    agentComparator, harmonyMemory, distance, kmeans);
 
             if (log) {
                 report.writeHarmonyMemory(harmonyMemory, "Optimized Harmony Memory");
@@ -128,7 +128,7 @@ public class GBHSCentroids implements GBHS {
                 newSolution.reallocateRecords(dataset, distance);
 
                 if (random.nextDouble() < pOptimize) {
-                    newSolution = kmeans.process(newSolution, dataset, distance, pKmeans, maxKMeans);
+                    newSolution = kmeans.process(newSolution, dataset, distance, pKmeans, maxKMeans, f);
                 }
 
                 newSolution.setFitness(f.calculate(newSolution, dataset, distance));
@@ -155,7 +155,7 @@ public class GBHSCentroids implements GBHS {
                     if (utils.uniformMemory(harmonyMemory)) {
                         harmonyMemory = utils.regenerateMemory(harmonyMemory, maxK,
                                 maxImprovisations, pOptimize, 0.0, dataset, f,
-                                agentComparator, random, distance);
+                                agentComparator, random, distance, initialization);
                         regenerated++;
                         curHms = harmonyMemory.size();
                     }
@@ -182,6 +182,9 @@ public class GBHSCentroids implements GBHS {
             return harmonyMemory.get(0);
         } catch (DistanceException ex) {
             Logger.getLogger(GBHSRecords.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        } catch (Exception ex) {
+            Logger.getLogger(GBHSCentroids.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
     }

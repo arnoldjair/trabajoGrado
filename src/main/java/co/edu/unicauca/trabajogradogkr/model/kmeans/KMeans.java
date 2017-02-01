@@ -27,7 +27,7 @@ import co.edu.unicauca.trabajogradogkr.model.objectivefunction.ObjectiveFunction
  *
  * @author Arnold Jair Jimenez Vargas <ajjimenez@unicauca.edu.co>
  */
-public interface OBKMeans {
+public interface KMeans {
 
     public Agent process(Agent agent, Dataset dataset, Distance distance,
             double percentageStop, int maxIt, ObjectiveFunction objectiveFunction);

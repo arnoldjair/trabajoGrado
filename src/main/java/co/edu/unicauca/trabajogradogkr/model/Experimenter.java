@@ -22,6 +22,8 @@ import co.edu.unicauca.trabajogradogkr.model.distance.Distance;
 import co.edu.unicauca.trabajogradogkr.model.distance.DistanceFactory;
 import co.edu.unicauca.trabajogradogkr.model.gbhs.GBHS;
 import co.edu.unicauca.trabajogradogkr.model.gbhs.GBHSFactory;
+import co.edu.unicauca.trabajogradogkr.model.kmeans.KMeans;
+import co.edu.unicauca.trabajogradogkr.model.kmeans.KMeansFactory;
 import co.edu.unicauca.trabajogradogkr.model.objectivefunction.ObjectiveFunction;
 import co.edu.unicauca.trabajogradogkr.model.objectivefunction.ObjectiveFunctionFactory;
 import co.edu.unicauca.trabajogradogkr.model.task.Task;
@@ -56,55 +58,9 @@ public class Experimenter implements Callable<Result> {
     private int[] iic;
     private double[] er;
     private Distance distance;
-    private DatasetService datasetService;
-
-    /**
-     *
-     * @param hms
-     * @param maxImprovisations
-     * @param maxK
-     * @param maxKMeans
-     * @param nExp
-     * @param minPar
-     * @param maxPar
-     * @param hmcr
-     * @param pOptimize
-     * @param dataset
-     * @param f
-     * @param seed
-     * @param algorithm
-     * @param id
-     * @param distance
-     */
-    public Experimenter(int hms, int maxImprovisations, int maxK, int maxKMeans,
-            int nExp, double minPar, double maxPar, double hmcr, double pOptimize,
-            Dataset dataset, ObjectiveFunction f, long seed,
-            GBHS algorithm, String id, Distance distance) {
-        this.hms = hms;
-        this.maxImprovisations = maxImprovisations;
-        this.maxK = maxK;
-        this.maxKMeans = maxKMeans;
-        this.nExp = nExp;
-        this.minPar = minPar;
-        this.maxPar = maxPar;
-        this.hmcr = hmcr;
-        this.pOptimize = pOptimize;
-        this.dataset = dataset;
-        this.f = f;
-        if (seed != 0) {
-            this.random = new Random(seed);
-        } else {
-            this.random = new Random();
-        }
-        this.algorithm = algorithm;
-        this.solutions = new Agent[nExp];
-        this.contingencyMatrices = new ContingencyMatrix[nExp];
-        this.icc = new int[nExp];
-        this.iic = new int[nExp];
-        this.er = new double[nExp];
-        this.distance = distance;
-        this.datasetService = new DatasetServiceImpl();
-    }
+    private final KMeans kmeans;
+    private final DatasetService datasetService;
+    private final String initialization;
 
     public Experimenter(Task task) throws FileNotFoundException {
         this.datasetService = new DatasetServiceImpl();
@@ -131,6 +87,9 @@ public class Experimenter implements Callable<Result> {
         this.iic = new int[nExp];
         this.er = new double[nExp];
         this.distance = DistanceFactory.getDistance(task.getDistance());
+        this.kmeans = KMeansFactory.getKMeans(task.getKmeansAlgorithm());
+        this.initialization = task.getInitialization();
+
     }
 
     public synchronized Result experiment() {
@@ -141,7 +100,7 @@ public class Experimenter implements Callable<Result> {
             GBHS currAlgorithm = algorithm.newInstance();
             Agent cSolucion = currAlgorithm.process(hms, maxImprovisations,
                     maxK, maxKMeans, 0.0, minPar, maxPar, hmcr, pOptimize,
-                    dataset, f, false, new Random(i), distance);
+                    dataset, f, false, new Random(i), distance, kmeans, initialization);
             solutions[i] = cSolucion;
 
             ContingencyMatrix contingencyMatrix = new ContingencyMatrix(cSolucion, dataset);

@@ -12,16 +12,8 @@ import co.edu.unicauca.trabajogradogkr.model.Dataset;
 import co.edu.unicauca.trabajogradogkr.model.ECVM;
 import co.edu.unicauca.trabajogradogkr.model.Experimenter;
 import co.edu.unicauca.trabajogradogkr.model.JsonParams;
-import co.edu.unicauca.trabajogradogkr.model.KmeansParams;
-import co.edu.unicauca.trabajogradogkr.model.Params;
 import co.edu.unicauca.trabajogradogkr.model.Result;
 import co.edu.unicauca.trabajogradogkr.model.distance.DistanceFactory;
-import co.edu.unicauca.trabajogradogkr.model.gbhs.RandomTuner;
-import co.edu.unicauca.trabajogradogkr.model.gbhs.Tuner;
-import co.edu.unicauca.trabajogradogkr.model.kmeans.BasicKMeans;
-import co.edu.unicauca.trabajogradogkr.model.kmeans.BasicKMeansImpl;
-import co.edu.unicauca.trabajogradogkr.model.kmeans.OBKMeans;
-import co.edu.unicauca.trabajogradogkr.model.kmeans.OBKMeansImpl;
 import co.edu.unicauca.trabajogradogkr.model.objectivefunction.ObjectiveFunction;
 import co.edu.unicauca.trabajogradogkr.model.objectivefunction.ObjectiveFunctionFactory;
 import co.edu.unicauca.trabajogradogkr.model.rgs.Partition;
@@ -55,6 +47,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import co.edu.unicauca.trabajogradogkr.model.kmeans.KMeans;
+import co.edu.unicauca.trabajogradogkr.model.kmeans.KMeansFactory;
 
 /**
  * Spring
@@ -82,7 +76,7 @@ public class TrabajoGradoGKR {
         boolean kmeans = false;
         boolean fromR = false;
         JsonParams params = null;
-        KmeansParams kmeansParams = null;
+        Map<String, Object> tmpMap = new HashMap<>();
         String pathResults = null;
         GsonBuilder builder = new GsonBuilder();
         Gson gson = builder.create();
@@ -93,7 +87,13 @@ public class TrabajoGradoGKR {
             switch (c) {
 
                 case 'k': //KMeans
-                    kmeansParams = gson.fromJson(new FileReader(go.getOptarg()), KmeansParams.class);
+                    tmpMap = gson.fromJson(new FileReader(go.getOptarg()), tmpMap.getClass());
+                    params = new JsonParams();
+                    params.setMap(tmpMap);
+                    if (!params.verifyKMeans()) {
+                        throw new Exception("Error en los parámetros");
+                    }
+                    Config.getInstance().setConfig("datasetsPath", (String) params.getParam("datasetsPath"));
                     kmeans = true;
                     break;
                 case 'j':
@@ -103,11 +103,13 @@ public class TrabajoGradoGKR {
                     }
                     break;
                 case 'p':
-                    params = gson.fromJson(new FileReader(go.getOptarg()), JsonParams.class);
-                    if (!params.verify()) {
+                    tmpMap = gson.fromJson(new FileReader(go.getOptarg()), tmpMap.getClass());
+                    params = new JsonParams();
+                    params.setMap(tmpMap);
+                    if (!params.verifyExperiment()) {
                         throw new Exception("Error en los parámetros");
                     }
-                    Config.getInstance().setConfig("datasetsPath", params.getDatasetsPath());
+                    Config.getInstance().setConfig("datasetsPath", (String) params.getParam("datasetsPath"));
                     break;
                 case 'r':
                     pathResults = go.getOptarg();
@@ -164,14 +166,14 @@ public class TrabajoGradoGKR {
             }
 
             if (kmeans) {
-                testKMeans(kmeansParams);
+                testKMeans(params);
                 return;
             }
 
             Config.getInstance().initResultFolder();
 
             // TODO: Configuración aparte para afinar.
-            if (params.getTuneUp() != null && !params.getTuneUp().isEmpty()) {
+            if ((String) params.getParam("tuneUp") != null && !((String) params.getParam("tuneUp")).isEmpty()) {
                 tuneUp(params);
                 return;
             }
@@ -181,49 +183,57 @@ public class TrabajoGradoGKR {
 
     }
 
-    public static void testKMeans(KmeansParams params) throws FileNotFoundException {
-        long milis = System.currentTimeMillis();
+    public static void testKMeans(JsonParams params) throws FileNotFoundException, Exception {
+        long milis;
         Random random = new SecureRandom();
         DatasetService datasetService = new DatasetServiceImpl();
-        //BasicKMeansImpl kmeans = new BasicKMeansImpl();
-        List<Dataset> datasets = datasetService.getDatasets();
-        Dataset dataset = datasetService.byName(params.getDataset());
-        //Dataset dataset = Dataset.fromJson(params.getDataset());
-        Distance distance = DistanceFactory.getDistance(params.getDistance());
+        Dataset dataset = datasetService.byName((String) params.getParam("dataset"));
+        Distance distance = DistanceFactory.getDistance((String) params.getParam("distance"));
         SimpleDateFormat dFormat = new SimpleDateFormat("dd-MM-yyyy_HH:mm:ss");
-        ObjectiveFunction objectiveFunction = ObjectiveFunctionFactory.getObjectiveFuncion(params.getObjectiveFunction());
+        ObjectiveFunction objectiveFunction
+                = ObjectiveFunctionFactory.
+                getObjectiveFuncion((String) params.getParam("objectiveFunction"));
+        int nExp = ((Double) params.getParam("nExp")).intValue();
+        int k = ((Double) params.getParam("k")).intValue();
+        int maxIt = ((Double) params.getParam("maxIt")).intValue();
+        double po = (double) params.getParam("po");
+        KMeans kmeans = KMeansFactory.getKMeans((String) params.getParam("kmeansAlgorithm"));
+        String initialization = (String) params.getParam("initialization");
 
-        Report report = new Report("Kmeans_" + params.getDataset() + ".csv", true);
-        double tErr = 0;
+        Report report = new Report("Kmeans_" + dataset.getName() + ".csv", true);
+        report.writeLine(params.getFields());
+        report.writeLine("ER\tTime\n");
 
-        for (int i = 0; i < params.getnExp(); i++) {
-            Partition p = Partition.randPartition(dataset.getN(), params.getK(), random);
+        for (int i = 0; i < nExp; i++) {
+            milis = System.currentTimeMillis();
+            Partition p = null;
+            switch (initialization) {
+                case "random":
+                    p = Partition.randPartition(dataset.getN(), k, random);
+                    break;
+                case "kmeanspp":
+                    p = Partition.RandPartitionKmeanspp(k, dataset, distance, random);
+                    break;
+                default:
+                    throw new Exception("El método de init es incorrecto caballero");
+            }
+
             Agent a = new Agent();
             a.setP(p);
             Agent sol;
-            if (params.getAlgorithm().compareTo("basic") == 0) {
-                BasicKMeans kmeans = new BasicKMeansImpl();
-                sol = kmeans.process(a, dataset, distance, params.getPercentageStop(), params.getMaxIt());
-            } else {
-                OBKMeans kmeans = new OBKMeansImpl();
-                sol = kmeans.process(a, dataset, distance, params.getPercentageStop(), params.getMaxIt(), objectiveFunction);
-            }
+            sol = kmeans.process(a, dataset, distance, po, maxIt, objectiveFunction);
             ContingencyMatrix m = new ContingencyMatrix(sol, dataset);
             ECVM ecvm = new ECVM(m);
             int icc = ecvm.getIcc();
             int iic = dataset.getN() - icc;
             double er = ((double) iic / dataset.getN()) * 100;
-            //report.writeLine(Double.toString(er));
-            //report.writeLine("\n");
-            tErr += er;
+            report.writeLine(params.toString());
+            report.writeLine(Double.toString(er) + "\t");
+            milis = System.currentTimeMillis() - milis;
+            report.writeLine(Double.toString((double) milis / 1000));
+            report.writeLine("\n");
         }
 
-        tErr /= params.getnExp();
-        milis = System.currentTimeMillis() - milis;
-        report.writeLine(params.toString());
-        report.writeLine(tErr + "\t");
-        report.writeLine(Double.toString((double) milis / 1000));
-        report.writeLine("\n");
         report.close();
     }
 
@@ -292,7 +302,7 @@ public class TrabajoGradoGKR {
     }
 
     public static void tuneUp(JsonParams jsonParams) throws Exception {
-        long milis = System.currentTimeMillis();
+        /*long milis = System.currentTimeMillis();
         Tuner tuner = new RandomTuner();
         SimpleDateFormat dFormat = new SimpleDateFormat("dd-MM-yyyy_HH:mm:ss");
 
@@ -380,6 +390,7 @@ public class TrabajoGradoGKR {
 
         milis = System.currentTimeMillis() - milis;
         System.out.println(milis / 1000 + " Segundos");
+         */
     }
 
 }

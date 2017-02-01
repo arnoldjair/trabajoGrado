@@ -25,6 +25,7 @@ import co.edu.unicauca.trabajogradogkr.model.AgentComparator;
 import co.edu.unicauca.trabajogradogkr.model.Cluster;
 import co.edu.unicauca.trabajogradogkr.model.Dataset;
 import co.edu.unicauca.trabajogradogkr.model.kmeans.BasicKMeansImpl;
+import co.edu.unicauca.trabajogradogkr.model.kmeans.KMeans;
 import co.edu.unicauca.trabajogradogkr.model.objectivefunction.ObjectiveFunction;
 import co.edu.unicauca.trabajogradogkr.model.rgs.Partition;
 import java.util.ArrayList;
@@ -41,17 +42,27 @@ public class GBHSUtils {
 
     public List<Agent> generateHarmonyMemory(int hms, int maxK, Dataset dataset,
             ObjectiveFunction f, Comparator comparador, Random random,
-            Distance distance) throws DistanceException {
+            Distance distance, String initialization) throws DistanceException, Exception {
         List<Agent> harmonyMemory = new ArrayList<>();
         for (int i = 0; i < hms; i++) {
-            Partition tmp = Partition.randPartition(dataset.getN(), random.nextInt(maxK), random);
+            Partition tmp;
+            switch (initialization) {
+                case "random":
+                    tmp = Partition.randPartition(dataset.getN(), random.nextInt(maxK), random);
+                    break;
+                case "kmeanspp":
+                    tmp = Partition.RandPartitionKmeanspp(random.nextInt(maxK) + 2, dataset, distance, random);
+                    break;
+                default:
+                    throw new Exception("El método de init buen hombre");
+            }
             if (tmp.getK() < 2) {
                 System.out.println("Lala");
             }
             Agent atmp = new Agent(tmp);
             atmp.calcClusters(dataset);
             double fitness = f.calculate(atmp, dataset, distance);
-//            System.out.println(fitness);
+
             if (Double.isNaN(fitness)) {
                 i--;
                 continue;
@@ -74,13 +85,13 @@ public class GBHSUtils {
 
     public void optimizeMemory(int maxIt, double pKMeans, double p,
             Random rand, Dataset d, ObjectiveFunction f,
-            Comparator comparador, List<Agent> harmonyMemory, Distance distance)
+            Comparator comparador, List<Agent> harmonyMemory, Distance distance,
+            KMeans kmeans)
             throws DistanceException {
-        BasicKMeansImpl kmeans = new BasicKMeansImpl();
 
         for (int i = 0; i < harmonyMemory.size(); i++) {
             if (rand.nextDouble() <= p) {
-                Agent n = kmeans.process(harmonyMemory.get(i), d, distance, pKMeans, maxIt);
+                Agent n = kmeans.process(harmonyMemory.get(i), d, distance, pKMeans, maxIt, f);
                 n.setFitness(f.calculate(n, d, distance));
                 harmonyMemory.set(i, n);
             }
@@ -159,11 +170,11 @@ public class GBHSUtils {
     public List<Agent> regenerateMemory(List<Agent> agentes, int maxK, int maxIt,
             double po, double pKMeans,
             Dataset dataset, ObjectiveFunction f, AgentComparator comparator,
-            Random random, Distance distance) throws DistanceException {
+            Random random, Distance distance, String initialization) throws DistanceException, Exception {
         int hms = agentes.size();
         BasicKMeansImpl kmeans = new BasicKMeansImpl();
 
-        List<Agent> ret = generateHarmonyMemory(hms - 2, maxK, dataset, f, comparator, random, distance);
+        List<Agent> ret = generateHarmonyMemory(hms - 2, maxK, dataset, f, comparator, random, distance, initialization);
 
         ret.add(agentes.get(0));
         ret.add(agentes.get(1));
@@ -179,7 +190,6 @@ public class GBHSUtils {
             atmp.calcClusters(dataset);
             agentes.set(i, atmp);
         }*/
-        
         Collections.sort(ret, comparator);
         return ret;
     }

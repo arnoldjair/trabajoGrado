@@ -24,15 +24,16 @@ import co.edu.unicauca.trabajogradogkr.model.Cluster;
 import co.edu.unicauca.trabajogradogkr.model.Dataset;
 import co.edu.unicauca.trabajogradogkr.model.rgs.Partition;
 import co.edu.unicauca.trabajogradogkr.model.Record;
+import co.edu.unicauca.trabajogradogkr.model.objectivefunction.ObjectiveFunction;
 
 /**
  *
  * @author Arnold Jair Jimenez Vargas <ajjimenez@unicauca.edu.co>
  */
-public class BasicKMeansImpl implements BasicKMeans {
+public class BasicKMeansImpl implements KMeans {
 
     public Agent process(Agent agent, Dataset dataset, Distance distance,
-            double percentageStop, int maxIt) {
+            double percentageStop, int maxIt, ObjectiveFunction f) {
         int n = dataset.getN();
         int currIt = 0;
         double reallocated;
@@ -69,13 +70,16 @@ public class BasicKMeansImpl implements BasicKMeans {
                     reallocated++;
                     rgs[i] = index;
                     /**
-                     * MacQueen
-                     * Cada vez que se reasigna un punto se calculan los clusters.
+                     * MacQueen Cada vez que se reasigna un punto se calculan
+                     * los clusters.
+                     * Si esto iris: 147.92 seg
+                     * Con esto iris 4823 seg
                      */
-                    ret.setP(Partition.reprocessRGS(rgs));
+                    /*ret.setP(Partition.reprocessRGS(rgs));
                     ret.calcClusters(dataset);
                     // TODO: ¿Es necesario clonar la rgs?
                     rgs = ret.getP().getRgs().clone();
+                     */
                 }
             }
 

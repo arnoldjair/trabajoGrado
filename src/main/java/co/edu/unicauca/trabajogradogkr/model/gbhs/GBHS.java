@@ -21,6 +21,7 @@ package co.edu.unicauca.trabajogradogkr.model.gbhs;
 import co.edu.unicauca.trabajogradogkr.model.distance.Distance;
 import co.edu.unicauca.trabajogradogkr.model.Agent;
 import co.edu.unicauca.trabajogradogkr.model.Dataset;
+import co.edu.unicauca.trabajogradogkr.model.kmeans.KMeans;
 import co.edu.unicauca.trabajogradogkr.model.objectivefunction.ObjectiveFunction;
 import java.util.Random;
 
@@ -47,12 +48,14 @@ public interface GBHS {
      * @param log
      * @param random
      * @param distance
+     * @param kmeans
+     * @param initialization
      * @return
      */
     public Agent process(int hms, int maxImprovisations, int maxK,
             int maxKMeans, double pKmeans, double minPar, double maxPar, double hmcr, double pOptimize,
             Dataset dataset, ObjectiveFunction f, boolean log, Random random,
-            Distance distance);
+            Distance distance, KMeans kmeans, String initialization);
 
     public GBHS newInstance();
 }

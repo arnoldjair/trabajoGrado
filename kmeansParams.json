@@ -1,10 +1,12 @@
 {
-  "k": 3,
+  "k": 2,
   "maxIt": 100,
-  "nExp": 100,
-  "percentageStop": 0.0,
-  "dataset": "wine",
+  "nExp": 10,
+  "po": 0.0,
+  "dataset": "sonar",
   "distance": "euclidean",
   "objectiveFunction": "chi",
-  "algorithm": "objectiveFunction"
+  "kmeansAlgorithm": "objective",
+  "datasetsPath": "/home/equipo/Documentos/TrabajoGradoRGS/Codigo/TrabajoGradoGKR/Código/Datasets/json",
+  "initialization": "kmeanspp"
 }

@@ -39,9 +39,15 @@ public class Task {
     private String objectiveFunction;
     private String distance;
     private String algorithm;
+    private String kmeansAlgorithm;
+    private String initialization;
     private boolean done;
 
-    public Task(double minPar, double maxPar, double hmcr, double po, int hms, int nExp, int nIt, int maxK, int maxKMeans, int threads, long seed, String dataset, String objectiveFunction, String distance, String algorithm, boolean done) {
+    public Task(double minPar, double maxPar, double hmcr, double po, int hms,
+            int nExp, int nIt, int maxK, int maxKMeans, int threads, long seed,
+            String dataset, String objectiveFunction, String distance,
+            String algorithm, boolean done, String kmeansAlgorithm,
+            String initialization) {
         this.minPar = minPar;
         this.maxPar = maxPar;
         this.hmcr = hmcr;
@@ -58,6 +64,8 @@ public class Task {
         this.distance = distance;
         this.algorithm = algorithm;
         this.done = done;
+        this.kmeansAlgorithm = kmeansAlgorithm;
+        this.initialization = initialization;
     }
 
     public double getMinPar() {
@@ -186,6 +194,22 @@ public class Task {
 
     public void setDone(boolean done) {
         this.done = done;
+    }
+
+    public String getKmeansAlgorithm() {
+        return kmeansAlgorithm;
+    }
+
+    public void setKmeansAlgorithm(String kmeansAlgorithm) {
+        this.kmeansAlgorithm = kmeansAlgorithm;
+    }
+
+    public String getInitialization() {
+        return initialization;
+    }
+
+    public void setInitialization(String initialization) {
+        this.initialization = initialization;
     }
 
 }

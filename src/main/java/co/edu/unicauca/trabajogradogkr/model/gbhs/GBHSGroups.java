@@ -23,7 +23,7 @@ import co.edu.unicauca.trabajogradogkr.exception.DistanceException;
 import co.edu.unicauca.trabajogradogkr.model.Agent;
 import co.edu.unicauca.trabajogradogkr.model.AgentComparator;
 import co.edu.unicauca.trabajogradogkr.model.Dataset;
-import co.edu.unicauca.trabajogradogkr.model.kmeans.BasicKMeansImpl;
+import co.edu.unicauca.trabajogradogkr.model.kmeans.KMeans;
 import co.edu.unicauca.trabajogradogkr.model.objectivefunction.ObjectiveFunction;
 import co.edu.unicauca.trabajogradogkr.model.rgs.Partition;
 import co.edu.unicauca.trabajogradogkr.service.Config;
@@ -44,7 +44,8 @@ public class GBHSGroups implements GBHS {
     @Override
     public Agent process(int hms, int maxImprovisations, int maxK, int maxKMeans, double pKmeans,
             double minPar, double maxPar, double hmcr, double pOptimize, Dataset dataset,
-            ObjectiveFunction f, boolean log, Random random, Distance distance) {
+            ObjectiveFunction f, boolean log, Random random, Distance distance,
+            KMeans kmeans, String initialization) {
 
         try {
             int repeated = 0;
@@ -59,10 +60,9 @@ public class GBHSGroups implements GBHS {
             List<Agent> harmonyMemory;
             double par;
             GBHSUtils utils = new GBHSUtils();
-            BasicKMeansImpl kmeans = new BasicKMeansImpl();
 
             harmonyMemory = utils.generateHarmonyMemory(hms, maxK, dataset, f,
-                    agentComparator, random, distance);
+                    agentComparator, random, distance, initialization);
 
             curHms = harmonyMemory.size();
 
@@ -71,7 +71,7 @@ public class GBHSGroups implements GBHS {
             }
 
             utils.optimizeMemory(maxKMeans, pKmeans, pOptimize, random, dataset, f,
-                    agentComparator, harmonyMemory, distance);
+                    agentComparator, harmonyMemory, distance, kmeans);
 
             if (log) {
                 report.writeHarmonyMemory(harmonyMemory, "Optimized Harmony Memory");
@@ -100,7 +100,8 @@ public class GBHSGroups implements GBHS {
                             p = harmonyMemory.get(0).getP().mix(p, random, nc);
                         }
                     } else {
-                        Partition tmp = Partition.randPartition(dataset.getN(), k, random);
+                        //Partition tmp = Partition.randPartition(dataset.getN(), k, random);
+                        Partition tmp = Partition.RandPartitionKmeanspp(k, dataset, distance, random);
                         p = tmp.mix(p, random, i);
                     }
                 }
@@ -115,7 +116,7 @@ public class GBHSGroups implements GBHS {
                 newSolution.calcClusters(dataset);
 
                 if (random.nextDouble() < pOptimize) {
-                    newSolution = kmeans.process(newSolution, dataset, distance, pKmeans, maxKMeans);
+                    newSolution = kmeans.process(newSolution, dataset, distance, pKmeans, maxKMeans, f);
                 }
 
                 newSolution.setFitness(f.calculate(newSolution, dataset, distance));
@@ -143,7 +144,7 @@ public class GBHSGroups implements GBHS {
                     if (utils.uniformMemory(harmonyMemory)) {
                         harmonyMemory = utils.regenerateMemory(harmonyMemory, maxK,
                                 maxImprovisations, pOptimize, 0.0, dataset, f,
-                                agentComparator, random, distance);
+                                agentComparator, random, distance, initialization);
                         regenerated++;
                         curHms = harmonyMemory.size();
                     }
@@ -170,6 +171,9 @@ public class GBHSGroups implements GBHS {
             return harmonyMemory.get(0);
         } catch (DistanceException ex) {
             Logger.getLogger(GBHSRecords.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        } catch (Exception ex) {
+            Logger.getLogger(GBHSGroups.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
     }

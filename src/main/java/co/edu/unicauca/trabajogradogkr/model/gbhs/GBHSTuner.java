@@ -132,7 +132,7 @@ public class GBHSTuner implements Tuner {
                 for (int j = 0; j < 30; j++) {
                     System.out.println("Improvisacion param: " + j);
                     Agent a = algorithm.process(hms, 100, maxK, 100, 0, params.minPar,
-                            params.maxPar, params.hmcr, params.po, dataset, objectiveFunction, false, random, distance);
+                            params.maxPar, params.hmcr, params.po, dataset, objectiveFunction, false, random, distance, null, null);
                     ContingencyMatrix m = new ContingencyMatrix(a, dataset);
                     ECVM ecvm = new ECVM(m);
                     int icc = ecvm.getIcc();
@@ -180,7 +180,9 @@ public class GBHSTuner implements Tuner {
                 int maxK = (int) Math.sqrt(dataset.getN());
                 for (int j = 0; j < 30; j++) {
                     System.out.println("Improvisación: " + j);
-                    Agent a = algorithm.process(hms, 100, maxK, 100, 0, tmp.minPar, tmp.maxPar, tmp.hmcr, tmp.po, dataset, f, true, random, distance);
+                    Agent a = algorithm.process(hms, 100, maxK, 100, 0, tmp.minPar,
+                            tmp.maxPar, tmp.hmcr, tmp.po, dataset, f, true,
+                            random, distance, null, null);
                     ContingencyMatrix m = new ContingencyMatrix(a, dataset);
                     ECVM ecvm = new ECVM(m);
                     int icc = ecvm.getIcc();
@@ -201,7 +203,8 @@ public class GBHSTuner implements Tuner {
 
     @Override
     public JsonParams call() throws Exception {
-        return this.tuneUp();
+        throw new UnsupportedOperationException("Acordaos de que se cambió el paso de parámetros y que esto no se ha actualizado (igual es muy costoso su uso)");
+        //return this.tuneUp();
     }
 
     @Override

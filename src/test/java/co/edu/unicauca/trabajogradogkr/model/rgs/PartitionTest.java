@@ -18,7 +18,16 @@
  */
 package co.edu.unicauca.trabajogradogkr.model.rgs;
 
+import co.edu.unicauca.trabajogradogkr.model.Dataset;
+import co.edu.unicauca.trabajogradogkr.model.distance.Distance;
+import co.edu.unicauca.trabajogradogkr.model.distance.EuclideanDistance;
+import co.edu.unicauca.trabajogradogkr.service.Config;
+import co.edu.unicauca.trabajogradogkr.service.DatasetServiceImpl;
+import java.io.FileNotFoundException;
+import java.security.SecureRandom;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -45,6 +54,7 @@ public class PartitionTest {
 
     @Before
     public void setUp() {
+        Config.getInstance().setConfig("datasetsPath", "/home/equipo/Documentos/TrabajoGradoRGS/Codigo/TrabajoGradoGKR/Código/Datasets/json");
     }
 
     @After
@@ -102,4 +112,26 @@ public class PartitionTest {
         assertEquals(result, eResult);
     }
 
+    /**
+     * Test of RandPartitionKmeanspp method, of class Partition.
+     */
+    @Test
+    public void testRandPartitionKmeanspp() {
+        try {
+            System.out.println("RandPartitionKmeanspp");
+            String datasetName = "/home/equipo/Documentos/TrabajoGradoRGS/Codigo/TrabajoGradoGKR/Código/Datasets/json/iris.json";
+            DatasetServiceImpl instance = new DatasetServiceImpl();
+            Dataset dataset = instance.fromJson(datasetName);
+            instance.normalize(dataset);
+            int n = dataset.getN();
+            int k = 3;
+            Distance distance = new EuclideanDistance();
+            Random random = new SecureRandom();
+            Partition expResult = null;
+            Partition result = Partition.RandPartitionKmeanspp(k, dataset, distance, random);
+            assertNotEquals(expResult, result);
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(PartitionTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 }

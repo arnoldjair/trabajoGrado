@@ -33,7 +33,7 @@ import java.util.logging.Logger;
  *
  * @author Arnold Jair Jimenez Vargas <ajjimenez@unicauca.edu.co>
  */
-public class OBKMeansImpl implements OBKMeans {
+public class OBKMeansImpl implements KMeans {
 
     @Override
     public Agent process(Agent agent, Dataset dataset, Distance distance,
@@ -79,8 +79,8 @@ public class OBKMeansImpl implements OBKMeans {
                         /**
                          * MacQueen
                          */
-                        Partition tmp = Partition.reprocessRGS(rgs);
-                        rgs = tmp.getRgs();
+                        //Partition tmp = Partition.reprocessRGS(rgs);
+                        //rgs = tmp.getRgs();
                     }
                 }
 

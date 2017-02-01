@@ -1,0 +1,148 @@
+{
+  "minPar": 0.01,
+  "maxPar": 0.99,
+  "hmcr": 0.95,
+  "hms": 30,
+  "nExp": 30,
+  "po": 1,
+  "seed": 10,
+  "nIt": 1000,
+  "maxK": 10,
+  "maxKMeans": 30,
+  "threads": 4,
+  "datasets": ["iris"],
+  "algorithms": [ "records","centroids", "groups"],
+  "distances": ["euclidean", "manhattan"],
+  "objectiveFunctions": ["aic", "chi"],
+  "datasetsPath": "/home/equipo/Documentos/TrabajoGradoRGS/Codigo/TrabajoGradoGKR/Código/Datasets/json",
+  "kmeansAlgorithm": "basic",
+  "initialization": "random"
+}
+
+averageIcc	averageIic	averageEr	standardDeviation	dataset	objectiveFunction	distance	algorithm
+100	50	33.3333333333333	1.4210854715202E-14	iris	AIC	Euclidean	Records
+100	50	33.3333333333333	1.4210854715202E-14	iris	CHI	Euclidean	Records
+131	19	12.6666666666667	1.77635683940025E-15	iris	AIC	Manhattan	Records
+100	50	33.3333333333333	1.4210854715202E-14	iris	CHI	Manhattan	Records
+100	50	33.3333333333333	1.4210854715202E-14	iris	AIC	Euclidean	Centroids
+100	50	33.3333333333333	1.4210854715202E-14	iris	CHI	Euclidean	Centroids
+131	19	12.6666666666667	1.77635683940025E-15	iris	AIC	Manhattan	Centroids
+100	50	33.3333333333333	1.4210854715202E-14	iris	CHI	Manhattan	Centroids
+100	50	33.3333333333333	1.4210854715202E-14	iris	AIC	Euclidean	Groups
+100	50	33.3333333333333	1.4210854715202E-14	iris	CHI	Euclidean	Groups
+131	19	12.6666666666667	1.77635683940025E-15	iris	AIC	Manhattan	Groups
+100	50	33.3333333333333	1.4210854715202E-14	iris	CHI	Manhattan	Groups
+
+
+tiempo: 148.257
+
+{
+  "minPar": 0.01,
+  "maxPar": 0.99,
+  "hmcr": 0.95,
+  "hms": 30,
+  "nExp": 30,
+  "po": 1,
+  "seed": 10,
+  "nIt": 1000,
+  "maxK": 10,
+  "maxKMeans": 30,
+  "threads": 4,
+  "datasets": ["iris"],
+  "algorithms": [ "records","centroids", "groups"],
+  "distances": ["euclidean", "manhattan"],
+  "objectiveFunctions": ["aic", "chi"],
+  "datasetsPath": "/home/equipo/Documentos/TrabajoGradoRGS/Codigo/TrabajoGradoGKR/Código/Datasets/json",
+  "kmeansAlgorithm": "basic",
+  "initialization": "kmeanspp"
+}
+
+averageIcc	averageIic	averageEr	standardDeviation	dataset	objectiveFunction	distance	algorithm
+101.1	48.9	32.6	3.9491208585653	iris	AIC	Euclidean	Records
+101.1	48.9	32.6	3.9491208585653	iris	CHI	Euclidean	Records
+129.4	20.6	13.7333333333333	4.26388798407519	iris	AIC	Manhattan	Records
+101.066666666667	48.9333333333333	32.6222222222222	3.82945052951787	iris	CHI	Manhattan	Records
+100	50	33.3333333333333	1.4210854715202E-14	iris	AIC	Euclidean	Centroids
+100	50	33.3333333333333	1.4210854715202E-14	iris	CHI	Euclidean	Centroids
+131	19	12.6666666666667	1.77635683940025E-15	iris	AIC	Manhattan	Centroids
+100	50	33.3333333333333	1.4210854715202E-14	iris	CHI	Manhattan	Centroids
+100	50	33.3333333333333	1.4210854715202E-14	iris	AIC	Euclidean	Groups
+100	50	33.3333333333333	1.4210854715202E-14	iris	CHI	Euclidean	Groups
+131	19	12.6666666666667	1.77635683940025E-15	iris	AIC	Manhattan	Groups
+100	50	33.3333333333333	1.4210854715202E-14	iris	CHI	Manhattan	Groups
+
+tiempo: 191.784
+
+{
+  "minPar": 0.01,
+  "maxPar": 0.99,
+  "hmcr": 0.95,
+  "hms": 30,
+  "nExp": 30,
+  "po": 1,
+  "seed": 10,
+  "nIt": 1000,
+  "maxK": 10,
+  "maxKMeans": 30,
+  "threads": 4,
+  "datasets": ["iris"],
+  "algorithms": [ "records","centroids", "groups"],
+  "distances": ["euclidean", "manhattan"],
+  "objectiveFunctions": ["aic", "chi"],
+  "datasetsPath": "/home/equipo/Documentos/TrabajoGradoRGS/Codigo/TrabajoGradoGKR/Código/Datasets/json",
+  "kmeansAlgorithm": "objective",
+  "initialization": "random"
+}
+
+averageIcc	averageIic	averageEr	standardDeviation	dataset	objectiveFunction	distance	algorithm
+100	50	33.3333333333333	1.4210854715202E-14	iris	AIC	Euclidean	Records
+100	50	33.3333333333333	1.4210854715202E-14	iris	CHI	Euclidean	Records
+131	19	12.6666666666667	1.77635683940025E-15	iris	AIC	Manhattan	Records
+100	50	33.3333333333333	1.4210854715202E-14	iris	CHI	Manhattan	Records
+100	50	33.3333333333333	1.4210854715202E-14	iris	AIC	Euclidean	Centroids
+100	50	33.3333333333333	1.4210854715202E-14	iris	CHI	Euclidean	Centroids
+131	19	12.6666666666667	1.77635683940025E-15	iris	AIC	Manhattan	Centroids
+100	50	33.3333333333333	1.4210854715202E-14	iris	CHI	Manhattan	Centroids
+100	50	33.3333333333333	1.4210854715202E-14	iris	AIC	Euclidean	Groups
+100	50	33.3333333333333	1.4210854715202E-14	iris	CHI	Euclidean	Groups
+131	19	12.6666666666667	1.77635683940025E-15	iris	AIC	Manhattan	Groups
+100	50	33.3333333333333	1.4210854715202E-14	iris	CHI	Manhattan	Groups
+
+tiempo: 176.593
+
+{
+  "minPar": 0.01,
+  "maxPar": 0.99,
+  "hmcr": 0.95,
+  "hms": 30,
+  "nExp": 30,
+  "po": 1,
+  "seed": 10,
+  "nIt": 1000,
+  "maxK": 10,
+  "maxKMeans": 30,
+  "threads": 4,
+  "datasets": ["iris"],
+  "algorithms": [ "records","centroids", "groups"],
+  "distances": ["euclidean", "manhattan"],
+  "objectiveFunctions": ["aic", "chi"],
+  "datasetsPath": "/home/equipo/Documentos/TrabajoGradoRGS/Codigo/TrabajoGradoGKR/Código/Datasets/json",
+  "kmeansAlgorithm": "objective",
+  "initialization": "kmeanspp"
+}
+
+averageIcc	averageIic	averageEr	standardDeviation	dataset	objectiveFunction	distance	algorithm
+101.1	48.9	32.6	3.9491208585653	iris	AIC	Euclidean	Records
+101.1	48.9	32.6	3.9491208585653	iris	CHI	Euclidean	Records
+129.433333333333	20.5666666666667	13.7111111111111	4.18350671029242	iris	AIC	Manhattan	Records
+101.066666666667	48.9333333333333	32.6222222222222	3.82945052951787	iris	CHI	Manhattan	Records
+100	50	33.3333333333333	1.4210854715202E-14	iris	AIC	Euclidean	Centroids
+100	50	33.3333333333333	1.4210854715202E-14	iris	CHI	Euclidean	Centroids
+131	19	12.6666666666667	1.77635683940025E-15	iris	AIC	Manhattan	Centroids
+100	50	33.3333333333333	1.4210854715202E-14	iris	CHI	Manhattan	Centroids
+100	50	33.3333333333333	1.4210854715202E-14	iris	AIC	Euclidean	Groups
+100	50	33.3333333333333	1.4210854715202E-14	iris	CHI	Euclidean	Groups
+131	19	12.6666666666667	1.77635683940025E-15	iris	AIC	Manhattan	Groups
+100	50	33.3333333333333	1.4210854715202E-14	iris	CHI	Manhattan	Groups
+
+tiempo: 244.633

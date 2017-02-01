@@ -33,13 +33,38 @@ import java.util.List;
 public class TaskBuilder {
 
     public static List<Task> buildTasks(JsonParams params) throws Exception {
-        if (!params.verify()) {
+        if (!params.verifyExperiment()) {
             return null;
         }
 
         List<Task> ret = new ArrayList<>();
+        String kmAlgo = (String) params.getParam("kmeansAlgorithm");
+        String initialization = (String) params.getParam("initialization");
 
-        for (String algorithm : params.getAlgorithms()) {
+        for (String algorithm : (List<String>) params.getParam("algorithms")) {
+            for (String dataset : (List<String>) params.getParam("datasets")) {
+                for (String distance : (List<String>) params.getParam("distances")) {
+                    for (String objectiveFunction : (List<String>) params.getParam("objectiveFunctions")) {
+                        Task task = new Task(
+                                (double) params.getParam("minPar"),
+                                (double) params.getParam("minPar"),
+                                (double) params.getParam("hmcr"),
+                                (double) params.getParam("po"),
+                                ((Double) params.getParam("hms")).intValue(),
+                                ((Double) params.getParam("nExp")).intValue(),
+                                ((Double) params.getParam("nIt")).intValue(),
+                                ((Double) params.getParam("maxK")).intValue(),
+                                ((Double) params.getParam("maxKMeans")).intValue(),
+                                ((Double) params.getParam("threads")).intValue(),
+                                ((Double) params.getParam("seed")).intValue(),
+                                dataset, objectiveFunction, distance, algorithm,
+                                false, kmAlgo, initialization);
+                        ret.add(task);
+                    }
+                }
+            }
+        }
+        /*for (String algorithm : params.getAlgorithms()) {
             for (String dataset : params.getDatasets()) {
                 for (String distance : params.getDistances()) {
                     for (String objectiveFunction : params.getObjectiveFunctions()) {
@@ -54,7 +79,7 @@ public class TaskBuilder {
                     }
                 }
             }
-        }
+        }*/
 
         return ret;
     }

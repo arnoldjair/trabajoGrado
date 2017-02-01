@@ -23,7 +23,7 @@ import co.edu.unicauca.trabajogradogkr.exception.DistanceException;
 import co.edu.unicauca.trabajogradogkr.model.Agent;
 import co.edu.unicauca.trabajogradogkr.model.AgentComparator;
 import co.edu.unicauca.trabajogradogkr.model.Dataset;
-import co.edu.unicauca.trabajogradogkr.model.kmeans.BasicKMeansImpl;
+import co.edu.unicauca.trabajogradogkr.model.kmeans.KMeans;
 import co.edu.unicauca.trabajogradogkr.model.objectivefunction.ObjectiveFunction;
 import co.edu.unicauca.trabajogradogkr.model.rgs.Partition;
 import co.edu.unicauca.trabajogradogkr.service.Config;
@@ -45,7 +45,7 @@ public class GBHSRecords implements GBHS {
     public synchronized Agent process(int hms, int maxImprovisations, int maxK,
             int maxKMeans, double pKmeans, double minPar, double maxPar, double hmcr,
             double pOptimize, Dataset dataset, ObjectiveFunction f, boolean log,
-            Random random, Distance distance) {
+            Random random, Distance distance, KMeans kmeans, String initialization) {
 
         try {
             int repeated = 0;
@@ -60,10 +60,9 @@ public class GBHSRecords implements GBHS {
             List<Agent> harmonyMemory;
             double par;
             GBHSUtils utils = new GBHSUtils();
-            BasicKMeansImpl kmeans = new BasicKMeansImpl();
 
             harmonyMemory = utils.generateHarmonyMemory(hms, maxK, dataset, f,
-                    agentComparator, random, distance);
+                    agentComparator, random, distance, initialization);
 
             curHms = harmonyMemory.size();
 
@@ -72,12 +71,12 @@ public class GBHSRecords implements GBHS {
             }
 
             utils.optimizeMemory(maxKMeans, pKmeans, pOptimize, random, dataset, f,
-                    agentComparator, harmonyMemory, distance);
+                    agentComparator, harmonyMemory, distance, kmeans);
 
             if (log) {
                 report.writeHarmonyMemory(harmonyMemory, "Optimized Harmony Memory");
             }
-            
+
             int regenerated = 0;
 
             for (int cIt = 0; cIt < maxImprovisations; cIt++) {
@@ -105,12 +104,12 @@ public class GBHSRecords implements GBHS {
                 Partition p = Partition.reprocessRGS(rgs);
                 newSolution.setP(p);
                 if (random.nextDouble() < pOptimize) {
-                    newSolution = kmeans.process(newSolution, dataset, distance, pKmeans, maxKMeans);
+                    newSolution = kmeans.process(newSolution, dataset, distance, pKmeans, maxKMeans, f);
                 }
 
-                newSolution.setFitness(f.calculate(newSolution, dataset, distance));                
+                newSolution.setFitness(f.calculate(newSolution, dataset, distance));
                 newSolution.calcClusters(dataset);
-                
+
                 if (!utils.testSolution(newSolution)) {
                     cIt--;
                     continue;
@@ -132,7 +131,7 @@ public class GBHSRecords implements GBHS {
                     if (utils.uniformMemory(harmonyMemory)) {
                         harmonyMemory = utils.regenerateMemory(harmonyMemory, maxK,
                                 maxImprovisations, pOptimize, 0.0, dataset, f,
-                                agentComparator, random, distance);
+                                agentComparator, random, distance, initialization);
                         regenerated++;
                         curHms = harmonyMemory.size();
                     }
@@ -141,7 +140,7 @@ public class GBHSRecords implements GBHS {
                 if (log) {
                     report.writeHarmonyMemory(harmonyMemory, "Harmony Memory iteration " + cIt);
                 }
-                
+
                 if (regenerated > 10) {
                     break;
                 }
@@ -156,6 +155,9 @@ public class GBHSRecords implements GBHS {
             report.close();
             return harmonyMemory.get(0);
         } catch (DistanceException ex) {
+            Logger.getLogger(GBHSRecords.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        } catch (Exception ex) {
             Logger.getLogger(GBHSRecords.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }

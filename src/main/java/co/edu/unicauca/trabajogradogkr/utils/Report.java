@@ -59,6 +59,7 @@ public class Report {
         if (bw != null) {
             try {
                 bw.write(line);
+                bw.flush();
             } catch (IOException ex) {
                 Logger.getLogger(Report.class.getName()).log(Level.SEVERE, null, ex);
             }

@@ -18,8 +18,15 @@
  */
 package co.edu.unicauca.trabajogradogkr.model.rgs;
 
+import co.edu.unicauca.trabajogradogkr.model.Agent;
+import co.edu.unicauca.trabajogradogkr.model.Cluster;
+import co.edu.unicauca.trabajogradogkr.model.Dataset;
+import co.edu.unicauca.trabajogradogkr.model.Record;
+import co.edu.unicauca.trabajogradogkr.model.distance.Distance;
 import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -97,9 +104,10 @@ public class Partition {
 
     /**
      * Crea una partición con n elementos y a lo mucho k grupos.
+     *
      * @param n
      * @param k
-     * @return 
+     * @return
      */
     public synchronized static Partition randPartition(int n, int k) {
         Random random = new SecureRandom();
@@ -129,6 +137,84 @@ public class Partition {
             ak = ret.getK();
         }
         return ret;
+    }
+
+    /**
+     * Partición aleatoria utilizando el método de inicialización de kmeanspp
+     *
+     * @param k
+     * @param dataset
+     * @param distance
+     * @param random
+     * @return
+     */
+    public synchronized static Partition RandPartitionKmeanspp(int k, Dataset dataset,
+            Distance distance, Random random) {
+        int[] rgs = new int[dataset.getN()];
+        int max = k;
+
+        List<Record> centroids = new ArrayList<>();
+
+        //Las distancia entre cada punto y su centroide mas cercano.
+        double[] D2 = new double[dataset.getN()];
+        double[] probs = new double[dataset.getN()];
+        double acumD2;
+
+        //Se selecciona el primer centroide de manera aleatoria.
+        int pos = random.nextInt(dataset.getN());
+        centroids.add(dataset.getRecord(pos));
+
+        //Seleccionar los siguientes centroides.
+        for (int i = 1; i < k; i++) {
+            acumD2 = 0;
+            for (int j = 0; j < dataset.getN(); j++) {
+                D2[j] = closestClusterDistance(dataset.getRecord(j), centroids, distance, dataset);
+                acumD2 += D2[j];
+            }
+
+            for (int j = 0; j < dataset.getN(); j++) {
+                probs[j] = D2[j] / acumD2;
+            }
+
+            double tmp = random.nextDouble();
+            double acumProbs = 0;
+
+            for (int c = 0; c < dataset.getN(); c++) {
+                acumProbs += probs[c];
+                if (acumProbs >= tmp) {
+                    centroids.add(dataset.getRecord(c));
+                    break;
+                }
+            }
+        }
+
+        Agent agent = new Agent();
+        Cluster[] clusters = new Cluster[centroids.size()];
+
+        pos = 0;
+
+        for (Record centroid : centroids) {
+            Cluster tmpCluster = new Cluster();
+            tmpCluster.setCentroid(centroid);
+            clusters[pos] = tmpCluster;
+            pos++;
+        }
+
+        agent.setClusters(clusters);
+        agent.reallocateRecords(dataset, distance);
+
+        return agent.getP();
+    }
+
+    public synchronized static double closestClusterDistance(Record record, List<Record> centroids, Distance distance, Dataset dataset) {
+        double minDist = Double.POSITIVE_INFINITY;
+        for (Record centroid : centroids) {
+            double currDist = distance.distance(record, centroid);
+            if (currDist < minDist) {
+                minDist = currDist;
+            }
+        }
+        return minDist;
     }
 
     public synchronized static Partition reprocessRGS(int[] rgs) {

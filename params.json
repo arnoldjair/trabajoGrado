@@ -10,9 +10,12 @@
   "maxK": 10,
   "maxKMeans": 30,
   "threads": 4,
-  "datasets": ["iris"],
-  "algorithms": ["records", "groups", "centroids"],
+  "datasets": ["sonar"],
+  "algorithms": [ "records","centroids", "groups"],
   "distances": ["euclidean", "manhattan"],
   "objectiveFunctions": ["aic", "chi"],
-  "datasetsPath": "/home/equipo/Documentos/TrabajoGradoRGS/Codigo/TrabajoGradoGKR/Código/Datasets/json"
+  "datasetsPath": "/home/equipo/Documentos/TrabajoGradoRGS/Codigo/TrabajoGradoGKR/Código/Datasets/json",
+  "kmeansAlgorithm": "basic",
+  "initialization": "kmeanspp",
+  "normalize": true
 }
