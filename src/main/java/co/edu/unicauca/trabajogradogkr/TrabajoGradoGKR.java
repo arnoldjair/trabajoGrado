@@ -21,7 +21,7 @@ import co.edu.unicauca.trabajogradogkr.model.task.Task;
 import co.edu.unicauca.trabajogradogkr.model.task.TaskBuilder;
 import co.edu.unicauca.trabajogradogkr.service.Config;
 import co.edu.unicauca.trabajogradogkr.service.DatasetServiceImpl;
-import co.edu.unicauca.trabajogradogkr.service.interfaces.DatasetService;
+import co.edu.unicauca.trabajogradogkr.service.DatasetService;
 import co.edu.unicauca.trabajogradogkr.utils.Report;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -97,7 +97,8 @@ public class TrabajoGradoGKR {
                     kmeans = true;
                     break;
                 case 'j':
-                    List<Dataset> datasets = datasetService.getDatasets();
+                    //TODO: Esto ya no debe funcionar.
+                    List<Dataset> datasets = datasetService.getDatasets(true);
                     for (Dataset dataset : datasets) {
                         dataset.toFile();
                     }
@@ -134,7 +135,7 @@ public class TrabajoGradoGKR {
                 List<RKmeansOutput> outputs = RUtils.read(pathResults);
                 List<Agent> agents = new ArrayList<>();
                 // TODO: Se asume que el archivo no está vacío.
-                Dataset dataset = datasetService.fromJson(outputs.get(0).getName());
+                Dataset dataset = datasetService.fromJson(outputs.get(0).getName(), true);
                 for (RKmeansOutput rKmeansOutput : outputs) {
                     int[] rgs = new int[rKmeansOutput.getCluster().size()];
 
@@ -187,7 +188,8 @@ public class TrabajoGradoGKR {
         long milis;
         Random random = new SecureRandom();
         DatasetService datasetService = new DatasetServiceImpl();
-        Dataset dataset = datasetService.byName((String) params.getParam("dataset"));
+        boolean normalize = (boolean) (params.getParam("normalize") == null ? false : params.getParam("normalize"));
+        Dataset dataset = datasetService.byName((String) params.getParam("dataset"), normalize);
         Distance distance = DistanceFactory.getDistance((String) params.getParam("distance"));
         SimpleDateFormat dFormat = new SimpleDateFormat("dd-MM-yyyy_HH:mm:ss");
         ObjectiveFunction objectiveFunction

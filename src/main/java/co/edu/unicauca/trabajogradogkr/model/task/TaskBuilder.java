@@ -40,6 +40,7 @@ public class TaskBuilder {
         List<Task> ret = new ArrayList<>();
         String kmAlgo = (String) params.getParam("kmeansAlgorithm");
         String initialization = (String) params.getParam("initialization");
+        boolean normalize = (boolean) (params.getParam("normalize") == null ? false : params.getParam("normalize"));
 
         for (String algorithm : (List<String>) params.getParam("algorithms")) {
             for (String dataset : (List<String>) params.getParam("datasets")) {
@@ -58,7 +59,7 @@ public class TaskBuilder {
                                 ((Double) params.getParam("threads")).intValue(),
                                 ((Double) params.getParam("seed")).intValue(),
                                 dataset, objectiveFunction, distance, algorithm,
-                                false, kmAlgo, initialization);
+                                false, kmAlgo, initialization, normalize);
                         ret.add(task);
                     }
                 }

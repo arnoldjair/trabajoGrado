@@ -28,7 +28,7 @@ import co.edu.unicauca.trabajogradogkr.model.objectivefunction.ObjectiveFunction
 import co.edu.unicauca.trabajogradogkr.model.objectivefunction.ObjectiveFunctionFactory;
 import co.edu.unicauca.trabajogradogkr.model.task.Task;
 import co.edu.unicauca.trabajogradogkr.service.DatasetServiceImpl;
-import co.edu.unicauca.trabajogradogkr.service.interfaces.DatasetService;
+import co.edu.unicauca.trabajogradogkr.service.DatasetService;
 import java.io.FileNotFoundException;
 import java.util.Random;
 import java.util.concurrent.Callable;
@@ -73,7 +73,7 @@ public class Experimenter implements Callable<Result> {
         this.maxPar = task.getMaxPar();
         this.hmcr = task.getHmcr();
         this.pOptimize = task.getPo();
-        this.dataset = this.datasetService.byName(task.getDataset());
+        this.dataset = this.datasetService.byName(task.getDataset(), task.isNormalize());
         this.f = ObjectiveFunctionFactory.getObjectiveFuncion(task.getObjectiveFunction());
         if (task.getSeed() != 0) {
             this.random = new Random(task.getSeed());

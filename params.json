@@ -11,11 +11,11 @@
   "maxKMeans": 30,
   "threads": 4,
   "datasets": ["sonar"],
-  "algorithms": [ "records","centroids", "groups"],
+  "algorithms": [ "records"],
   "distances": ["euclidean", "manhattan"],
   "objectiveFunctions": ["aic", "chi"],
   "datasetsPath": "/home/equipo/Documentos/TrabajoGradoRGS/Codigo/TrabajoGradoGKR/Código/Datasets/json",
   "kmeansAlgorithm": "basic",
   "initialization": "kmeanspp",
-  "normalize": true
+  "normalize": false
 }

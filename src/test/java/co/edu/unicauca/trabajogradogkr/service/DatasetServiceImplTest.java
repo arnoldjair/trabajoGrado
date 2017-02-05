@@ -19,7 +19,6 @@
 package co.edu.unicauca.trabajogradogkr.service;
 
 import co.edu.unicauca.trabajogradogkr.model.Dataset;
-import co.edu.unicauca.trabajogradogkr.service.interfaces.DatasetService;
 import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.logging.Level;
@@ -66,7 +65,7 @@ public class DatasetServiceImplTest {
             System.out.println("getDatasets");
             DatasetServiceImpl instance = new DatasetServiceImpl();
             List<Dataset> expResult = null;
-            List<Dataset> result = instance.getDatasets();
+            List<Dataset> result = instance.getDatasets(true);
             assertNotEquals(expResult, result);
         } catch (FileNotFoundException ex) {
             Logger.getLogger(DatasetServiceImplTest.class.getName()).log(Level.SEVERE, null, ex);
@@ -84,7 +83,7 @@ public class DatasetServiceImplTest {
         String name = "/home/equipo/Documentos/TrabajoGradoRGS/Codigo/TrabajoGradoGKR/Código/Datasets/json/iris.json";
         DatasetServiceImpl instance = new DatasetServiceImpl();
         Dataset expResult = null;
-        Dataset result = instance.fromJson(name);
+        Dataset result = instance.fromJson(name, true);
         assertNotEquals(expResult, result);
     }
 
@@ -97,7 +96,7 @@ public class DatasetServiceImplTest {
             System.out.println("normalize");
             String datasetName = "/home/equipo/Documentos/TrabajoGradoRGS/Codigo/TrabajoGradoGKR/Código/Datasets/json/iris.json";
             DatasetServiceImpl instance = new DatasetServiceImpl();
-            Dataset dataset = instance.fromJson(datasetName);
+            Dataset dataset = instance.fromJson(datasetName, true);
             instance.normalize(dataset);
             System.out.println("");
 
@@ -129,7 +128,7 @@ public class DatasetServiceImplTest {
         String name = "iris";
         DatasetServiceImpl instance = new DatasetServiceImpl();
         Dataset expResult = null;
-        Dataset result = instance.byName(name);
+        Dataset result = instance.byName(name, true);
         assertNotEquals(expResult, result);
     }
 }

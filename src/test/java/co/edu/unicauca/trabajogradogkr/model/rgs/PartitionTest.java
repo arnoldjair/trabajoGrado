@@ -121,7 +121,7 @@ public class PartitionTest {
             System.out.println("RandPartitionKmeanspp");
             String datasetName = "/home/equipo/Documentos/TrabajoGradoRGS/Codigo/TrabajoGradoGKR/Código/Datasets/json/iris.json";
             DatasetServiceImpl instance = new DatasetServiceImpl();
-            Dataset dataset = instance.fromJson(datasetName);
+            Dataset dataset = instance.fromJson(datasetName, true);
             instance.normalize(dataset);
             int n = dataset.getN();
             int k = 3;

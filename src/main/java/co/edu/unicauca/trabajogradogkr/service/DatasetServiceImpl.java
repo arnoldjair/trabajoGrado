@@ -22,7 +22,6 @@ import co.edu.unicauca.trabajogradogkr.model.Attribute;
 import co.edu.unicauca.trabajogradogkr.model.Dataset;
 import co.edu.unicauca.trabajogradogkr.model.JSONDataset;
 import co.edu.unicauca.trabajogradogkr.model.Record;
-import co.edu.unicauca.trabajogradogkr.service.interfaces.DatasetService;
 import com.google.gson.Gson;
 import java.io.BufferedReader;
 import java.io.File;
@@ -43,7 +42,7 @@ import java.util.logging.Logger;
 public class DatasetServiceImpl implements DatasetService {
 
     @Override
-    public List<Dataset> getDatasets() throws FileNotFoundException {
+    public List<Dataset> getDatasets(boolean normalize) throws FileNotFoundException {
         String datasetsPath = Config.getInstance().getConfig("datasetsPath");
 
         List<Dataset> datasets = new ArrayList<>();
@@ -64,7 +63,7 @@ public class DatasetServiceImpl implements DatasetService {
         File[] files = file.listFiles(filter);
 
         for (int i = 0; i < files.length; i++) {
-            Dataset tmp = this.fromJson(files[i].getAbsolutePath());
+            Dataset tmp = this.fromJson(files[i].getAbsolutePath(), normalize);
             datasets.add(tmp);
         }
 
@@ -72,7 +71,7 @@ public class DatasetServiceImpl implements DatasetService {
     }
 
     @Override
-    public Dataset fromJson(String path) throws FileNotFoundException {
+    public Dataset fromJson(String path, boolean normalize) throws FileNotFoundException {
         BufferedReader reader = new BufferedReader(new FileReader(path));
         Gson gson = new Gson();
         JSONDataset jsonDataset = gson.fromJson(reader, JSONDataset.class);
@@ -155,7 +154,15 @@ public class DatasetServiceImpl implements DatasetService {
 
         ret.setNormValues(norm);
         ret.setN(records.length);
-        this.normalize(ret);
+
+        if (normalize) {
+            System.out.println("Dataset normalizado");
+            this.normalize(ret);
+        } else {
+            System.out.println("Dataset no normalizado");
+            ret.setRecords(ret.getoRecords());
+        }
+
         ret.setAttributes(attrs);
         ret.setName(jsonDataset.getName());
 
@@ -206,10 +213,10 @@ public class DatasetServiceImpl implements DatasetService {
     }
 
     @Override
-    public Dataset byName(String name) {
+    public Dataset byName(String name, boolean normalize) {
         try {
             String datasetsPath = Config.getInstance().getConfig("datasetsPath") + "/" + name + ".json";
-            return this.fromJson(datasetsPath);
+            return this.fromJson(datasetsPath, normalize);
         } catch (FileNotFoundException ex) {
             Logger.getLogger(DatasetServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
             return null;

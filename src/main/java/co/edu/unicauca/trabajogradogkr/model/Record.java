@@ -18,7 +18,7 @@
  */
 package co.edu.unicauca.trabajogradogkr.model;
 
-import co.edu.unicauca.trabajogradogkr.service.interfaces.DatasetService;
+import co.edu.unicauca.trabajogradogkr.service.DatasetService;
 
 /**
  *

@@ -16,7 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
-package co.edu.unicauca.trabajogradogkr.service.interfaces;
+package co.edu.unicauca.trabajogradogkr.service;
 
 import co.edu.unicauca.trabajogradogkr.model.Dataset;
 import java.io.FileNotFoundException;
@@ -32,14 +32,14 @@ public interface DatasetService {
     public static final int STRING = 2;
     public static final int CLASS = 3;
 
-    public List<Dataset> getDatasets() throws FileNotFoundException;
+    public List<Dataset> getDatasets(boolean normalize) throws FileNotFoundException;
 
-    public Dataset fromJson(String path) throws FileNotFoundException;
+    public Dataset fromJson(String path, boolean normalize) throws FileNotFoundException;
 
     public void normalize(Dataset dataset);
     
     public int getAttrType(String t);
     
-    public Dataset byName(String name);
+    public Dataset byName(String name, boolean normalize);
 
 }

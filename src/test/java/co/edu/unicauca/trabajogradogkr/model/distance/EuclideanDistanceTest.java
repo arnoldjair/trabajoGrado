@@ -20,7 +20,7 @@ package co.edu.unicauca.trabajogradogkr.model.distance;
 
 import co.edu.unicauca.trabajogradogkr.model.Attribute;
 import co.edu.unicauca.trabajogradogkr.model.Record;
-import co.edu.unicauca.trabajogradogkr.service.interfaces.DatasetService;
+import co.edu.unicauca.trabajogradogkr.service.DatasetService;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
