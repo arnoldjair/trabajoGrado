@@ -93,6 +93,9 @@ public class Dataset {
     }
 
     public synchronized Record getRecord(int index) {
+        // TODO: Dejar los registros como una matriz de Objects y cuando se 
+        // solicite un registro en particular devolverlo como Record. 
+        // Esto facilitaría la aplicación de filtros al dataset.
         return records[index];
     }
 
@@ -186,20 +189,16 @@ public class Dataset {
         }
     }*/
 
-    /*public synchronized void fromFile(File file) throws IOException {
+ /*public synchronized void fromFile(File file) throws IOException {
         try {
             fromFile(new FileInputStream(file));
         } catch (FileNotFoundException | DatasetException | AttributeException ex) {
             Logger.getLogger(Dataset.class.getName()).log(Level.SEVERE, null, ex);
         }
     }*/
-
     /**
      *
-     * @param in
-     * @throws co.edu.unicauca.trabajogradogkr.exception.DatasetException
-     * @throws co.edu.unicauca.trabajogradogkr.exception.AttributeException
-     * @throws java.io.IOException
+     * @return
      */
     /*public synchronized void fromFile(InputStream in) throws DatasetException, AttributeException, IOException {
         //BufferedReader read;
@@ -308,7 +307,6 @@ public class Dataset {
         normalized = false;
 
     }*/
-
     public synchronized String toGson() {
         String ret = "";
 

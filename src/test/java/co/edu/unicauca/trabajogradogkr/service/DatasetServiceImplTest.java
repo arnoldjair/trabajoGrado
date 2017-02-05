@@ -80,7 +80,7 @@ public class DatasetServiceImplTest {
     @Test
     public void testFromJson() throws Exception {
         System.out.println("fromJson");
-        String name = "/home/equipo/Documentos/TrabajoGradoRGS/Codigo/TrabajoGradoGKR/Código/Datasets/json/iris.json";
+        String name = Config.getInstance().getConfig("datasetsPath") + "/dataset.json";
         DatasetServiceImpl instance = new DatasetServiceImpl();
         Dataset expResult = null;
         Dataset result = instance.fromJson(name, true);

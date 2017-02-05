@@ -86,7 +86,7 @@ public class DatasetServiceImpl implements DatasetService {
             tmp.setType(getAttrType(attribute.getType()));
             if (tmp.getType() == DatasetService.CLASS) {
                 ret.setClassIndex(index);
-                ret.setHasClass(true);
+                    ret.setHasClass(true);
             }
             attrs[index] = tmp;
             index++;
