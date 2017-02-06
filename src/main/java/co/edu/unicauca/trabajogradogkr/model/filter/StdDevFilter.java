@@ -24,6 +24,9 @@ import co.edu.unicauca.trabajogradogkr.model.Record;
 import co.edu.unicauca.trabajogradogkr.service.DatasetService;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Filtrar por StdDev
@@ -118,6 +121,14 @@ public class StdDevFilter implements Filter {
         }
 
         ret.setRecords(records);
+        ret.setNormalized(true);
+        //TODO: Copiar normValues        
+        ret.setName(dataset.getName());
+        ret.setClasses(dataset.getClasses());
+        if (ret.getN() < 3) {
+            Logger.getLogger("Error").log(Level.SEVERE, "El Dataset no es apto, se procedera con el dataset original");
+            System.exit(1);
+        }
         return ret;
     }
 

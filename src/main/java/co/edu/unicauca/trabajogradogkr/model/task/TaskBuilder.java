@@ -24,7 +24,9 @@ import co.edu.unicauca.trabajogradogkr.model.gbhs.GBHSCentroids;
 import co.edu.unicauca.trabajogradogkr.model.gbhs.GBHSGroups;
 import co.edu.unicauca.trabajogradogkr.model.gbhs.GBHSRecords;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -41,6 +43,14 @@ public class TaskBuilder {
         String kmAlgo = (String) params.getParam("kmeansAlgorithm");
         String initialization = (String) params.getParam("initialization");
         boolean normalize = (boolean) (params.getParam("normalize") == null ? false : params.getParam("normalize"));
+        Map<String, Object> filters = null;
+        if (params.getParam("filters") != null) {
+            List<Map<String, Object>> tmp = (List<Map<String, Object>>) params.getParam("filters");
+            filters = new HashMap<>();
+            for (Map<String, Object> map : tmp) {
+                filters.put((String) map.get("filter"), map.get("value"));
+            }
+        }
 
         for (String algorithm : (List<String>) params.getParam("algorithms")) {
             for (String dataset : (List<String>) params.getParam("datasets")) {
@@ -59,7 +69,7 @@ public class TaskBuilder {
                                 ((Double) params.getParam("threads")).intValue(),
                                 ((Double) params.getParam("seed")).intValue(),
                                 dataset, objectiveFunction, distance, algorithm,
-                                false, kmAlgo, initialization, normalize);
+                                false, kmAlgo, initialization, normalize, filters);
                         ret.add(task);
                     }
                 }

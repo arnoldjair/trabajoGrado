@@ -30,6 +30,7 @@ import co.edu.unicauca.trabajogradogkr.model.task.Task;
 import co.edu.unicauca.trabajogradogkr.service.DatasetServiceImpl;
 import co.edu.unicauca.trabajogradogkr.service.DatasetService;
 import java.io.FileNotFoundException;
+import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.Callable;
 
@@ -74,6 +75,14 @@ public class Experimenter implements Callable<Result> {
         this.hmcr = task.getHmcr();
         this.pOptimize = task.getPo();
         this.dataset = this.datasetService.byName(task.getDataset(), task.isNormalize());
+        Map<String, Object> filters = task.getFilters();
+        if (filters != null) {
+            for (Map.Entry<String, Object> entry : filters.entrySet()) {
+                String key = entry.getKey();
+                Object value = entry.getValue();
+                this.dataset = this.datasetService.filter(this.dataset, key, value);
+            }
+        }
         this.f = ObjectiveFunctionFactory.getObjectiveFuncion(task.getObjectiveFunction());
         if (task.getSeed() != 0) {
             this.random = new Random(task.getSeed());

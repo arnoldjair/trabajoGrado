@@ -18,6 +18,8 @@
  */
 package co.edu.unicauca.trabajogradogkr.model.task;
 
+import java.util.Map;
+
 /**
  *
  * @author Arnold Jair Jimenez Vargas <ajjimenez@unicauca.edu.co>
@@ -43,12 +45,13 @@ public class Task {
     private String initialization;
     private boolean done;
     private boolean normalize;
+    private Map<String, Object> filters;
 
     public Task(double minPar, double maxPar, double hmcr, double po, int hms,
             int nExp, int nIt, int maxK, int maxKMeans, int threads, long seed,
             String dataset, String objectiveFunction, String distance,
             String algorithm, boolean done, String kmeansAlgorithm,
-            String initialization, boolean normalize) {
+            String initialization, boolean normalize, Map<String, Object> filters) {
         this.minPar = minPar;
         this.maxPar = maxPar;
         this.hmcr = hmcr;
@@ -68,6 +71,7 @@ public class Task {
         this.kmeansAlgorithm = kmeansAlgorithm;
         this.initialization = initialization;
         this.normalize = normalize;
+        this.filters = filters;
     }
 
     public double getMinPar() {
@@ -220,6 +224,14 @@ public class Task {
 
     public void setNormalize(boolean normalize) {
         this.normalize = normalize;
+    }
+
+    public Map<String, Object> getFilters() {
+        return filters;
+    }
+
+    public void setFilters(Map<String, Object> filters) {
+        this.filters = filters;
     }
 
 }

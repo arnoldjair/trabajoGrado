@@ -37,9 +37,10 @@ public interface DatasetService {
     public Dataset fromJson(String path, boolean normalize) throws FileNotFoundException;
 
     public void normalize(Dataset dataset);
-    
+
     public int getAttrType(String t);
-    
+
     public Dataset byName(String name, boolean normalize);
 
+    public Dataset filter(Dataset dataset, String filter, Object value);
 }

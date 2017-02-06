@@ -22,6 +22,8 @@ import co.edu.unicauca.trabajogradogkr.model.Attribute;
 import co.edu.unicauca.trabajogradogkr.model.Dataset;
 import co.edu.unicauca.trabajogradogkr.model.JSONDataset;
 import co.edu.unicauca.trabajogradogkr.model.Record;
+import co.edu.unicauca.trabajogradogkr.model.filter.Filter;
+import co.edu.unicauca.trabajogradogkr.model.filter.StdDevFilter;
 import com.google.gson.Gson;
 import java.io.BufferedReader;
 import java.io.File;
@@ -86,7 +88,7 @@ public class DatasetServiceImpl implements DatasetService {
             tmp.setType(getAttrType(attribute.getType()));
             if (tmp.getType() == DatasetService.CLASS) {
                 ret.setClassIndex(index);
-                    ret.setHasClass(true);
+                ret.setHasClass(true);
             }
             attrs[index] = tmp;
             index++;
@@ -218,6 +220,21 @@ public class DatasetServiceImpl implements DatasetService {
             String datasetsPath = Config.getInstance().getConfig("datasetsPath") + "/" + name + ".json";
             return this.fromJson(datasetsPath, normalize);
         } catch (FileNotFoundException ex) {
+            Logger.getLogger(DatasetServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+    }
+
+    @Override
+    public Dataset filter(Dataset dataset, String filter, Object value) {
+        try {
+            switch (filter) {
+                case "stdDev":
+                    Filter currFilter = new StdDevFilter();
+                    return currFilter.filter(dataset, (double) value);
+            }
+            return null;
+        } catch (Exception ex) {
             Logger.getLogger(DatasetServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }

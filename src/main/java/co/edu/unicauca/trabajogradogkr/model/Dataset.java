@@ -101,6 +101,7 @@ public class Dataset {
 
     public synchronized void setRecords(Record[] records) {
         this.records = records;
+        this.n = records.length;
     }
 
     public synchronized Record[] getoRecords() {

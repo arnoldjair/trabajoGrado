@@ -113,6 +113,7 @@ public class TrabajoGradoGKR {
                     Config.getInstance().setConfig("datasetsPath", (String) params.getParam("datasetsPath"));
                     break;
                 case 'r':
+                    // TODO: Se utilizó para calcular el error del clustering desde R.
                     pathResults = go.getOptarg();
                     fromR = true;
                     break;
