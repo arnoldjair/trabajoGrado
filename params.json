@@ -11,11 +11,12 @@
   "maxKMeans": 30,
   "threads": 4,
   "datasets": ["wdbc"],
-  "algorithms": [ "records"],
+  "algorithms": [ "records", "centroids", "groups"],
   "distances": ["euclidean", "manhattan"],
   "objectiveFunctions": ["aic", "chi"],
   "datasetsPath": "/home/equipo/Documentos/TrabajoGradoRGS/Codigo/TrabajoGradoGKR/Código/Datasets/json",
   "kmeansAlgorithm": "basic",
   "initialization": "random",
-  "normalize": true
+  "normalize": true,
+  "filters": [{"filter": "stdDev", "value": 0.165}]
 }

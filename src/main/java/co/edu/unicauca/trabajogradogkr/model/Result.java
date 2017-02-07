@@ -196,7 +196,7 @@ public class Result implements Comparable<Result> {
         ret.append(dataset).append("\t");
         ret.append(objectiveFunction).append("\t");
         ret.append(distance).append("\t");
-        ret.append(algorithm).append("\n");
+        ret.append(algorithm);
 
         return ret.toString();
     }

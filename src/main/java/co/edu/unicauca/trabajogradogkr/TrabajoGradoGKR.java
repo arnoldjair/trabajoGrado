@@ -242,6 +242,7 @@ public class TrabajoGradoGKR {
 
     public static void experiment(JsonParams params) throws Exception {
         long milis = System.currentTimeMillis();
+        Report report = new Report("Reporte.csv", true);
         try {
 
             SimpleDateFormat dFormat = new SimpleDateFormat("dd-MM-yyyy_HH:mm:ss");
@@ -264,43 +265,44 @@ public class TrabajoGradoGKR {
 
             pool.shutdown();
 
-            Date date = new Date();
-            Report report = new Report("Resumen" + dFormat.format(date) + ".json");
-
+            /*
             GsonBuilder gsonBuilder = new GsonBuilder();
             Gson gson = gsonBuilder.setPrettyPrinting().create();
 
             Type resultType = new TypeToken<List<Result>>() {
             }.getType();
-
-//            gson.toJson(results, resultType, new FileWriter("Resumen" + dFormat.format(date) + ".json", false));
-            report.writeLine(gson.toJson(results, resultType));
-            report.close();
-
-            report = new Report("Resumen" + dFormat.format(date) + ".csv");
+             */
             StringBuilder sb = new StringBuilder();
-            sb.append("averageIcc").append("\t");
-            sb.append("averageIic").append("\t");
-            sb.append("averageEr").append("\t");
-            sb.append("standardDeviation").append("\t");
-            sb.append("dataset").append("\t");
-            sb.append("objectiveFunction").append("\t");
-            sb.append("distance").append("\t");
-            sb.append("algorithm").append("\n");
+            sb.append("date").append("\t")
+                    .append("averageIcc").append("\t")
+                    .append("averageIic").append("\t")
+                    .append("averageEr").append("\t")
+                    .append("standardDeviation").append("\t")
+                    .append("dataset").append("\t")
+                    .append("objectiveFunction").append("\t")
+                    .append("distance").append("\t")
+                    .append("algorithm").append("\t")
+                    .append(params.getFields()).append("\n");
             report.writeLine(sb.toString());
-
+            Date date = new Date();
             for (Result result : results) {
-                report.writeLine(result.toString());
+                sb = new StringBuilder();
+                sb.append(dFormat.format(date)).append("\t")
+                        .append(result.toString()).append("\t")
+                        .append(params.toString()).append("\n");
+                report.writeLine(sb.toString());
             }
-            report.close();
 
         } catch (AttributeException | DatasetException ex) {
             Logger.getLogger(TrabajoGradoGKR.class.getName()).log(Level.SEVERE, null, ex);
         } catch (InstantiationException | IllegalAccessException | InterruptedException | ExecutionException ex) {
             Logger.getLogger(TrabajoGradoGKR.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            milis = System.currentTimeMillis() - milis;
+            report.writeLine("tiempo\t" + milis + "\tmilis\n\n");
+            System.out.println("tiempo\t" + milis + "\tmilis");
+            report.close();
         }
-        milis = System.currentTimeMillis() - milis;
-        System.out.println((double) milis / 1000);
 
     }
 
