@@ -4,19 +4,18 @@
   "hmcr": 0.95,
   "hms": 30,
   "nExp": 30,
-  "po": 1,
+  "po": 0,
   "seed": 10,
   "nIt": 1000,
   "maxK": 10,
   "maxKMeans": 30,
   "threads": 4,
-  "datasets": ["wdbc"],
+  "datasets": ["iris"],
   "algorithms": [ "records", "centroids", "groups"],
   "distances": ["euclidean", "manhattan"],
   "objectiveFunctions": ["aic", "chi"],
   "datasetsPath": "/home/equipo/Documentos/TrabajoGradoRGS/Codigo/TrabajoGradoGKR/Código/Datasets/json",
   "kmeansAlgorithm": "basic",
   "initialization": "random",
-  "normalize": true,
-  "filters": [{"filter": "stdDev", "value": 0.165}]
+  "normalize": true
 }

@@ -25,11 +25,9 @@ import co.edu.unicauca.trabajogradogkr.service.DatasetService;
 import co.edu.unicauca.trabajogradogkr.utils.Report;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 import gnu.getopt.Getopt;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.lang.reflect.Type;
 import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -186,7 +184,8 @@ public class TrabajoGradoGKR {
     }
 
     public static void testKMeans(JsonParams params) throws FileNotFoundException, Exception {
-        long milis;
+        long milis = System.currentTimeMillis();
+        Report report = new Report("ReporteKmeans.csv", true);
         Random random = new SecureRandom();
         DatasetService datasetService = new DatasetServiceImpl();
         boolean normalize = (boolean) (params.getParam("normalize") == null ? false : params.getParam("normalize"));
@@ -202,13 +201,15 @@ public class TrabajoGradoGKR {
         double po = (double) params.getParam("po");
         KMeans kmeans = KMeansFactory.getKMeans((String) params.getParam("kmeansAlgorithm"));
         String initialization = (String) params.getParam("initialization");
+        StringBuilder sb = new StringBuilder();
+        sb.append("date").append("\t")
+                .append("averageEr").append("\t")
+                .append(params.getFields()).append("\n");
+        report.writeLine(sb.toString());
 
-        Report report = new Report("Kmeans_" + dataset.getName() + ".csv", true);
-        report.writeLine(params.getFields());
-        report.writeLine("ER\tTime\n");
+        double err = 0;
 
         for (int i = 0; i < nExp; i++) {
-            milis = System.currentTimeMillis();
             Partition p = null;
             switch (initialization) {
                 case "random":
@@ -221,22 +222,26 @@ public class TrabajoGradoGKR {
                     throw new Exception("El método de init es incorrecto caballero");
             }
 
-            Agent a = new Agent();
-            a.setP(p);
+            Agent agent = new Agent();
+            agent.setP(p);
             Agent sol;
-            sol = kmeans.process(a, dataset, distance, po, maxIt, objectiveFunction);
+            sol = kmeans.process(agent, dataset, distance, po, maxIt, objectiveFunction);
             ContingencyMatrix m = new ContingencyMatrix(sol, dataset);
             ECVM ecvm = new ECVM(m);
             int icc = ecvm.getIcc();
             int iic = dataset.getN() - icc;
-            double er = ((double) iic / dataset.getN()) * 100;
-            report.writeLine(params.toString());
-            report.writeLine(Double.toString(er) + "\t");
-            milis = System.currentTimeMillis() - milis;
-            report.writeLine(Double.toString((double) milis / 1000));
-            report.writeLine("\n");
+            err += ((double) iic / dataset.getN()) * 100;
         }
-
+        err /= nExp;
+        sb = new StringBuilder();
+        Date date = new Date();
+        sb.append(dFormat.format(date)).append("\t")
+                .append(Double.toString(err)).append("\t")
+                .append(params.toString()).append("\n");
+        report.writeLine(sb.toString());
+        milis = System.currentTimeMillis() - milis;
+        report.writeLine("tiempo\t" + milis + "\tmilis\n\n");
+        System.out.println("tiempo\t" + milis + "\tmilis");
         report.close();
     }
 
