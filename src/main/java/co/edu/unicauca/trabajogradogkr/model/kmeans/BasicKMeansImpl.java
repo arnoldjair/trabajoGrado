@@ -71,9 +71,8 @@ public class BasicKMeansImpl implements KMeans {
                     rgs[i] = index;
                     /**
                      * MacQueen Cada vez que se reasigna un punto se calculan
-                     * los clusters.
-                     * Si esto iris: 147.92 seg
-                     * Con esto iris 4823 seg
+                     * los clusters. Sin esto iris: 147.92 seg Con esto iris 4823
+                     * seg
                      */
                     /*ret.setP(Partition.reprocessRGS(rgs));
                     ret.calcClusters(dataset);
@@ -89,7 +88,6 @@ public class BasicKMeansImpl implements KMeans {
             ret.calcClusters(dataset);
             currIt++;
         } while (reallocated != 0 && currIt < maxIt);
-
         return ret;
     }
 
