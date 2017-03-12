@@ -1,13 +1,13 @@
 {
   "k": 2,
   "maxIt": 100,
-  "nExp": 3000,
+  "nExp": 500,
   "po": 0.0,
-  "dataset": "wine",
+  "dataset": "ionosphere",
   "distance": "euclidean",
   "objectiveFunction": "aic",
   "kmeansAlgorithm": "basic",
   "datasetsPath": "/home/equipo/Documentos/TrabajoGradoRGS/Codigo/TrabajoGradoGKR/Código/Datasets/json",
-  "initialization": "kmeanspp",
+  "initialization": "random",
   "normalize": true
 }

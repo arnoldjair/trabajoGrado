@@ -43,8 +43,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import co.edu.unicauca.trabajogradogkr.model.kmeans.KMeans;
 import co.edu.unicauca.trabajogradogkr.model.kmeans.KMeansFactory;
 
@@ -55,7 +53,6 @@ import co.edu.unicauca.trabajogradogkr.model.kmeans.KMeansFactory;
  *
  * @author equipo
  */
-@SpringBootApplication
 public class TrabajoGradoGKR {
 
     public static void main(String[] args) throws DistanceException, Exception {
@@ -125,7 +122,7 @@ public class TrabajoGradoGKR {
         }
 
         if (web) {
-            SpringApplication.run(TrabajoGradoGKR.class, args);
+            //SpringApplication.run(TrabajoGradoGKR.class, args);
         } else {
 
             // TODO: Toca volver a hacer esto
