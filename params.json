@@ -14,7 +14,7 @@
   "algorithms": [ "records", "centroids" ,"groups"],
   "distances": ["euclidean", "manhattan"],
   "objectiveFunctions": ["aic", "chi"],
-  "datasetsPath": "/home/equipo/Documentos/TrabajoGradoRGS/Codigo/TrabajoGradoGKR/Código/Datasets/json",
+  "datasetsPath": "/home/equipo/Desarrollo/trabajoGrado/Datasets/json/",
   "kmeansAlgorithm": "objective",
   "initialization": "random",
   "normalize": true

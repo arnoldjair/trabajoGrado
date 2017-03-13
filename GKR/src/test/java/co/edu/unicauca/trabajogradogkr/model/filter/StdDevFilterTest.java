@@ -47,7 +47,7 @@ public class StdDevFilterTest {
 
     @Before
     public void setUp() {
-        Config.getInstance().setConfig("datasetsPath", "/home/equipo/Documentos/TrabajoGradoRGS/Codigo/TrabajoGradoGKR/Código/Datasets/json");
+        Config.getInstance().setConfig("datasetsPath", "/home/equipo/Desarrollo/trabajoGrado/Datasets/json/");
     }
 
     @After

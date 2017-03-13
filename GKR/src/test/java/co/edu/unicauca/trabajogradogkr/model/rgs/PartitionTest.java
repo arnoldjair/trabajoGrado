@@ -54,7 +54,7 @@ public class PartitionTest {
 
     @Before
     public void setUp() {
-        Config.getInstance().setConfig("datasetsPath", "/home/equipo/Documentos/TrabajoGradoRGS/Codigo/TrabajoGradoGKR/Código/Datasets/json");
+        Config.getInstance().setConfig("datasetsPath", "/home/equipo/Desarrollo/trabajoGrado/Datasets/json/");
     }
 
     @After
@@ -119,7 +119,7 @@ public class PartitionTest {
     public void testRandPartitionKmeanspp() {
         try {
             System.out.println("RandPartitionKmeanspp");
-            String datasetName = "/home/equipo/Documentos/TrabajoGradoRGS/Codigo/TrabajoGradoGKR/Código/Datasets/json/iris.json";
+            String datasetName = "/home/equipo/Desarrollo/trabajoGrado/Datasets/json/iris.json";
             DatasetServiceImpl instance = new DatasetServiceImpl();
             Dataset dataset = instance.fromJson(datasetName, true);
             instance.normalize(dataset);
