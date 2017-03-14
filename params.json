@@ -10,12 +10,13 @@
   "maxK": 10,
   "maxKMeans": 100,
   "threads": 6,
-  "datasets": ["iris", "glass", "wine", "wdbc", "sonar"],
-  "algorithms": [ "records", "centroids" ,"groups"],
+  "datasets": ["iris", "glass", "sonar", "wdbc", "wine"],
+  "algorithms": ["records", "centroids", "groups"],
   "distances": ["euclidean", "manhattan"],
   "objectiveFunctions": ["aic", "chi"],
-  "datasetsPath": "/home/equipo/Desarrollo/trabajoGrado/Datasets/json/",
-  "kmeansAlgorithm": "objective",
+  "datasetsPath": "/home/equipo/Documentos/TrabajoGradoRGS/Codigo/TrabajoGradoGKR/Código/Datasets/json",
+  "kmeansAlgorithm": "basic",
   "initialization": "random",
-  "normalize": true
+  "normalize": true,
+  "fixedK": true
 }

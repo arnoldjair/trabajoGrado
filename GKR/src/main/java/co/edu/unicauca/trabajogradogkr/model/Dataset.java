@@ -13,9 +13,10 @@ import java.io.InputStreamReader;
  */
 public class Dataset {
 
-    public static final String datasetsPath = "Datasets";
+    public static final String DATASETSPATH_STRING = "Datasets";
 
     private int n;
+    private int k;
     private int classIndex;
     private boolean hasClass;
     private boolean normalized;
@@ -38,6 +39,14 @@ public class Dataset {
 
     public synchronized void setN(int n) {
         this.n = n;
+    }
+
+    public int getK() {
+        return k;
+    }
+
+    public void setK(int k) {
+        this.k = k;
     }
 
     public synchronized int getClassIndex() {

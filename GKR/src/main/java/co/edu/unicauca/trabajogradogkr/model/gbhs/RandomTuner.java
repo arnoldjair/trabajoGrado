@@ -53,6 +53,8 @@ public class RandomTuner implements Tuner {
                 err += result.getAverageEr();
             } catch (FileNotFoundException ex) {
                 Logger.getLogger(RandomTuner.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (Exception ex) {
+                Logger.getLogger(RandomTuner.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
 

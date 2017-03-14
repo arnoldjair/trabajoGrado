@@ -44,7 +44,7 @@ public class GBHSRecords implements GBHS {
     @Override
     public synchronized Agent process(int hms, int maxImprovisations, int maxK,
             int maxKMeans, double pKmeans, double minPar, double maxPar, double hmcr,
-            double pOptimize, Dataset dataset, ObjectiveFunction f, boolean log,
+            double pOptimize, Dataset dataset, ObjectiveFunction f, boolean log, boolean fixedK,
             Random random, Distance distance, KMeans kmeans, String initialization) {
 
         try {
@@ -62,7 +62,7 @@ public class GBHSRecords implements GBHS {
             GBHSUtils utils = new GBHSUtils();
 
             harmonyMemory = utils.generateHarmonyMemory(hms, maxK, dataset, f,
-                    agentComparator, random, distance, initialization);
+                    agentComparator, random, distance, initialization, fixedK);
 
             curHms = harmonyMemory.size();
 
@@ -79,9 +79,18 @@ public class GBHSRecords implements GBHS {
 
             int regenerated = 0;
 
+            int k;
+
             for (int cIt = 0; cIt < maxImprovisations; cIt++) {
                 par = minPar + ((maxPar - minPar) / maxImprovisations) * cIt;
-                int k = utils.chooseK(maxK, hmcr, par, random, harmonyMemory);
+                if (fixedK) {
+                    if (dataset.getK() == 0) {
+                        throw new Exception("El dataset no tiene el valor de k");
+                    }
+                    k = dataset.getK();
+                } else {
+                    k = utils.chooseK(maxK, hmcr, par, random, harmonyMemory);
+                }
                 int n = dataset.getN();
                 int[] rgs = new int[n];
                 Agent newSolution = new Agent();
@@ -93,7 +102,6 @@ public class GBHSRecords implements GBHS {
                         rgs[i] = harmonyMemory.get(pos).getP().getRgs()[i];
 
                         if (random.nextDouble() < par) {
-                            //rgs[i] = harmonyMemory.get(pos).getP().getRgs()[i];
                             rgs[i] = harmonyMemory.get(pos).getP().getRgs()[random.nextInt(curHms)];
                         }
                     } else {
@@ -131,7 +139,7 @@ public class GBHSRecords implements GBHS {
                     if (utils.uniformMemory(harmonyMemory)) {
                         harmonyMemory = utils.regenerateMemory(harmonyMemory, maxK,
                                 maxImprovisations, pOptimize, 0.0, dataset, f,
-                                agentComparator, random, distance, initialization);
+                                agentComparator, random, distance, initialization, fixedK);
                         regenerated++;
                         curHms = harmonyMemory.size();
                     }

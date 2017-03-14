@@ -93,7 +93,7 @@ public class OBKMeansImpl implements KMeans {
                  * Se repite mientras no se mejore el fitness
                  */
             } while (comparator.compare(ret, old) < 0 && currIt < maxIt);
-            System.out.println("Kmeans finalizó tras " + currIt + " iteraciones");
+            //System.out.println("Kmeans finalizó tras " + currIt + " iteraciones");
 
             return ret;
         } catch (CloneNotSupportedException ex) {

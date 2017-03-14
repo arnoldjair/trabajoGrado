@@ -28,6 +28,7 @@ public class JSONDataset {
 
     private List<Dataset.JsonAttribute> attributes;
     private List<List<Object>> data;
+    private int k;
     private String name;
 
     public List<Dataset.JsonAttribute> getAttributes() {
@@ -44,6 +45,14 @@ public class JSONDataset {
 
     public void setData(List<List<Object>> data) {
         this.data = data;
+    }
+
+    public int getK() {
+        return k;
+    }
+
+    public void setK(int k) {
+        this.k = k;
     }
 
     public String getName() {

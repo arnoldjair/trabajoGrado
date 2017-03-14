@@ -41,19 +41,34 @@ import java.util.logging.Logger;
  * @author Arnold Jair Jimenez Vargas <ajjimenez@unicauca.edu.co>
  */
 public class GBHSUtils {
-    
+
     public List<Agent> generateHarmonyMemory(int hms, int maxK, Dataset dataset,
             ObjectiveFunction f, Comparator comparador, Random random,
-            Distance distance, String initialization) throws DistanceException, Exception {
+            Distance distance, String initialization, boolean fixedK) throws DistanceException, Exception {
         List<Agent> harmonyMemory = new ArrayList<>();
+        int k;
+        if (fixedK) {
+            if (dataset.getK() == 0) {
+                throw new Exception("El dataset no tiene el valor de k");
+            }
+        }
+
         for (int i = 0; i < hms; i++) {
+            if (fixedK) {
+                if (dataset.getK() == 0) {
+                    throw new Exception("El dataset no tiene el valor de k");
+                }
+                k = dataset.getK();
+            } else {
+                k = random.nextInt(maxK) + 2;
+            }
             Partition tmp;
             switch (initialization) {
                 case "random":
-                    tmp = Partition.randPartition(dataset.getN(), random.nextInt(maxK) + 2, random);
+                    tmp = Partition.randPartition(dataset.getN(), k, random);
                     break;
                 case "kmeanspp":
-                    tmp = Partition.RandPartitionKmeanspp(random.nextInt(maxK) + 2, dataset, distance, random);
+                    tmp = Partition.RandPartitionKmeanspp(k, dataset, distance, random);
                     break;
                 default:
                     throw new Exception("El método de init buen hombre");
@@ -62,10 +77,16 @@ public class GBHSUtils {
                 Logger.getLogger("Error").log(Level.SEVERE, "K < 2");
                 i--;
             }
+            if (fixedK) {
+                if (tmp.getK() != dataset.getK()) {
+                    continue;
+                }
+            }
+
             Agent atmp = new Agent(tmp);
             atmp.calcClusters(dataset);
             double fitness = f.calculate(atmp, dataset, distance);
-            
+
             if (Double.isNaN(fitness)) {
                 i--;
                 continue;
@@ -85,13 +106,13 @@ public class GBHSUtils {
         Collections.sort(harmonyMemory, comparador);
         return harmonyMemory;
     }
-    
+
     public void optimizeMemory(int maxIt, double pKMeans, double p,
             Random rand, Dataset d, ObjectiveFunction f,
             Comparator comparador, List<Agent> harmonyMemory, Distance distance,
             KMeans kmeans)
             throws DistanceException {
-        
+
         for (int i = 0; i < harmonyMemory.size(); i++) {
             if (rand.nextDouble() <= p) {
                 Agent n = kmeans.process(harmonyMemory.get(i), d, distance, pKMeans, maxIt, f);
@@ -101,17 +122,17 @@ public class GBHSUtils {
         }
         Collections.sort(harmonyMemory, comparador);
     }
-    
+
     public int chooseK(int maxK, double hmcr,
             double par, Random random, List<Agent> harmonyMemory) {
         double num = random.nextDouble();
         int ret;
         int hms = harmonyMemory.size();
-        
+
         if (num <= hmcr) {
             int pos = random.nextInt(hms);
             ret = harmonyMemory.get(pos).getP().getK();
-            
+
             if (random.nextDouble() < par) {
                 ret = harmonyMemory.get(0).getP().getK();
             }
@@ -119,7 +140,7 @@ public class GBHSUtils {
             ret = random.nextInt(maxK);
             ret = ret < 2 ? 2 : ret;
         }
-        
+
         return ret;
     }
 
@@ -133,7 +154,7 @@ public class GBHSUtils {
      */
     public boolean repeatedSolution(Agent newSolution,
             Comparator comparadorAgents, List<Agent> harmonyMemory) {
-        
+
         int hms = harmonyMemory.size();
         for (int i = 0; i < hms; i++) {
             if (comparadorAgents.compare(harmonyMemory.get(i), newSolution) == 0) {
@@ -144,7 +165,7 @@ public class GBHSUtils {
         }
         return false;
     }
-    
+
     public boolean replaceSolution(List<Agent> ma, Agent ns, AgentComparator c) {
         int hms = ma.size();
         if (c.compare(ns, ma.get(hms - 1)) == -1) {
@@ -153,7 +174,7 @@ public class GBHSUtils {
         }
         return false;
     }
-    
+
     public boolean uniformMemory(List<Agent> harmonyMemory) {
         int hms = harmonyMemory.size();
         double mean = 0;
@@ -169,30 +190,20 @@ public class GBHSUtils {
         deviation = Math.sqrt(deviation);
         return deviation <= 0.05 * mean;
     }
-    
+
     public List<Agent> regenerateMemory(List<Agent> agentes, int maxK, int maxIt,
             double po, double pKMeans,
             Dataset dataset, ObjectiveFunction f, AgentComparator comparator,
-            Random random, Distance distance, String initialization) throws DistanceException, Exception {
+            Random random, Distance distance, String initialization, boolean fixedK) throws DistanceException, Exception {
         int hms = agentes.size();
         BasicKMeansImpl kmeans = new BasicKMeansImpl();
-        
-        List<Agent> ret = generateHarmonyMemory(hms - 2, maxK, dataset, f, comparator, random, distance, initialization);
-        
+
+        List<Agent> ret = generateHarmonyMemory(hms - 2, maxK, dataset, f,
+                comparator, random, distance, initialization, fixedK);
+
         ret.add(agentes.get(0));
         ret.add(agentes.get(1));
 
-        /*for (int i = 2; i < hms; i++) {
-            Partition tmp = Partition.randPartition(dataset.getN(), random.nextInt(maxK), random);
-            Agent atmp = new Agent(tmp);
-            if (random.nextDouble() <= po) {
-                atmp = kmeans.process(atmp, dataset, distance, pKMeans, maxIt);
-            }
-            double fitness = f.calculate(atmp, dataset, distance);
-            atmp.setFitness(fitness);
-            atmp.calcClusters(dataset);
-            agentes.set(i, atmp);
-        }*/
         Collections.sort(ret, comparator);
         return ret;
     }
@@ -204,22 +215,22 @@ public class GBHSUtils {
      * @return
      */
     public boolean testSolution(Agent agent) {
-        
+
         if (agent.getFitness() == Double.NEGATIVE_INFINITY || agent.getFitness() == Double.POSITIVE_INFINITY) {
             return false;
         }
-        
+
         if (agent.getP().getK() < 2) {
             return false;
         }
-        
+
         Cluster[] clusters = agent.getClusters();
         for (Cluster cluster : clusters) {
             if (cluster.getRecords().length == 1) {
                 return false;
             }
         }
-        
+
         return true;
     }
 }

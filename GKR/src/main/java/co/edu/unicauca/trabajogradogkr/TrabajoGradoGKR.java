@@ -228,13 +228,6 @@ public class TrabajoGradoGKR {
 
             pool.shutdown();
 
-            /*
-            GsonBuilder gsonBuilder = new GsonBuilder();
-            Gson gson = gsonBuilder.setPrettyPrinting().create();
-
-            Type resultType = new TypeToken<List<Result>>() {
-            }.getType();
-             */
             StringBuilder sb = new StringBuilder();
             sb.append("date").append("\t")
                     .append("averageIcc").append("\t")

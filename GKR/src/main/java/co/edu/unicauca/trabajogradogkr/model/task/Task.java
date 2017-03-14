@@ -36,6 +36,7 @@ public class Task {
     private int maxK;
     private int maxKMeans;
     private int threads;
+    private int k;
     private long seed;
     private String dataset;
     private String objectiveFunction;
@@ -45,13 +46,14 @@ public class Task {
     private String initialization;
     private boolean done;
     private boolean normalize;
+    private boolean fixedK;
     private Map<String, Object> filters;
 
     public Task(double minPar, double maxPar, double hmcr, double po, int hms,
             int nExp, int nIt, int maxK, int maxKMeans, int threads, long seed,
             String dataset, String objectiveFunction, String distance,
             String algorithm, boolean done, String kmeansAlgorithm,
-            String initialization, boolean normalize, Map<String, Object> filters) {
+            String initialization, boolean normalize, boolean fixedK, Map<String, Object> filters) {
         this.minPar = minPar;
         this.maxPar = maxPar;
         this.hmcr = hmcr;
@@ -72,6 +74,7 @@ public class Task {
         this.initialization = initialization;
         this.normalize = normalize;
         this.filters = filters;
+        this.fixedK = fixedK;
     }
 
     public double getMinPar() {
@@ -154,6 +157,14 @@ public class Task {
         this.threads = threads;
     }
 
+    public int getK() {
+        return k;
+    }
+
+    public void setK(int k) {
+        this.k = k;
+    }
+
     public long getSeed() {
         return seed;
     }
@@ -224,6 +235,14 @@ public class Task {
 
     public void setNormalize(boolean normalize) {
         this.normalize = normalize;
+    }
+
+    public boolean isFixedK() {
+        return fixedK;
+    }
+
+    public void setFixedK(boolean fixedK) {
+        this.fixedK = fixedK;
     }
 
     public Map<String, Object> getFilters() {

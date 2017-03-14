@@ -44,7 +44,7 @@ public class GBHSCentroids implements GBHS {
     @Override
     public Agent process(int hms, int maxImprovisations, int maxK, int maxKMeans, double pKmeans,
             double minPar, double maxPar, double hmcr, double pOptimize,
-            Dataset dataset, ObjectiveFunction f, boolean log, Random random,
+            Dataset dataset, ObjectiveFunction f, boolean log, boolean fixedK, Random random,
             Distance distance, KMeans kmeans, String initialization) {
 
         try {
@@ -62,7 +62,7 @@ public class GBHSCentroids implements GBHS {
             GBHSUtils utils = new GBHSUtils();
 
             harmonyMemory = utils.generateHarmonyMemory(hms, maxK, dataset, f,
-                    agentComparator, random, distance, initialization);
+                    agentComparator, random, distance, initialization, fixedK);
 
             curHms = harmonyMemory.size();
 
@@ -79,9 +79,19 @@ public class GBHSCentroids implements GBHS {
 
             int regenerated = 0;
 
+            int k;
+
             for (int cIt = 0; cIt < maxImprovisations; cIt++) {
                 par = minPar + ((maxPar - minPar) / maxImprovisations) * cIt;
-                int k = utils.chooseK(maxK, hmcr, par, random, harmonyMemory);
+                if (fixedK) {
+                    if (dataset.getK() == 0) {
+                        throw new Exception("El dataset no tiene el valor de k");
+                    }
+                    k = dataset.getK();
+                } else {
+                    k = utils.chooseK(maxK, hmcr, par, random, harmonyMemory);
+                }
+
                 Agent newSolution = new Agent();
                 newSolution.setClusters(new Cluster[k]);
 
@@ -155,7 +165,7 @@ public class GBHSCentroids implements GBHS {
                     if (utils.uniformMemory(harmonyMemory)) {
                         harmonyMemory = utils.regenerateMemory(harmonyMemory, maxK,
                                 maxImprovisations, pOptimize, 0.0, dataset, f,
-                                agentComparator, random, distance, initialization);
+                                agentComparator, random, distance, initialization, fixedK);
                         regenerated++;
                         curHms = harmonyMemory.size();
                     }

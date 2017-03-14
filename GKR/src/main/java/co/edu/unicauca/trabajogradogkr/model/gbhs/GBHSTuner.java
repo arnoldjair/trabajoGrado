@@ -132,7 +132,7 @@ public class GBHSTuner implements Tuner {
                 for (int j = 0; j < 30; j++) {
                     System.out.println("Improvisacion param: " + j);
                     Agent a = algorithm.process(hms, 100, maxK, 100, 0, params.minPar,
-                            params.maxPar, params.hmcr, params.po, dataset, objectiveFunction, false, random, distance, null, null);
+                            params.maxPar, params.hmcr, params.po, dataset, objectiveFunction, false, false, random, distance, null, null);
                     ContingencyMatrix m = new ContingencyMatrix(a, dataset);
                     ECVM ecvm = new ECVM(m);
                     int icc = ecvm.getIcc();
@@ -181,7 +181,7 @@ public class GBHSTuner implements Tuner {
                 for (int j = 0; j < 30; j++) {
                     System.out.println("Improvisación: " + j);
                     Agent a = algorithm.process(hms, 100, maxK, 100, 0, tmp.minPar,
-                            tmp.maxPar, tmp.hmcr, tmp.po, dataset, f, true,
+                            tmp.maxPar, tmp.hmcr, tmp.po, dataset, f, true, false,
                             random, distance, null, null);
                     ContingencyMatrix m = new ContingencyMatrix(a, dataset);
                     ECVM ecvm = new ECVM(m);

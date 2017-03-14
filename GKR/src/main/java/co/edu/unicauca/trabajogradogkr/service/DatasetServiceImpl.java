@@ -42,46 +42,46 @@ import java.util.logging.Logger;
  * @author Arnold Jair Jimenez Vargas arnoldjair@hotmail.com
  */
 public class DatasetServiceImpl implements DatasetService {
-
+    
     @Override
     public List<Dataset> getDatasets(boolean normalize) throws FileNotFoundException {
         String datasetsPath = Config.getInstance().getConfig("datasetsPath");
-
+        
         List<Dataset> datasets = new ArrayList<>();
-
+        
         File file = new File(datasetsPath);
         if (!file.isDirectory()) {
             System.out.println("Directorio de datasets inválido");
             return null;
         }
-
+        
         FilenameFilter filter = new FilenameFilter() {
             @Override
             public boolean accept(File dir, String name) {
                 return name.endsWith(".json");
             }
         };
-
+        
         File[] files = file.listFiles(filter);
-
+        
         for (int i = 0; i < files.length; i++) {
             Dataset tmp = this.fromJson(files[i].getAbsolutePath(), normalize);
             datasets.add(tmp);
         }
-
+        
         return datasets;
     }
-
+    
     @Override
     public Dataset fromJson(String path, boolean normalize) throws FileNotFoundException {
         BufferedReader reader = new BufferedReader(new FileReader(path));
         Gson gson = new Gson();
         JSONDataset jsonDataset = gson.fromJson(reader, JSONDataset.class);
-
+        
         Dataset ret = new Dataset();
         Attribute[] attrs = new Attribute[jsonDataset.getAttributes().size()];
         int index = 0;
-
+        
         for (Dataset.JsonAttribute attribute : jsonDataset.getAttributes()) {
             Attribute tmp = new Attribute();
             tmp.setName(attribute.getName());
@@ -96,7 +96,7 @@ public class DatasetServiceImpl implements DatasetService {
         ret.setAttributes(attrs);
         index = 0;
         Record[] records = new Record[jsonDataset.getData().size()];
-
+        
         for (List<Object> list : jsonDataset.getData()) {
             Object[] tmpData;// = new Object[list.size()];
             tmpData = list.toArray();
@@ -111,7 +111,7 @@ public class DatasetServiceImpl implements DatasetService {
             records[index] = record;
             index++;
         }
-
+        
         ret.setoRecords(records);
 
         //Valores normalización
@@ -121,7 +121,7 @@ public class DatasetServiceImpl implements DatasetService {
                 norm[i][0] = norm[i][1] = (double) records[0].getData()[i];
             }
         }
-
+        
         for (int i = 0; i < ret.getAttributes().length; i++) {
             if (attrs[i].getType() == DatasetService.DOUBLE) {
                 for (int j = 0; j < records.length; j++) {
@@ -130,7 +130,7 @@ public class DatasetServiceImpl implements DatasetService {
                 }
             }
         }
-
+        
         if (ret.isHasClass()) {
             Map<String, Integer> classMap = new LinkedHashMap<>();
             int cont = 0;
@@ -153,10 +153,10 @@ public class DatasetServiceImpl implements DatasetService {
             }
             ret.setClasses(classes);
         }
-
+        
         ret.setNormValues(norm);
         ret.setN(records.length);
-
+        
         if (normalize) {
             System.out.println("Dataset normalizado");
             this.normalize(ret);
@@ -164,16 +164,17 @@ public class DatasetServiceImpl implements DatasetService {
             System.out.println("Dataset no normalizado");
             ret.setRecords(ret.getoRecords());
         }
-
+        
         ret.setAttributes(attrs);
         ret.setName(jsonDataset.getName());
-
+        ret.setK(jsonDataset.getK());
+        
         return ret;
     }
-
+    
     @Override
     public void normalize(Dataset dataset) {
-
+        
         int rows = dataset.getN();
         int cols = dataset.getAttributes().length;
         Object tempD[];
@@ -200,7 +201,7 @@ public class DatasetServiceImpl implements DatasetService {
         }
         dataset.setNormalized(true);
     }
-
+    
     @Override
     public int getAttrType(String t) {
         switch (t) {
@@ -213,7 +214,7 @@ public class DatasetServiceImpl implements DatasetService {
         }
         return 0;
     }
-
+    
     @Override
     public Dataset byName(String name, boolean normalize) {
         try {
@@ -224,7 +225,7 @@ public class DatasetServiceImpl implements DatasetService {
             return null;
         }
     }
-
+    
     @Override
     public Dataset filter(Dataset dataset, String filter, Object value) {
         try {
@@ -239,5 +240,5 @@ public class DatasetServiceImpl implements DatasetService {
             return null;
         }
     }
-
+    
 }

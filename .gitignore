@@ -10,13 +10,14 @@
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
-/GKR/target/
-
+/*/target/
 /nbactions.xml
+/*/nbactions.xml
 /nb-configuration.xml
 /Prueba*/
 /Res/
 /Resultado
+/GKR/Resultado
 glass_*
 Glass_*
 iris_*

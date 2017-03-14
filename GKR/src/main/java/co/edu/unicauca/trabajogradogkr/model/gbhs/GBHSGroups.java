@@ -44,7 +44,7 @@ public class GBHSGroups implements GBHS {
     @Override
     public Agent process(int hms, int maxImprovisations, int maxK, int maxKMeans, double pKmeans,
             double minPar, double maxPar, double hmcr, double pOptimize, Dataset dataset,
-            ObjectiveFunction f, boolean log, Random random, Distance distance,
+            ObjectiveFunction f, boolean log, boolean fixedK, Random random, Distance distance,
             KMeans kmeans, String initialization) {
 
         try {
@@ -62,7 +62,7 @@ public class GBHSGroups implements GBHS {
             GBHSUtils utils = new GBHSUtils();
 
             harmonyMemory = utils.generateHarmonyMemory(hms, maxK, dataset, f,
-                    agentComparator, random, distance, initialization);
+                    agentComparator, random, distance, initialization, fixedK);
 
             curHms = harmonyMemory.size();
 
@@ -79,9 +79,20 @@ public class GBHSGroups implements GBHS {
 
             int regenerated = 0;
 
+            int k;
+
             for (int cIt = 0; cIt < maxImprovisations; cIt++) {
                 par = minPar + ((maxPar - minPar) / maxImprovisations) * cIt;
-                int k = utils.chooseK(maxK, hmcr, par, random, harmonyMemory);
+
+                if (fixedK) {
+                    if (dataset.getK() == 0) {
+                        throw new Exception("El dataset no tiene el valor de k");
+                    }
+                    k = dataset.getK();
+                } else {
+                    k = utils.chooseK(maxK, hmcr, par, random, harmonyMemory);
+                }
+
                 Partition p = new Partition(dataset.getN());
                 p.clear();
                 Agent newSolution = new Agent(p);
@@ -100,8 +111,23 @@ public class GBHSGroups implements GBHS {
                             p = harmonyMemory.get(0).getP().mix(p, random, nc);
                         }
                     } else {
-                        //Partition tmp = Partition.randPartition(dataset.getN(), k, random);
-                        Partition tmp = Partition.RandPartitionKmeanspp(k, dataset, distance, random);
+                        Partition tmp;
+                        int currK;
+                        if (fixedK) {
+                            currK = k;
+                        } else {
+                            currK = random.nextInt(maxK) + 2;
+                        }
+                        switch (initialization) {
+                            case "random":
+                                tmp = Partition.randPartition(dataset.getN(), currK, random);
+                                break;
+                            case "kmeanspp":
+                                tmp = Partition.RandPartitionKmeanspp(currK, dataset, distance, random);
+                                break;
+                            default:
+                                throw new Exception("El método de init buen hombre");
+                        }
                         p = tmp.mix(p, random, i);
                     }
                 }
@@ -144,7 +170,7 @@ public class GBHSGroups implements GBHS {
                     if (utils.uniformMemory(harmonyMemory)) {
                         harmonyMemory = utils.regenerateMemory(harmonyMemory, maxK,
                                 maxImprovisations, pOptimize, 0.0, dataset, f,
-                                agentComparator, random, distance, initialization);
+                                agentComparator, random, distance, initialization, fixedK);
                         regenerated++;
                         curHms = harmonyMemory.size();
                     }

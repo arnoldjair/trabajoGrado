@@ -59,11 +59,12 @@ public class Experimenter implements Callable<Result> {
     private int[] iic;
     private double[] er;
     private Distance distance;
+    private boolean fixedK;
     private final KMeans kmeans;
     private final DatasetService datasetService;
     private final String initialization;
 
-    public Experimenter(Task task) throws FileNotFoundException {
+    public Experimenter(Task task) throws Exception {
         this.datasetService = new DatasetServiceImpl();
         this.hms = task.getHms();
         this.maxImprovisations = task.getnIt();
@@ -98,6 +99,12 @@ public class Experimenter implements Callable<Result> {
         this.distance = DistanceFactory.getDistance(task.getDistance());
         this.kmeans = KMeansFactory.getKMeans(task.getKmeansAlgorithm());
         this.initialization = task.getInitialization();
+        if (task.isFixedK()) {
+            if (dataset.getK() == 0) {
+                throw new Exception("El dataset no tiene el valor de k");
+            }
+            this.fixedK = task.isFixedK();
+        }
 
     }
 
@@ -109,7 +116,7 @@ public class Experimenter implements Callable<Result> {
             GBHS currAlgorithm = algorithm.newInstance();
             Agent cSolucion = currAlgorithm.process(hms, maxImprovisations,
                     maxK, maxKMeans, 0.0, minPar, maxPar, hmcr, pOptimize,
-                    dataset, f, false, new Random(i), distance, kmeans, initialization);
+                    dataset, f, false, fixedK, new Random(i), distance, kmeans, initialization);
             solutions[i] = cSolucion;
 
             ContingencyMatrix contingencyMatrix = new ContingencyMatrix(cSolucion, dataset);

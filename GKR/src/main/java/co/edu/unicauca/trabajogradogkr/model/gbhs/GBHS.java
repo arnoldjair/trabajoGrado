@@ -46,6 +46,7 @@ public interface GBHS {
      * @param dataset
      * @param f
      * @param log
+     * @param fixedK
      * @param random
      * @param distance
      * @param kmeans
@@ -54,7 +55,7 @@ public interface GBHS {
      */
     public Agent process(int hms, int maxImprovisations, int maxK,
             int maxKMeans, double pKmeans, double minPar, double maxPar, double hmcr, double pOptimize,
-            Dataset dataset, ObjectiveFunction f, boolean log, Random random,
+            Dataset dataset, ObjectiveFunction f, boolean log, boolean fixedK, Random random,
             Distance distance, KMeans kmeans, String initialization);
 
     public GBHS newInstance();
