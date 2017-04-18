@@ -47,13 +47,15 @@ public class Task {
     private boolean done;
     private boolean normalize;
     private boolean fixedK;
+    private boolean log;
     private Map<String, Object> filters;
 
     public Task(double minPar, double maxPar, double hmcr, double po, int hms,
             int nExp, int nIt, int maxK, int maxKMeans, int threads, long seed,
             String dataset, String objectiveFunction, String distance,
             String algorithm, boolean done, String kmeansAlgorithm,
-            String initialization, boolean normalize, boolean fixedK, Map<String, Object> filters) {
+            String initialization, boolean normalize, boolean fixedK, boolean log,
+            Map<String, Object> filters) {
         this.minPar = minPar;
         this.maxPar = maxPar;
         this.hmcr = hmcr;
@@ -75,6 +77,7 @@ public class Task {
         this.normalize = normalize;
         this.filters = filters;
         this.fixedK = fixedK;
+        this.log = log;
     }
 
     public double getMinPar() {
@@ -243,6 +246,14 @@ public class Task {
 
     public void setFixedK(boolean fixedK) {
         this.fixedK = fixedK;
+    }
+
+    public boolean isLog() {
+        return log;
+    }
+
+    public void setLog(boolean log) {
+        this.log = log;
     }
 
     public Map<String, Object> getFilters() {

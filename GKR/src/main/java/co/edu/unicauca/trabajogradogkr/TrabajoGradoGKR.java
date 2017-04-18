@@ -8,7 +8,7 @@ import co.edu.unicauca.trabajogradogkr.model.Agent;
 import co.edu.unicauca.trabajogradogkr.model.ContingencyMatrix;
 import co.edu.unicauca.trabajogradogkr.model.Dataset;
 import co.edu.unicauca.trabajogradogkr.model.ECVM;
-import co.edu.unicauca.trabajogradogkr.model.Experimenter;
+import co.edu.unicauca.trabajogradogkr.model.GBHSExperimenter;
 import co.edu.unicauca.trabajogradogkr.model.JsonParams;
 import co.edu.unicauca.trabajogradogkr.model.Result;
 import co.edu.unicauca.trabajogradogkr.model.distance.DistanceFactory;
@@ -74,8 +74,7 @@ public class TrabajoGradoGKR {
         GsonBuilder builder = new GsonBuilder();
         Gson gson = builder.create();
         DatasetService datasetService = new DatasetServiceImpl();
-
-        //Config.getInstance().setConfig("datasetsPath", "/home/equipo/Documentos/TrabajoGradoRGS/Codigo/TrabajoGradoGKR/Código/Datasets/json");
+        
         while ((c = go.getopt()) != -1) {
             switch (c) {
 
@@ -152,7 +151,7 @@ public class TrabajoGradoGKR {
         SimpleDateFormat dFormat = new SimpleDateFormat("dd-MM-yyyy_HH:mm:ss");
         ObjectiveFunction objectiveFunction
                 = ObjectiveFunctionFactory.
-                getObjectiveFuncion((String) params.getParam("objectiveFunction"));
+                        getObjectiveFuncion((String) params.getParam("objectiveFunction"));
         int nExp = ((Double) params.getParam("nExp")).intValue();
         int k = ((Double) params.getParam("k")).intValue();
         int maxIt = ((Double) params.getParam("maxIt")).intValue();
@@ -217,7 +216,7 @@ public class TrabajoGradoGKR {
             List<Result> results = new ArrayList();
 
             for (Task task : tasks) {
-                Experimenter exp = new Experimenter(task);
+                GBHSExperimenter exp = new GBHSExperimenter(task);
                 Future<Result> future = pool.submit(exp);
                 futureObjs.add(future);
             }

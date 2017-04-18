@@ -40,6 +40,7 @@ public class TaskBuilder {
         }
 
         boolean fixedK = false;
+        boolean log = false;
 
         List<Task> ret = new ArrayList<>();
         String kmAlgo = (String) params.getParam("kmeansAlgorithm");
@@ -56,6 +57,10 @@ public class TaskBuilder {
 
         if (params.getParam("fixedK") != null) {
             fixedK = (boolean) params.getParam("fixedK");
+        }
+
+        if (params.getParam("log") != null) {
+            log = (boolean) params.getParam("fixedK");
         }
 
         for (String algorithm : (List<String>) params.getParam("algorithms")) {
@@ -75,7 +80,8 @@ public class TaskBuilder {
                                 ((Double) params.getParam("threads")).intValue(),
                                 ((Double) params.getParam("seed")).intValue(),
                                 dataset, objectiveFunction, distance, algorithm,
-                                false, kmAlgo, initialization, normalize, fixedK, filters);
+                                false, kmAlgo, initialization, normalize,
+                                fixedK, log, filters);
                         ret.add(task);
                     }
                 }

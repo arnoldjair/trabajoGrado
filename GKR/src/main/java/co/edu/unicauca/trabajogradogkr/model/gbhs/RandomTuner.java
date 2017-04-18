@@ -18,7 +18,7 @@
  */
 package co.edu.unicauca.trabajogradogkr.model.gbhs;
 
-import co.edu.unicauca.trabajogradogkr.model.Experimenter;
+import co.edu.unicauca.trabajogradogkr.model.GBHSExperimenter;
 import co.edu.unicauca.trabajogradogkr.model.JsonParams;
 import co.edu.unicauca.trabajogradogkr.model.Result;
 import co.edu.unicauca.trabajogradogkr.model.task.Task;
@@ -47,7 +47,7 @@ public class RandomTuner implements Tuner {
 
         for (Task task : tasks) {
             try {
-                Experimenter exp = new Experimenter(task);
+                GBHSExperimenter exp = new GBHSExperimenter(task);
                 Result result = exp.experiment();
                 result.calcAverages();
                 err += result.getAverageEr();

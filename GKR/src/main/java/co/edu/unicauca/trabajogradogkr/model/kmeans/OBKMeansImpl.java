@@ -87,6 +87,11 @@ public class OBKMeansImpl implements KMeans {
                 ret.setP(Partition.reprocessRGS(rgs));
                 ret.calcClusters(dataset);
                 ret.setFitness(objectiveFunction.calculate(ret, dataset, distance));
+
+                //Para evitar que el número de clusters sea menor
+                if (agent.getP().getK() > ret.getP().getK()) {
+                    return agent.clone();
+                }
                 currIt++;
 
                 /**

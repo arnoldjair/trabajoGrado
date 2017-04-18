@@ -25,6 +25,8 @@ import co.edu.unicauca.trabajogradogkr.model.Dataset;
 import co.edu.unicauca.trabajogradogkr.model.rgs.Partition;
 import co.edu.unicauca.trabajogradogkr.model.Record;
 import co.edu.unicauca.trabajogradogkr.model.objectivefunction.ObjectiveFunction;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -32,63 +34,63 @@ import co.edu.unicauca.trabajogradogkr.model.objectivefunction.ObjectiveFunction
  */
 public class BasicKMeansImpl implements KMeans {
 
+    @Override
     public Agent process(Agent agent, Dataset dataset, Distance distance,
             double percentageStop, int maxIt, ObjectiveFunction f) {
-        int n = dataset.getN();
-        int currIt = 0;
-        double reallocated;
-        double prevReallocated = n;
-        int k;
-        int index;
-        int[] rgs;
-        double currPercent = 1;
-        Cluster[] clusters;
-        Agent ret = new Agent();
-        Partition tmpP = new Partition(agent.getP().getRgs().clone(),
-                agent.getP().getN(), agent.getP().getK());
-        ret.setP(tmpP);
-        ret.calcClusters(dataset);
+        try {
+            int n = dataset.getN();
+            int currIt = 0;
+            double reallocated;
+            double prevReallocated = n;
+            int k;
+            int index;
+            int[] rgs;
+            double currPercent = 1;
+            Cluster[] clusters;
+            Agent ret = new Agent();
+            Partition tmpP = new Partition(agent.getP().getRgs().clone(),
+                    agent.getP().getN(), agent.getP().getK());
+            ret.setP(tmpP);
+            ret.calcClusters(dataset);
 
-        do {
-            reallocated = 0;
-            rgs = ret.getP().getRgs().clone();
-            clusters = ret.getClusters();
-            k = ret.getP().getK();
-            double dist;
-            for (int i = 0; i < n; i++) {
-                Record record = dataset.getRecord(i);
-                index = rgs[i];
-                dist = distance.distance(clusters[index].getCentroid(), record);
-                for (int j = 0; j < k; j++) {
-                    double currDist = distance.distance(clusters[j].getCentroid(), record);
-                    if (currDist < dist) {
-                        index = j;
-                        dist = currDist;
+            do {
+                reallocated = 0;
+                rgs = ret.getP().getRgs().clone();
+                clusters = ret.getClusters();
+                k = ret.getP().getK();
+                double dist;
+                for (int i = 0; i < n; i++) {
+                    Record record = dataset.getRecord(i);
+                    index = rgs[i];
+                    dist = distance.distance(clusters[index].getCentroid(), record);
+                    for (int j = 0; j < k; j++) {
+                        double currDist = distance.distance(clusters[j].getCentroid(), record);
+                        if (currDist < dist) {
+                            index = j;
+                            dist = currDist;
+                        }
+                    }
+                    if (index != rgs[i]) {
+                        reallocated++;
+                        rgs[i] = index;
                     }
                 }
-                if (index != rgs[i]) {
-                    reallocated++;
-                    rgs[i] = index;
-                    /**
-                     * MacQueen Cada vez que se reasigna un punto se calculan
-                     * los clusters. Sin esto iris: 147.92 seg Con esto iris 4823
-                     * seg
-                     */
-                    /*ret.setP(Partition.reprocessRGS(rgs));
-                    ret.calcClusters(dataset);
-                    // TODO: ¿Es necesario clonar la rgs?
-                    rgs = ret.getP().getRgs().clone();
-                     */
-                }
-            }
 
-            currPercent = reallocated / prevReallocated;
-            prevReallocated = reallocated;
-            ret.setP(Partition.reprocessRGS(rgs));
-            ret.calcClusters(dataset);
-            currIt++;
-        } while (reallocated != 0 && currIt < maxIt);
-        return ret;
+                currPercent = reallocated / prevReallocated;
+                prevReallocated = reallocated;
+                ret.setP(Partition.reprocessRGS(rgs));
+                ret.calcClusters(dataset);
+
+                if (agent.getP().getK() > ret.getP().getK()) {
+                    return agent.clone();
+                }
+                currIt++;
+            } while (reallocated != 0 && currIt < maxIt);
+            return ret;
+        } catch (CloneNotSupportedException ex) {
+            Logger.getLogger(BasicKMeansImpl.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
     }
 
 }

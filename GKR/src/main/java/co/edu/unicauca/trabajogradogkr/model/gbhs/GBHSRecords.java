@@ -30,6 +30,7 @@ import co.edu.unicauca.trabajogradogkr.service.Config;
 import co.edu.unicauca.trabajogradogkr.utils.Report;
 import java.io.File;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
@@ -53,7 +54,7 @@ public class GBHSRecords implements GBHS {
             int bad = 0;
             File resultFolder = Config.getInstance().getResultFolder();
             File resultado = new File(resultFolder, "registros_"
-                    + dataset.getName() + "_" + f.toString() + ".txt");
+                    + dataset.getName() + "_" + f.toString() + (new Date()).toString() + ".txt");
             String logPath = resultado.getAbsolutePath();
             Report report = new Report(logPath);
             AgentComparator agentComparator = new AgentComparator(f.minimizes());
