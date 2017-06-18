@@ -60,7 +60,7 @@ public class TaskBuilder {
         }
 
         if (params.getParam("log") != null) {
-            log = (boolean) params.getParam("fixedK");
+            log = (boolean) params.getParam("log");
         }
 
         for (String algorithm : (List<String>) params.getParam("algorithms")) {
@@ -72,13 +72,13 @@ public class TaskBuilder {
                                 (double) params.getParam("maxPar"),
                                 (double) params.getParam("hmcr"),
                                 (double) params.getParam("po"),
-                                ((Double) params.getParam("hms")).intValue(),
-                                ((Double) params.getParam("nExp")).intValue(),
-                                ((Double) params.getParam("nIt")).intValue(),
-                                ((Double) params.getParam("maxK")).intValue(),
-                                ((Double) params.getParam("maxKMeans")).intValue(),
-                                ((Double) params.getParam("threads")).intValue(),
-                                ((Double) params.getParam("seed")).intValue(),
+                                params.toInteger(params.getParam("hms")),
+                                params.toInteger(params.getParam("nExp")),
+                                params.toInteger(params.getParam("nIt")),
+                                params.toInteger(params.getParam("maxK")),
+                                params.toInteger(params.getParam("maxKMeans")),
+                                params.toInteger(params.getParam("threads")),
+                                params.toInteger(params.getParam("seed")),
                                 dataset, objectiveFunction, distance, algorithm,
                                 false, kmAlgo, initialization, normalize,
                                 fixedK, log, filters);

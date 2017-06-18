@@ -12,6 +12,8 @@ import co.edu.unicauca.trabajogradogkr.model.GBHSExperimenter;
 import co.edu.unicauca.trabajogradogkr.model.JsonParams;
 import co.edu.unicauca.trabajogradogkr.model.Result;
 import co.edu.unicauca.trabajogradogkr.model.distance.DistanceFactory;
+import co.edu.unicauca.trabajogradogkr.model.gbhs.RandomTuner;
+import co.edu.unicauca.trabajogradogkr.model.gbhs.Tuner;
 import co.edu.unicauca.trabajogradogkr.model.objectivefunction.ObjectiveFunction;
 import co.edu.unicauca.trabajogradogkr.model.objectivefunction.ObjectiveFunctionFactory;
 import co.edu.unicauca.trabajogradogkr.model.rgs.Partition;
@@ -74,7 +76,7 @@ public class TrabajoGradoGKR {
         GsonBuilder builder = new GsonBuilder();
         Gson gson = builder.create();
         DatasetService datasetService = new DatasetServiceImpl();
-        
+
         while ((c = go.getopt()) != -1) {
             switch (c) {
 
@@ -118,25 +120,21 @@ public class TrabajoGradoGKR {
             }
         }
 
-        if (web) {
-            //SpringApplication.run(TrabajoGradoGKR.class, args);
-        } else {
-
-            if (kmeans) {
-                testKMeans(params);
-                return;
-            }
-
-            Config.getInstance().initResultFolder();
-
-            // TODO: Configuración aparte para afinar.
-            if ((String) params.getParam("tuneUp") != null && !((String) params.getParam("tuneUp")).isEmpty()) {
-                tuneUp(params);
-                return;
-            }
-
-            experiment(params);
+        if (kmeans) {
+            testKMeans(params);
+            return;
         }
+
+        Config.getInstance().initResultFolder();
+
+        // TODO: Configuración aparte para afinar.
+        Boolean tuneUp = (Boolean) params.getParam("tuneUp");
+        if (tuneUp != null && tuneUp) {
+            tuneUp(params);
+            return;
+        }
+
+        experiment(params);
 
     }
 
@@ -248,9 +246,7 @@ public class TrabajoGradoGKR {
                 report.writeLine(sb.toString());
             }
 
-        } catch (AttributeException | DatasetException ex) {
-            Logger.getLogger(TrabajoGradoGKR.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (InstantiationException | IllegalAccessException | InterruptedException | ExecutionException ex) {
+        } catch (AttributeException | DatasetException | InstantiationException | IllegalAccessException | InterruptedException | ExecutionException ex) {
             Logger.getLogger(TrabajoGradoGKR.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             milis = System.currentTimeMillis() - milis;
@@ -262,63 +258,63 @@ public class TrabajoGradoGKR {
     }
 
     public static void tuneUp(JsonParams jsonParams) throws Exception {
-        /*long milis = System.currentTimeMillis();
+        long milis = System.currentTimeMillis();
         Tuner tuner = new RandomTuner();
-        SimpleDateFormat dFormat = new SimpleDateFormat("dd-MM-yyyy_HH:mm:ss");
 
-        switch (jsonParams.getTuneUp()) {
-            case "random":
-                tuner = new RandomTuner();
-                break;
-            case "gbhs":
-                //TODO: Cambiar parámetros
-                break;
-        }
-
-        //Thread
-        int maxT = jsonParams.getThreads();
+        Double tmp = (Double) jsonParams.getParam("threads");
+        int maxT = tmp.intValue();
         ExecutorService pool = Executors.newFixedThreadPool(maxT);
 
-        Report report = new Report("Afinar" + dFormat.format(new Date()) + ".csv");
+        Report report = new Report("Afinar.csv", true);
 
         StringBuilder sb = new StringBuilder();
 
-        sb.append("minPar").append("\t")
+        sb
+                .append("minPar").append("\t")
                 .append("maxPar").append("\t")
-                .append("HMCR").append("\t")
-                .append("PO").append("\t")
-                .append("HMS").append("\t")
-                .append("nExp").append("\t")
+                .append("hmcr").append("\t")
+                .append("hms").append("\t")
+                .append("po").append("\t")
+                .append("seed").append("\t")
                 .append("nIt").append("\t")
                 .append("maxK").append("\t")
                 .append("maxKMeans").append("\t")
+                .append("initialization").append("\t")
+                .append("normalize").append("\t")
                 .append("ER").append("\n");
         report.writeLine(sb.toString());
 
         List<Future<JsonParams>> futureObjs = new ArrayList<>();
-
-        int tuneUpIt = jsonParams.getTuneUpIt() == 0 ? 1 : jsonParams.getTuneUpIt();
+        tmp = (Double) jsonParams.getParam("tuneUpIt");
+        int tuneUpIt = tmp.intValue() == 0 ? 1 : tmp.intValue();
 
         for (int i = 0; i < tuneUpIt; i++) {
-            Tuner currTuner = tuner.getClass().newInstance();
+            Tuner currTuner = new RandomTuner();
             Random random = new SecureRandom();
             JsonParams currParams = new JsonParams();
-            currParams.setMinPar(random.nextDouble());
-            currParams.setMaxPar(currParams.getMinPar() + (1 - currParams.getMinPar()) * random.nextDouble());
-            currParams.setHmcr(random.nextDouble());
-            currParams.setPo(random.nextDouble());
-            currParams.setHms(1 + random.nextInt(50));
-            currParams.setDatasetsPath(jsonParams.getDatasetsPath());
-            currParams.setnExp(jsonParams.getnExp());
-            currParams.setMaxK(2 + random.nextInt(20));
-            currParams.setMaxKMeans(10 + random.nextInt(100));
-            currParams.setPo(random.nextDouble());
-            currParams.setnIt(100 + random.nextInt(1000));
-            currParams.setThreads(jsonParams.getThreads());
-            currParams.setDatasets(jsonParams.getDatasets());
-            currParams.setObjectiveFunctions(jsonParams.getObjectiveFunctions());
-            currParams.setDistances(jsonParams.getDistances());
-            currParams.setAlgorithms(jsonParams.getAlgorithms());
+            double minPar = random.nextDouble();
+            currParams.setParam("minPar", minPar);
+            currParams.setParam("maxPar", minPar + (1 - minPar) * random.nextDouble());
+            currParams.setParam("hmcr", random.nextDouble());
+            currParams.setParam("hms", random.nextInt(50));
+            currParams.setParam("nExp", jsonParams.getParam("nExp"));
+            currParams.setParam("po", random.nextDouble());
+            currParams.setParam("seed", random.nextInt(2000));
+            currParams.setParam("nIt", (100 + random.nextInt(1000)));
+            currParams.setParam("maxK", (2 + random.nextInt(20)));
+            currParams.setParam("maxKMeans", (10 + random.nextInt(100)));
+            currParams.setParam("threads", jsonParams.getParam("threads"));
+            currParams.setParam("datasets", jsonParams.getParam("datasets"));
+            currParams.setParam("algorithms", jsonParams.getParam("algorithms"));
+            currParams.setParam("distances", jsonParams.getParam("distances"));
+            currParams.setParam("objectiveFunctions", jsonParams.getParam("objectiveFunctions"));
+            currParams.setParam("datasetsPath", jsonParams.getParam("datasetsPath"));
+            currParams.setParam("kmeansAlgorithm", jsonParams.getParam("kmeansAlgorithm"));
+            currParams.setParam("initialization", jsonParams.getParam("initialization"));
+            currParams.setParam("normalize", jsonParams.getParam("normalize"));
+            currParams.setParam("fixedK", jsonParams.getParam("fixedK"));
+            currParams.setParam("log", jsonParams.getParam("log"));
+
             List<Task> tasks = TaskBuilder.buildTasks(currParams);
             currTuner.setTasks(tasks);
             currTuner.setParams(currParams);
@@ -326,21 +322,24 @@ public class TrabajoGradoGKR {
             futureObjs.add(futureObj);
         }
 
-        List<JsonParams> params = new ArrayList<>();
-
         for (Future<JsonParams> futureObj : futureObjs) {
             JsonParams curr = futureObj.get();
             sb = new StringBuilder();
-            sb.append(curr.getMinPar()).append("\t")
-                    .append(curr.getMaxPar()).append("\t")
-                    .append(curr.getHmcr()).append("\t")
-                    .append(curr.getPo()).append("\t")
-                    .append(curr.getHms()).append("\t")
-                    .append(curr.getnExp()).append("\t")
-                    .append(curr.getnIt()).append("\t")
-                    .append(curr.getMaxK()).append("\t")
-                    .append(curr.getMaxKMeans()).append("\t")
-                    .append(curr.getEr()).append("\n");
+
+            sb
+                    .append(curr.getParam("minPar")).append("\t")
+                    .append(curr.getParam("maxPar")).append("\t")
+                    .append(curr.getParam("hmcr")).append("\t")
+                    .append(curr.getParam("hms")).append("\t")
+                    .append(curr.getParam("po")).append("\t")
+                    .append(curr.getParam("seed")).append("\t")
+                    .append(curr.getParam("nIt")).append("\t")
+                    .append(curr.getParam("maxK")).append("\t")
+                    .append(curr.getParam("maxKMeans")).append("\t")
+                    .append(curr.getParam("initialization")).append("\t")
+                    .append(curr.getParam("normalize")).append("\t")
+                    .append(curr.getParam("ER")).append("\n");
+
             report.writeLine(sb.toString());
         }
 
@@ -350,7 +349,6 @@ public class TrabajoGradoGKR {
 
         milis = System.currentTimeMillis() - milis;
         System.out.println(milis / 1000 + " Segundos");
-         */
     }
 
 }

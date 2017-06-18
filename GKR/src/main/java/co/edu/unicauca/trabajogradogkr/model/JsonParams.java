@@ -18,6 +18,7 @@
  */
 package co.edu.unicauca.trabajogradogkr.model;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -28,6 +29,10 @@ import java.util.Map;
 public class JsonParams {
 
     private Map<String, Object> map;
+
+    public JsonParams() {
+        this.map = new HashMap<>();
+    }
 
     public void setMap(Map map) {
         this.map = map;
@@ -54,12 +59,12 @@ public class JsonParams {
         ret = ret && (double) getParam("maxPar") > 0;
         ret = ret && (double) getParam("hmcr") > 0;
         ret = ret && (double) getParam("po") >= 0;
-        ret = ret && ((Double) getParam("hms")).intValue() > 0;
-        ret = ret && ((Double) getParam("nExp")).intValue() > 0;
-        ret = ret && ((Double) getParam("nIt")).intValue() > 0;
-        ret = ret && ((Double) getParam("maxK")).intValue() > 0;
-        ret = ret && ((Double) getParam("maxKMeans")).intValue() > 0;
-        ret = ret && ((Double) getParam("threads")).intValue() > 0;
+        ret = ret && toInteger(getParam("hms")) > 0;
+        ret = ret && toInteger(getParam("nExp")) > 0;
+        ret = ret && toInteger(getParam("nIt")) > 0;
+        ret = ret && toInteger(getParam("maxK")) > 0;
+        ret = ret && toInteger(getParam("maxKMeans")) > 0;
+        ret = ret && toInteger(getParam("threads")) > 0;
         ret = ret && ((List<String>) getParam("datasets")).size() > 0;
         ret = ret && ((List<String>) getParam("objectiveFunctions")).size() > 0;
         ret = ret && ((List<String>) getParam("distances")).size() > 0;
@@ -73,6 +78,19 @@ public class JsonParams {
         }
 
         return ret;
+    }
+
+    public Integer toInteger(Object var) {
+        if (var instanceof Integer) {
+            return (Integer) var;
+        }
+
+        if (var instanceof Double) {
+            Double tmp = (Double) var;
+            return tmp.intValue();
+        }
+
+        return null;
     }
 
     public boolean verifyKMeans() throws Exception {
